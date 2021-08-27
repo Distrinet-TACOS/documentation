@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html  dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Using OP-TEE and QEMUv7</title>
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.26.4/css/uikit.gradient.css">
+
+        <!-- <link rel="stylesheet" href="style.css"> -->
+        <link rel="stylesheet" href="https://cdn.rawgit.com/diversen/pandoc-uikit/master/style.css">
+        <link href="https://vjs.zencdn.net/5.4.4/video-js.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+        <!-- <script src="uikit.js"></script> -->
+        <script src="https://cdn.rawgit.com/diversen/pandoc-uikit/master/uikit.js"></script>
+        <!-- <script src="scripts.js"></script> -->
+        <script src="https://cdn.rawgit.com/diversen/pandoc-uikit/master/scripts.js"></script>
+        <!-- <script src="jquery.sticky-kit.js "></script> -->
+        <script src="https://cdn.rawgit.com/diversen/pandoc-uikit/master/jquery.sticky-kit.js"></script>
+
+        <meta name="generator" content="pandoc-uikit" />
+                <meta name="author" content="Tom Van Eyck" />
+                        <title>Using OP-TEE and QEMUv7</title>
+        <style type="text/css">code{white-space: pre;}</style>
+                        <style type="text/css">
+            a.sourceLine { display: inline-block; line-height: 1.25; }
+            a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+            a.sourceLine:empty { height: 1.2em; }
+            .sourceCode { overflow: visible; }
+            code.sourceCode { white-space: pre; position: relative; }
+            div.sourceCode { margin: 1em 0; }
+            pre.sourceCode { margin: 0; }
+            @media screen {
+            div.sourceCode { overflow: auto; }
+            }
+            @media print {
+            code.sourceCode { white-space: pre-wrap; }
+            a.sourceLine { text-indent: -1em; padding-left: 1em; }
+            }
+            pre.numberSource a.sourceLine
+              { position: relative; left: -4em; }
+            pre.numberSource a.sourceLine::before
+              { content: attr(title);
+                position: relative; left: -1em; text-align: right; vertical-align: baseline;
+                border: none; pointer-events: all; display: inline-block;
+                -webkit-touch-callout: none; -webkit-user-select: none;
+                -khtml-user-select: none; -moz-user-select: none;
+                -ms-user-select: none; user-select: none;
+                padding: 0 4px; width: 4em;
+                color: #aaaaaa;
+              }
+            pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+            div.sourceCode
+              {  }
+            @media screen {
+            a.sourceLine::before { text-decoration: underline; }
+            }
+            code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+            code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+            code span.at { color: #7d9029; } /* Attribute */
+            code span.bn { color: #40a070; } /* BaseN */
+            code span.bu { } /* BuiltIn */
+            code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+            code span.ch { color: #4070a0; } /* Char */
+            code span.cn { color: #880000; } /* Constant */
+            code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+            code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+            code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+            code span.dt { color: #902000; } /* DataType */
+            code span.dv { color: #40a070; } /* DecVal */
+            code span.er { color: #ff0000; font-weight: bold; } /* Error */
+            code span.ex { } /* Extension */
+            code span.fl { color: #40a070; } /* Float */
+            code span.fu { color: #06287e; } /* Function */
+            code span.im { } /* Import */
+            code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+            code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+            code span.op { color: #666666; } /* Operator */
+            code span.ot { color: #007020; } /* Other */
+            code span.pp { color: #bc7a00; } /* Preprocessor */
+            code span.sc { color: #4070a0; } /* SpecialChar */
+            code span.ss { color: #bb6688; } /* SpecialString */
+            code span.st { color: #4070a0; } /* String */
+            code span.va { color: #19177c; } /* Variable */
+            code span.vs { color: #4070a0; } /* VerbatimString */
+            code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        </style>
+                                                </head>
+
+    <body>
+
+
+        <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
+
+                        <div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-1-1">
+                    <h1 class="uk-heading-large">Using OP-TEE and QEMUv7</h1>
+                                                            <p class="uk-text-large">Tom Van Eyck</p>
+                                    </div>
+            </div>
+            
+            <div class="uk-grid" data-uk-grid-margin >          
+                <div class="uk-width-medium-1-4">
+                    <div class="uk-overflow-container" data-uk-sticky="{top:25,media: 768}">
+                        <div class="uk-panel uk-panel-box menu-begin" >
+
+                                                        <ul>
+                            <li><a href="#bibliography">1. Bibliography</a></li>
+                            <li><a href="#prerequisites">2. Prerequisites</a><ul>
+                            <li><a href="#ubuntu">2.1. Ubuntu</a><ul>
+                            <li><a href="#changes-from-original-2">2.1.1. Changes from original [2]</a></li>
+                            </ul></li>
+                            <li><a href="#google-aosp-repo">2.2. Google AOSP repo</a></li>
+                            <li><a href="#qemu">2.3. QEMU</a></li>
+                            </ul></li>
+                            <li><a href="#building-running-op-tee">3. Building &amp; running OP-TEE</a><ul>
+                            <li><a href="#download-of-repositories">3.1. Download of repositories</a></li>
+                            <li><a href="#toolchains">3.2. Toolchains</a></li>
+                            <li><a href="#build-op-tee">3.3. Build OP-TEE</a></li>
+                            <li><a href="#running-op-tee">3.4. Running OP-TEE</a></li>
+                            </ul></li>
+                            <li><a href="#debugging-op-tee">4. Debugging OP-TEE</a><ul>
+                            <li><a href="#download-and-install-gdb-for-arm">4.1. Download and install gdb for ARM</a></li>
+                            <li><a href="#gdb-settings">4.2. Gdb settings</a></li>
+                            <li><a href="#debugging-op-tee-1">4.3. Debugging OP-TEE</a></li>
+                            </ul></li>
+                            <li><a href="#custom-pseudo-trusted-application">5. Custom Pseudo Trusted Application</a><ul>
+                            <li><a href="#example-pta">5.1. Example PTA</a></li>
+                            </ul></li>
+                            <li><a href="#serial-interrupt-in-secure-world">6. Serial interrupt in secure world</a><ul>
+                            <li><a href="#interrupt-handler">6.1. Interrupt handler</a></li>
+                            <li><a href="#serial-console-driver">6.2. Serial console driver</a><ul>
+                            <li><a href="#handling-serial-input">6.2.1. Handling serial input</a></li>
+                            </ul></li>
+                            <li><a href="#cpu-masks">6.3. CPU masks</a></li>
+                            </ul></li>
+                            <li><a href="#tips-and-tricks">7. Tips and tricks</a><ul>
+                            <li><a href="#gdbserver">7.1. gdbserver</a></li>
+                            </ul></li>
+                            </ul>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-width-medium-3-4">
+<h1 id="bibliography">1. Bibliography</h1>
+<p>Based on multiple original sources from the OP-TEE team:</p>
+<ul>
+<li>[1] <a href="https://optee.readthedocs.io/en/latest/building/gits/build.html" class="uri">https://optee.readthedocs.io/en/latest/building/gits/build.html</a></li>
+<li>[2] <a href="https://optee.readthedocs.io/en/latest/building/prerequisites.html" class="uri">https://optee.readthedocs.io/en/latest/building/prerequisites.html</a></li>
+<li>[3] <a href="https://github.com/ForgeRock/optee-build/blob/master/docs/debug.md#14-debug" class="uri">https://github.com/ForgeRock/optee-build/blob/master/docs/debug.md#14-debug</a></li>
+</ul>
+<h1 id="prerequisites">2. Prerequisites</h1>
+<ul>
+<li>Ubuntu 20.04 (only this distribution tested)</li>
+<li>Google AOSP repo</li>
+<li>QEMU</li>
+</ul>
+<h2 id="ubuntu">2.1. Ubuntu</h2>
+<p>This guide is based on a clean Ubuntu 20.04 installation on a Hyper-V VM. It should be possible to repeat the results on any Linux distribution and any hypervisor platform, as long as the required packages are available.</p>
+<p>At least 30GiB free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to a total system failure without chance of recovery.</p>
+<p>The first thing to do when the operating system is installed, is to update the package manager for the right architectures. Run the following in a command line:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">sudo</span> dpkg --add-architecture i386</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="fu">sudo</span> apt update</a></code></pre></div>
+<p>Then the required packages can be installed:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">sudo</span> apt install android-tools-adb android-tools-fastboot autoconf \</a>
+<a class="sourceLine" id="cb2-2" title="2">        automake bc bison build-essential ccache cscope curl device-tree-compiler \</a>
+<a class="sourceLine" id="cb2-3" title="3">        expect flex ftp-upload gdisk iasl libattr1-dev libcap-dev \</a>
+<a class="sourceLine" id="cb2-4" title="4">        libfdt-dev libftdi-dev libglib2.0-dev libgmp-dev libhidapi-dev \</a>
+<a class="sourceLine" id="cb2-5" title="5">        libmpc-dev libncurses5-dev libncursesw5-dev libpixman-1-dev libpython2.7 \</a>
+<a class="sourceLine" id="cb2-6" title="6">        libssl-dev libtool make mtools netcat ninja-build python-crypto \</a>
+<a class="sourceLine" id="cb2-7" title="7">        python3-crypto python-is-python3 python-pyelftools python3-pycryptodome \</a>
+<a class="sourceLine" id="cb2-8" title="8">        python3-pyelftools python3-serial rsync unzip uuid-dev xdg-utils xterm \</a>
+<a class="sourceLine" id="cb2-9" title="9">        xz-utils zlib1g-dev</a></code></pre></div>
+<h3 id="changes-from-original-2">2.1.1. Changes from original [2]</h3>
+<ul>
+<li>python-serial is not available for Ubuntu 20.04. This package has thus been removed from the install procedure. This should not have any impact, because only python3 is used.</li>
+<li>As python3 is the only python version available on Ubuntu 20.04 (as it should be), a package is added that links <code>python</code> to <code>python3</code>. This might be troublesome on systems where Python 2 is installed and existing tools use Python 2 by calling <code>python</code>. If this is the case, change these tools to use <code>python2</code> explicitly.</li>
+</ul>
+<h2 id="google-aosp-repo">2.2. Google AOSP repo</h2>
+<p>The repo tool from the Google Android Open Source Project (AOSP) allows you to manage multiple git repositories using manifest files. OP-TEE uses these manifests to combine all projects into a single development environment based on the specific architecture to be used.</p>
+<p>Obviously, because repo uses git, git needs to be installed and setup on the system. Configure git with your email and name.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">sudo</span> apt install git</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="fu">git</span> config --global user.email <span class="st">&quot;&lt;email&gt;&quot;</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="fu">git</span> config --global user.name <span class="st">&quot;&lt;name&gt;&quot;</span></a></code></pre></div>
+<p>After that, repo can be installed:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">mkdir</span> -p ~/bin</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="va">PATH=</span><span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/bin:</span><span class="va">${PATH}</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ex">curl</span> https://storage.googleapis.com/git-repo-downloads/repo <span class="op">&gt;</span> ~/bin/repo</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="fu">chmod</span> a+rx ~/bin/repo</a></code></pre></div>
+<p>Because repo is installed in <code>~/bin</code>, this directory needs to be added to the path. This should already been taken care of by Ubuntu, this can be checked if the following is present in <code>~/.profile</code>. If not, it should be added to the end of the file.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"> <span class="kw">set</span> <span class="ex">path</span> so it includes user<span class="st">&#39;s private bin if it exists</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="st">if [ -d &quot;$HOME/bin&quot; ] ; then</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="st">    path=&quot;$HOME/bin:$PATH&quot;</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="st">fi</span></a></code></pre></div>
+<h2 id="qemu">2.3. QEMU</h2>
+<p>Next, QEMU should be installed. This can be done by executing <code>sudo apt install qemu</code>.</p>
+<h1 id="building-running-op-tee">3. Building &amp; running OP-TEE</h1>
+<h2 id="download-of-repositories">3.1. Download of repositories</h2>
+<p>OP-TEE uses a <a href="https://github.com/OP-TEE/manifest.git">central repository</a> containing the manifest files for repo for all architectures. To download all necessary git repositories of the OP-TEE project for the QEMUv7 architecture, execute the following commands:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">mkdir</span> -p <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="ex">repo</span> init -u https://github.com/OP-TEE/manifest.git -m default.xml</a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="ex">repo</span> sync -j4 --no-clone-bundle</a></code></pre></div>
+<h2 id="toolchains">3.2. Toolchains</h2>
+<p>The toolchains required to build any part of OP-TEE are included in one of the repositories downloaded in the previous step. To download the actual toolchains, execute</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="fu">make</span> -j2 toolchains</a></code></pre></div>
+<h2 id="build-op-tee">3.3. Build OP-TEE</h2>
+<p>The OP-TEE project has three main parts: the operating system, the client API and the trusted applications. These three parts can be built on their own, but to get started it is easier to build the whole system at once. This is as simple as executing</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="fu">make</span> -j <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></a></code></pre></div>
+<p>This process will take some time.</p>
+<h2 id="running-op-tee">3.4. Running OP-TEE</h2>
+<p>QEMU and OP-TEE can be launched by executing</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="fu">make</span> run -j <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></a>
+<a class="sourceLine" id="cb9-3" title="3"></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="co"># After the command prompt (qemu) appears, press c to start execution.</span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="ex">c</span></a></code></pre></div>
+<p>This will launch QEMU in the current terminal and two new terminals, one serial connection to the secure world and one to the normal world. In the normal world terminal, you can login using the users <code>root</code>or <code>test</code>, after which it is possible to run programs in the normal world that interact with the secure world.</p>
+<p>To test if everything went according to plan, run <code>xtest</code> once logged in. If there are no obvious errors, the build process should have completed successfully. You can run the example programs by executing any of the <code>optee_example_*</code> programs present in the path.</p>
+<h1 id="debugging-op-tee">4. Debugging OP-TEE</h1>
+<p>To debug OP-TEE, some additional steps need to be taken to prepare everything.</p>
+<h2 id="download-and-install-gdb-for-arm">4.1. Download and install gdb for ARM</h2>
+<p>Normally, if this guide was followed and the toolchains were built accordingly, gdb should already be present in <code>&lt;project-dir&gt;/toolchains</code>. The necessary tools can be added to the path by adding the following in <code>.profile</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">if</span><span class="bu"> [</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin&quot;</span><span class="bu"> ]</span> <span class="kw">&amp;&amp;</span><span class="bu"> [</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch64/bin&quot;</span><span class="bu"> ]</span>; <span class="kw">then</span></a>
+<a class="sourceLine" id="cb10-2" title="2">        <span class="va">PATH=</span><span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin:&lt;project-dir&gt;/toolchains/aarch64/bin:</span><span class="va">$PATH</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">fi</span></a></code></pre></div>
+<h2 id="gdb-settings">4.2. Gdb settings</h2>
+<p>To make the initialization of gdb easier, add the following at the end of <code>~/.gdbinit</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb11-1" title="1"><span class="dt">set print pretty on</span></a>
+<a class="sourceLine" id="cb11-2" title="2"></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="dt">define optee</span></a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="dt">    handle SIGTRAP noprint nostop pass</span></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="dt">    symbol-file &lt;project-dir&gt;/optee_os/out/arm/core/tee.elf</span></a>
+<a class="sourceLine" id="cb11-6" title="6"><span class="dt">    target remote localhost:1234</span></a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="dt">end</span></a>
+<a class="sourceLine" id="cb11-8" title="8"><span class="dt">document optee</span></a>
+<a class="sourceLine" id="cb11-9" title="9"><span class="dt">    Loads and setup the binary (tee.elf) for OP-TEE and also connects to the QEMU</span></a>
+<a class="sourceLine" id="cb11-10" title="10"><span class="dt">    remote.</span></a>
+<a class="sourceLine" id="cb11-11" title="11"><span class="dt">end</span></a></code></pre></div>
+<h2 id="debugging-op-tee-1">4.3. Debugging OP-TEE</h2>
+<p>Because OP-TEE uses Address Space Layout Randomization (ASLR), it is necessary to disable it when starting QEMU. This is done by adding the flag <code>CFG_CORE_ASLR=n</code>.</p>
+<p>Open two terminals. One will be the terminal where QEMU will be running, the other will be used to debug using gdb. Like before, execute the following with the added flag, but <strong>do not press <code>c</code></strong>!</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" title="1"><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="fu">make</span> run CFG_CORE_ASLR=n -j <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></a></code></pre></div>
+<p>Once QEMU is started, start gdb in the second terminal:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb13-1" title="1"><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/toolchains/aarch32/bin</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="ex">./arm-linux-gnueabihf-gdb</span> -q</a></code></pre></div>
+<p>When the gdb prompt appears, run <code>optee</code> to load the symbols and to connect to QEMU. The output below should appear.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" title="1"><span class="ex">optee</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="op">&gt;</span> <span class="ex">SIGTRAP</span> is used by the debugger.</a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="op">&gt;</span> <span class="ex">Are</span> you sure you want to change it? (y or n) [<span class="ex">answered</span> Y<span class="kw">;</span> <span class="ex">input</span> not from terminal]</a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="op">&gt;</span> <span class="ex">warning</span>: No executable has been specified and target does not support</a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="op">&gt;</span> <span class="ex">determining</span> executable automatically.  Try using the <span class="st">&quot;file&quot;</span> command.</a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="op">&gt;</span> <span class="ex">0x00000000</span> in ?? ()</a></code></pre></div>
+<p>Then it is possible to refer to the symbols in the OP-TEE p. To demonstrate, let’s set a breakpoint on <code>tee_entry_std(...)</code>, an often called function and continue execution. Th</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" title="1"> <span class="ex">Set</span> breakpoint</a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="ex">b</span> tee_entry_std</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="op">&gt;</span> <span class="ex">Breakpoint</span> 1 at 0xe1347ce: file core/tee/entry_std.c, line 528.</a>
+<a class="sourceLine" id="cb15-4" title="4"></a>
+<a class="sourceLine" id="cb15-5" title="5"> <span class="ex">Resume</span> execution. Breakpoint should be hit.</a>
+<a class="sourceLine" id="cb15-6" title="6"><span class="ex">c</span></a>
+<a class="sourceLine" id="cb15-7" title="7"><span class="op">&gt;</span> <span class="ex">Continuing.</span></a>
+<a class="sourceLine" id="cb15-8" title="8"><span class="op">&gt;</span> [<span class="ex">Switching</span> to Thread 1.2]</a>
+<a class="sourceLine" id="cb15-9" title="9"><span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb15-10" title="10"><span class="op">&gt;</span> <span class="ex">Thread</span> 2 hit Breakpoint 1, tee_entry_std (arg=0xe300000, num_params=2) <span class="ex">at</span> core/tee/entry_std.c:528</a>
+<a class="sourceLine" id="cb15-11" title="11"><span class="op">&gt;</span> <span class="ex">528</span>             return __tee_entry_std(arg, num_params);</a></code></pre></div>
+<p>Now it is possible to further explore OP-TEE using gdb.</p>
+<h1 id="custom-pseudo-trusted-application">5. Custom Pseudo Trusted Application</h1>
+<p><em>Trusted Applications</em> (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run p in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA’s are statically linked against the kernel.</p>
+<p>It is possible to create a PTA by adding the sources to <code>optee_os/core/pta</code> and including them in the Makefile in the same directory. This way the PTA is included int the os when it is built.</p>
+<p>It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA. This application is created by copying an existing example application from <code>optee_examples</code> and removing the <code>ta</code> subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.</p>
+<h2 id="example-pta">5.1. Example PTA</h2>
+<p>This example shows a simple PTA that prints some text when called from the normal world.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb16-1" title="1"><span class="co">// File: optee_os/core/pta/testpta.c</span></a>
+<a class="sourceLine" id="cb16-2" title="2"></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="pp">#include </span><span class="im">&lt;kernel/pseudo_ta.h&gt;</span></a>
+<a class="sourceLine" id="cb16-4" title="4"></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="pp">#define PTA_NAME </span><span class="st">&quot;test.pta&quot;</span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="pp">#define PTA_TEST_PRINT_UUID </span>{<span class="pp"> </span><span class="bn">0xd4be3f91</span>,<span class="pp"> </span><span class="bn">0xc4e1</span>,<span class="pp"> </span><span class="bn">0x436c</span>,<span class="pp"> </span>\</a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="pp">    </span>{<span class="pp"> </span><span class="bn">0xb2</span>,<span class="pp"> </span><span class="bn">0x92</span>,<span class="pp"> </span><span class="bn">0xbf</span>,<span class="pp"> </span><span class="bn">0xf5</span>,<span class="pp"> </span><span class="bn">0x3e</span>,<span class="pp"> </span><span class="bn">0x43</span>,<span class="pp"> </span><span class="bn">0x04</span>,<span class="pp"> </span><span class="bn">0xd5</span><span class="pp"> </span>}<span class="pp"> </span>}</a>
+<a class="sourceLine" id="cb16-8" title="8"></a>
+<a class="sourceLine" id="cb16-9" title="9"><span class="pp">#define PTA_TEST_PRINT </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb16-10" title="10"></a>
+<a class="sourceLine" id="cb16-11" title="11"><span class="at">static</span> TEE_Result test_print(<span class="dt">uint32_t</span> type, TEE_Param p[TEE_NUM_PARAMS]) {</a>
+<a class="sourceLine" id="cb16-12" title="12">    IMSG(<span class="st">&quot;This is a test of a pseudo trusted application.&quot;</span>);</a>
+<a class="sourceLine" id="cb16-13" title="13"></a>
+<a class="sourceLine" id="cb16-14" title="14">    <span class="cf">return</span> TEE_SUCCESS;</a>
+<a class="sourceLine" id="cb16-15" title="15">}</a>
+<a class="sourceLine" id="cb16-16" title="16"></a>
+<a class="sourceLine" id="cb16-17" title="17"><span class="co">/*</span></a>
+<a class="sourceLine" id="cb16-18" title="18"><span class="co"> * Trusted Application Etnry Points</span></a>
+<a class="sourceLine" id="cb16-19" title="19"><span class="co"> */</span></a>
+<a class="sourceLine" id="cb16-20" title="20"></a>
+<a class="sourceLine" id="cb16-21" title="21"><span class="at">static</span> TEE_Result invoke_command(<span class="dt">void</span> *session __unused, <span class="dt">uint32_t</span> cmd,</a>
+<a class="sourceLine" id="cb16-22" title="22">                                 <span class="dt">uint32_t</span> ptypes,</a>
+<a class="sourceLine" id="cb16-23" title="23">                                 TEE_Param params[TEE_NUM_PARAMS]) {</a>
+<a class="sourceLine" id="cb16-24" title="24">  <span class="cf">switch</span> (cmd) {</a>
+<a class="sourceLine" id="cb16-25" title="25">    <span class="cf">case</span> PTA_TEST_PRINT:</a>
+<a class="sourceLine" id="cb16-26" title="26">        <span class="cf">return</span> test_print(ptypes, params);</a>
+<a class="sourceLine" id="cb16-27" title="27">        <span class="cf">break</span>;</a>
+<a class="sourceLine" id="cb16-28" title="28">    <span class="cf">default</span>:</a>
+<a class="sourceLine" id="cb16-29" title="29">        <span class="cf">break</span>;</a>
+<a class="sourceLine" id="cb16-30" title="30">  }</a>
+<a class="sourceLine" id="cb16-31" title="31"></a>
+<a class="sourceLine" id="cb16-32" title="32">  <span class="cf">return</span> TEE_ERROR_NOT_IMPLEMENTED;</a>
+<a class="sourceLine" id="cb16-33" title="33">}</a>
+<a class="sourceLine" id="cb16-34" title="34"></a>
+<a class="sourceLine" id="cb16-35" title="35">pseudo_ta_register(.uuid = PTA_TEST_PRINT_UUID, .name = PTA_NAME,</a>
+<a class="sourceLine" id="cb16-36" title="36">    .flags = PTA_DEFAULT_FLAGS, .invoke_command_entry_point = invoke_command);</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode makefile"><code class="sourceCode makefile"><a class="sourceLine" id="cb17-1" title="1"><span class="co"># Added to optee_os/core/pta/sub.mk</span></a>
+<a class="sourceLine" id="cb17-2" title="2"></a>
+<a class="sourceLine" id="cb17-3" title="3"><span class="dt">srcs-y </span><span class="ch">+=</span><span class="st"> testpta.c</span></a></code></pre></div>
+<p>The code for the host application:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb18-1" title="1"><span class="co">// File: host/main.c</span></a>
+<a class="sourceLine" id="cb18-2" title="2"></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="co">/*</span></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="co"> * Copyright (c) 2016, Linaro Limited</span></a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="co"> * All rights reserved.</span></a>
+<a class="sourceLine" id="cb18-6" title="6"><span class="co"> *</span></a>
+<a class="sourceLine" id="cb18-7" title="7"><span class="co"> * Redistribution and use in source and binary forms, with or without</span></a>
+<a class="sourceLine" id="cb18-8" title="8"><span class="co"> * modification, are permitted provided that the following conditions are met:</span></a>
+<a class="sourceLine" id="cb18-9" title="9"><span class="co"> *</span></a>
+<a class="sourceLine" id="cb18-10" title="10"><span class="co"> * 1. Redistributions of source code must retain the above copyright notice,</span></a>
+<a class="sourceLine" id="cb18-11" title="11"><span class="co"> * this list of conditions and the following disclaimer.</span></a>
+<a class="sourceLine" id="cb18-12" title="12"><span class="co"> *</span></a>
+<a class="sourceLine" id="cb18-13" title="13"><span class="co"> * 2. Redistributions in binary form must reproduce the above copyright notice,</span></a>
+<a class="sourceLine" id="cb18-14" title="14"><span class="co"> * this list of conditions and the following disclaimer in the documentation</span></a>
+<a class="sourceLine" id="cb18-15" title="15"><span class="co"> * and/or other materials provided with the distribution.</span></a>
+<a class="sourceLine" id="cb18-16" title="16"><span class="co"> *</span></a>
+<a class="sourceLine" id="cb18-17" title="17"><span class="co"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span></a>
+<a class="sourceLine" id="cb18-18" title="18"><span class="co"> * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span></a>
+<a class="sourceLine" id="cb18-19" title="19"><span class="co"> * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span></a>
+<a class="sourceLine" id="cb18-20" title="20"><span class="co"> * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span></a>
+<a class="sourceLine" id="cb18-21" title="21"><span class="co"> * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span></a>
+<a class="sourceLine" id="cb18-22" title="22"><span class="co"> * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span></a>
+<a class="sourceLine" id="cb18-23" title="23"><span class="co"> * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span></a>
+<a class="sourceLine" id="cb18-24" title="24"><span class="co"> * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span></a>
+<a class="sourceLine" id="cb18-25" title="25"><span class="co"> * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span></a>
+<a class="sourceLine" id="cb18-26" title="26"><span class="co"> * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span></a>
+<a class="sourceLine" id="cb18-27" title="27"><span class="co"> * POSSIBILITY OF SUCH DAMAGE.</span></a>
+<a class="sourceLine" id="cb18-28" title="28"><span class="co"> */</span></a>
+<a class="sourceLine" id="cb18-29" title="29"></a>
+<a class="sourceLine" id="cb18-30" title="30"><span class="pp">#include </span><span class="im">&lt;err.h&gt;</span></a>
+<a class="sourceLine" id="cb18-31" title="31"><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></a>
+<a class="sourceLine" id="cb18-32" title="32"><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></a>
+<a class="sourceLine" id="cb18-33" title="33"></a>
+<a class="sourceLine" id="cb18-34" title="34"><span class="co">/* OP-TEE TEE client API (built by optee_client) */</span></a>
+<a class="sourceLine" id="cb18-35" title="35"><span class="pp">#include </span><span class="im">&lt;tee_client_api.h&gt;</span></a>
+<a class="sourceLine" id="cb18-36" title="36"></a>
+<a class="sourceLine" id="cb18-37" title="37"><span class="pp">#define PTA_TEST_PRINT_UUID </span>{<span class="pp"> </span><span class="bn">0xd4be3f91</span>,<span class="pp"> </span><span class="bn">0xc4e1</span>,<span class="pp"> </span><span class="bn">0x436c</span>,<span class="pp"> </span>\</a>
+<a class="sourceLine" id="cb18-38" title="38"><span class="pp">    </span>{<span class="pp"> </span><span class="bn">0xb2</span>,<span class="pp"> </span><span class="bn">0x92</span>,<span class="pp"> </span><span class="bn">0xbf</span>,<span class="pp"> </span><span class="bn">0xf5</span>,<span class="pp"> </span><span class="bn">0x3e</span>,<span class="pp"> </span><span class="bn">0x43</span>,<span class="pp"> </span><span class="bn">0x04</span>,<span class="pp"> </span><span class="bn">0xd5</span><span class="pp"> </span>}<span class="pp"> </span>}</a>
+<a class="sourceLine" id="cb18-39" title="39"></a>
+<a class="sourceLine" id="cb18-40" title="40"><span class="pp">#define PTA_TEST_PRINT </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb18-41" title="41"></a>
+<a class="sourceLine" id="cb18-42" title="42"><span class="dt">int</span> main(<span class="dt">void</span>)</a>
+<a class="sourceLine" id="cb18-43" title="43">{</a>
+<a class="sourceLine" id="cb18-44" title="44">    TEEC_Result res;</a>
+<a class="sourceLine" id="cb18-45" title="45">    TEEC_Context ctx;</a>
+<a class="sourceLine" id="cb18-46" title="46">    TEEC_Session sess;</a>
+<a class="sourceLine" id="cb18-47" title="47">    TEEC_Operation op;</a>
+<a class="sourceLine" id="cb18-48" title="48">    TEEC_UUID uuid = PTA_TEST_PRINT_UUID;</a>
+<a class="sourceLine" id="cb18-49" title="49">    <span class="dt">uint32_t</span> err_origin;</a>
+<a class="sourceLine" id="cb18-50" title="50"></a>
+<a class="sourceLine" id="cb18-51" title="51">    <span class="co">/* Initialize a context connecting us to the TEE */</span></a>
+<a class="sourceLine" id="cb18-52" title="52">    res = TEEC_InitializeContext(NULL, &amp;ctx);</a>
+<a class="sourceLine" id="cb18-53" title="53">    <span class="cf">if</span> (res != TEEC_SUCCESS)</a>
+<a class="sourceLine" id="cb18-54" title="54">        errx(<span class="dv">1</span>, <span class="st">&quot;TEEC_InitializeContext failed with code 0x</span><span class="sc">%x</span><span class="st">&quot;</span>, res);</a>
+<a class="sourceLine" id="cb18-55" title="55"></a>
+<a class="sourceLine" id="cb18-56" title="56">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb18-57" title="57"><span class="co">     * Open a session to the &quot;hello world&quot; TA, the TA will print &quot;hello</span></a>
+<a class="sourceLine" id="cb18-58" title="58"><span class="co">     * world!&quot; in the log when the session is created.</span></a>
+<a class="sourceLine" id="cb18-59" title="59"><span class="co">     */</span></a>
+<a class="sourceLine" id="cb18-60" title="60">    res = TEEC_OpenSession(&amp;ctx, &amp;sess, &amp;uuid,</a>
+<a class="sourceLine" id="cb18-61" title="61">                   TEEC_LOGIN_PUBLIC, NULL, NULL, &amp;err_origin);</a>
+<a class="sourceLine" id="cb18-62" title="62">    <span class="cf">if</span> (res != TEEC_SUCCESS)</a>
+<a class="sourceLine" id="cb18-63" title="63">        errx(<span class="dv">1</span>, <span class="st">&quot;TEEC_Opensession failed with code 0x</span><span class="sc">%x</span><span class="st"> origin 0x</span><span class="sc">%x</span><span class="st">&quot;</span>,</a>
+<a class="sourceLine" id="cb18-64" title="64">            res, err_origin);</a>
+<a class="sourceLine" id="cb18-65" title="65"></a>
+<a class="sourceLine" id="cb18-66" title="66">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb18-67" title="67"><span class="co">     * Execute a function in the TA by invoking it, in this case</span></a>
+<a class="sourceLine" id="cb18-68" title="68"><span class="co">     * we&#39;re incrementing a number.</span></a>
+<a class="sourceLine" id="cb18-69" title="69"><span class="co">     *</span></a>
+<a class="sourceLine" id="cb18-70" title="70"><span class="co">     * The value of command ID part and how the parameters are</span></a>
+<a class="sourceLine" id="cb18-71" title="71"><span class="co">     * interpreted is part of the interface provided by the TA.</span></a>
+<a class="sourceLine" id="cb18-72" title="72"><span class="co">     */</span></a>
+<a class="sourceLine" id="cb18-73" title="73"></a>
+<a class="sourceLine" id="cb18-74" title="74">    <span class="co">/* Clear the TEEC_Operation struct */</span></a>
+<a class="sourceLine" id="cb18-75" title="75">    memset(&amp;op, <span class="dv">0</span>, <span class="kw">sizeof</span>(op));</a>
+<a class="sourceLine" id="cb18-76" title="76"></a>
+<a class="sourceLine" id="cb18-77" title="77">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb18-78" title="78"><span class="co">     * Prepare the argument. Pass a value in the first parameter,</span></a>
+<a class="sourceLine" id="cb18-79" title="79"><span class="co">     * the remaining three parameters are unused.</span></a>
+<a class="sourceLine" id="cb18-80" title="80"><span class="co">     */</span></a>
+<a class="sourceLine" id="cb18-81" title="81">    op.paramTypes = TEEC_PARAM_TYPES(TEEC_NONE, TEEC_NONE,</a>
+<a class="sourceLine" id="cb18-82" title="82">                     TEEC_NONE, TEEC_NONE);</a>
+<a class="sourceLine" id="cb18-83" title="83"></a>
+<a class="sourceLine" id="cb18-84" title="84">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb18-85" title="85"><span class="co">     * TA_HELLO_WORLD_CMD_INC_VALUE is the actual function in the TA to be</span></a>
+<a class="sourceLine" id="cb18-86" title="86"><span class="co">     * called.</span></a>
+<a class="sourceLine" id="cb18-87" title="87"><span class="co">     */</span></a>
+<a class="sourceLine" id="cb18-88" title="88">    printf(<span class="st">&quot;Invoking PTA to print test.&quot;</span>);</a>
+<a class="sourceLine" id="cb18-89" title="89">    res = TEEC_InvokeCommand(&amp;sess, PTA_TEST_PRINT, &amp;op, &amp;err_origin);</a>
+<a class="sourceLine" id="cb18-90" title="90">    <span class="cf">if</span> (res != TEEC_SUCCESS)</a>
+<a class="sourceLine" id="cb18-91" title="91">        errx(<span class="dv">1</span>, <span class="st">&quot;TEEC_InvokeCommand failed with code 0x</span><span class="sc">%x</span><span class="st"> origin 0x</span><span class="sc">%x</span><span class="st">&quot;</span>,</a>
+<a class="sourceLine" id="cb18-92" title="92">            res, err_origin);</a>
+<a class="sourceLine" id="cb18-93" title="93">    printf(<span class="st">&quot;Test printed.&quot;</span>);</a>
+<a class="sourceLine" id="cb18-94" title="94"></a>
+<a class="sourceLine" id="cb18-95" title="95">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb18-96" title="96"><span class="co">     * We&#39;re done with the TA, close the session and</span></a>
+<a class="sourceLine" id="cb18-97" title="97"><span class="co">     * destroy the context.</span></a>
+<a class="sourceLine" id="cb18-98" title="98"><span class="co">     *</span></a>
+<a class="sourceLine" id="cb18-99" title="99"><span class="co">     * The TA will print &quot;Goodbye!&quot; in the log when the</span></a>
+<a class="sourceLine" id="cb18-100" title="100"><span class="co">     * session is closed.</span></a>
+<a class="sourceLine" id="cb18-101" title="101"><span class="co">     */</span></a>
+<a class="sourceLine" id="cb18-102" title="102"></a>
+<a class="sourceLine" id="cb18-103" title="103">    TEEC_CloseSession(&amp;sess);</a>
+<a class="sourceLine" id="cb18-104" title="104"></a>
+<a class="sourceLine" id="cb18-105" title="105">    TEEC_FinalizeContext(&amp;ctx);</a>
+<a class="sourceLine" id="cb18-106" title="106"></a>
+<a class="sourceLine" id="cb18-107" title="107">    <span class="cf">return</span> <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb18-108" title="108">}</a></code></pre></div>
+<p>The Makefiles of the new host application:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode makefile"><code class="sourceCode makefile"><a class="sourceLine" id="cb19-1" title="1"><span class="co"># File: Makefile</span></a>
+<a class="sourceLine" id="cb19-2" title="2"></a>
+<a class="sourceLine" id="cb19-3" title="3">export <span class="dt">V</span><span class="ch">?=</span><span class="st">0</span></a>
+<a class="sourceLine" id="cb19-4" title="4"></a>
+<a class="sourceLine" id="cb19-5" title="5"><span class="co"># If _HOST or _TA specific compilers are not specified, then use CROSS_COMPILE</span></a>
+<a class="sourceLine" id="cb19-6" title="6"><span class="dt">HOST_CROSS_COMPILE </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb19-7" title="7"></a>
+<a class="sourceLine" id="cb19-8" title="8"><span class="ot">.PHONY:</span><span class="dt"> all</span></a>
+<a class="sourceLine" id="cb19-9" title="9"><span class="dv">all:</span></a>
+<a class="sourceLine" id="cb19-10" title="10">    <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C host CROSS_COMPILE=<span class="st">&quot;</span><span class="ch">$(</span><span class="dt">HOST_CROSS_COMPILE</span><span class="ch">)</span><span class="st">&quot;</span> --no-builtin-variables</a>
+<a class="sourceLine" id="cb19-11" title="11"></a>
+<a class="sourceLine" id="cb19-12" title="12"><span class="ot">.PHONY:</span><span class="dt"> clean</span></a>
+<a class="sourceLine" id="cb19-13" title="13"><span class="dv">clean:</span></a>
+<a class="sourceLine" id="cb19-14" title="14">    <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C host clean</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode makefile"><code class="sourceCode makefile"><a class="sourceLine" id="cb20-1" title="1"><span class="co"># File: host/Makefile</span></a>
+<a class="sourceLine" id="cb20-2" title="2"></a>
+<a class="sourceLine" id="cb20-3" title="3"><span class="dt">CC      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">gcc</span></a>
+<a class="sourceLine" id="cb20-4" title="4"><span class="dt">LD      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">ld</span></a>
+<a class="sourceLine" id="cb20-5" title="5"><span class="dt">AR      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">ar</span></a>
+<a class="sourceLine" id="cb20-6" title="6"><span class="dt">NM      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">nm</span></a>
+<a class="sourceLine" id="cb20-7" title="7"><span class="dt">OBJCOPY </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">objcopy</span></a>
+<a class="sourceLine" id="cb20-8" title="8"><span class="dt">OBJDUMP </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">objdump</span></a>
+<a class="sourceLine" id="cb20-9" title="9"><span class="dt">READELF </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">readelf</span></a>
+<a class="sourceLine" id="cb20-10" title="10"></a>
+<a class="sourceLine" id="cb20-11" title="11"><span class="dt">OBJS </span><span class="ch">=</span><span class="st"> main.o</span></a>
+<a class="sourceLine" id="cb20-12" title="12"></a>
+<a class="sourceLine" id="cb20-13" title="13"><span class="dt">CFLAGS </span><span class="ch">+=</span><span class="st"> -Wall -I../ta/include -I</span><span class="ch">$(</span><span class="dt">TEEC_EXPORT</span><span class="ch">)</span><span class="st">/include -I./include</span></a>
+<a class="sourceLine" id="cb20-14" title="14"><span class="co">#Add/link other required libraries here</span></a>
+<a class="sourceLine" id="cb20-15" title="15"><span class="dt">LDADD </span><span class="ch">+=</span><span class="st"> -lteec -L</span><span class="ch">$(</span><span class="dt">TEEC_EXPORT</span><span class="ch">)</span><span class="st">/lib</span></a>
+<a class="sourceLine" id="cb20-16" title="16"></a>
+<a class="sourceLine" id="cb20-17" title="17"><span class="dt">BINARY </span><span class="ch">=</span><span class="st"> optee_example_testpta</span></a>
+<a class="sourceLine" id="cb20-18" title="18"></a>
+<a class="sourceLine" id="cb20-19" title="19"><span class="ot">.PHONY:</span><span class="dt"> all</span></a>
+<a class="sourceLine" id="cb20-20" title="20"><span class="dv">all:</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">BINARY</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb20-21" title="21"></a>
+<a class="sourceLine" id="cb20-22" title="22"><span class="dv">$(BINARY):</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">OBJS</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb20-23" title="23">    <span class="ch">$(</span><span class="dt">CC</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">LDFLAGS</span><span class="ch">)</span> -o <span class="ch">$@</span> <span class="ch">$&lt;</span> <span class="ch">$(</span><span class="dt">LDADD</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb20-24" title="24"></a>
+<a class="sourceLine" id="cb20-25" title="25"><span class="ot">.PHONY:</span><span class="dt"> clean</span></a>
+<a class="sourceLine" id="cb20-26" title="26"><span class="dv">clean:</span></a>
+<a class="sourceLine" id="cb20-27" title="27">    rm -f <span class="ch">$(</span><span class="dt">OBJS</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">BINARY</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb20-28" title="28"></a>
+<a class="sourceLine" id="cb20-29" title="29"><span class="dv">%.o:</span><span class="dt"> %.c</span></a>
+<a class="sourceLine" id="cb20-30" title="30">    <span class="ch">$(</span><span class="dt">CC</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">CFLAGS</span><span class="ch">)</span> -c <span class="ch">$&lt;</span> -o <span class="ch">$@</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode makefile"><code class="sourceCode makefile"><a class="sourceLine" id="cb21-1" title="1"><span class="co"># File: CMakeLists.txt</span></a>
+<a class="sourceLine" id="cb21-2" title="2"></a>
+<a class="sourceLine" id="cb21-3" title="3">project (optee_example_testpta C)</a>
+<a class="sourceLine" id="cb21-4" title="4"></a>
+<a class="sourceLine" id="cb21-5" title="5">set (SRC host/main.c)</a>
+<a class="sourceLine" id="cb21-6" title="6"></a>
+<a class="sourceLine" id="cb21-7" title="7">add_executable (<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> <span class="ch">${</span><span class="dt">SRC</span><span class="ch">}</span>)</a>
+<a class="sourceLine" id="cb21-8" title="8"></a>
+<a class="sourceLine" id="cb21-9" title="9">target_include_directories(<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span></a>
+<a class="sourceLine" id="cb21-10" title="10">            <span class="co">#    PRIVATE ta/include</span></a>
+<a class="sourceLine" id="cb21-11" title="11">               PRIVATE <span class="kw">include</span>)</a>
+<a class="sourceLine" id="cb21-12" title="12"></a>
+<a class="sourceLine" id="cb21-13" title="13">target_link_libraries (<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> PRIVATE teec)</a>
+<a class="sourceLine" id="cb21-14" title="14"></a>
+<a class="sourceLine" id="cb21-15" title="15">install (TARGETS <span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> DESTINATION <span class="ch">${</span><span class="dt">CMAKE_INSTALL_BINDIR</span><span class="ch">}</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode makefile"><code class="sourceCode makefile"><a class="sourceLine" id="cb22-1" title="1"><span class="co"># File: Android.mk</span></a>
+<a class="sourceLine" id="cb22-2" title="2"></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="co">###################### optee-testpta ######################</span></a>
+<a class="sourceLine" id="cb22-4" title="4"><span class="dt">LOCAL_PATH </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="kw">call</span><span class="st"> my-dir</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb22-5" title="5"></a>
+<a class="sourceLine" id="cb22-6" title="6"><span class="kw">include</span> <span class="ch">$(</span><span class="dt">CLEAR_VARS</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb22-7" title="7"><span class="dt">LOCAL_CFLAGS </span><span class="ch">+=</span><span class="st"> -DANDROID_BUILD</span></a>
+<a class="sourceLine" id="cb22-8" title="8"><span class="dt">LOCAL_CFLAGS </span><span class="ch">+=</span><span class="st"> -Wall</span></a>
+<a class="sourceLine" id="cb22-9" title="9"></a>
+<a class="sourceLine" id="cb22-10" title="10"><span class="dt">LOCAL_SRC_FILES </span><span class="ch">+=</span><span class="st"> host/main.c</span></a>
+<a class="sourceLine" id="cb22-11" title="11"></a>
+<a class="sourceLine" id="cb22-12" title="12"><span class="co"># LOCAL_C_INCLUDES := $(LOCAL_PATH)/ta/include</span></a>
+<a class="sourceLine" id="cb22-13" title="13"></a>
+<a class="sourceLine" id="cb22-14" title="14"><span class="dt">LOCAL_SHARED_LIBRARIES </span><span class="ch">:=</span><span class="st"> libteec</span></a>
+<a class="sourceLine" id="cb22-15" title="15"><span class="dt">LOCAL_MODULE </span><span class="ch">:=</span><span class="st"> optee_example_testpta</span></a>
+<a class="sourceLine" id="cb22-16" title="16"><span class="dt">LOCAL_VENDOR_MODULE </span><span class="ch">:=</span><span class="st"> true</span></a>
+<a class="sourceLine" id="cb22-17" title="17"><span class="dt">LOCAL_MODULE_TAGS </span><span class="ch">:=</span><span class="st"> optional</span></a>
+<a class="sourceLine" id="cb22-18" title="18"><span class="kw">include</span> <span class="ch">$(</span><span class="dt">BUILD_EXECUTABLE</span><span class="ch">)</span></a>
+<a class="sourceLine" id="cb22-19" title="19"></a>
+<a class="sourceLine" id="cb22-20" title="20"><span class="co"># include $(LOCAL_PATH)/ta/Android.mk</span></a></code></pre></div>
+<h1 id="serial-interrupt-in-secure-world">6. Serial interrupt in secure world</h1>
+<p>To accept input on the serial console of the secure world, it is necessary to register an interrupt on that serial console. To do this, two things need to be done: a interrupt handler needs to be defined and the handler must be registered for the interrupt.</p>
+<h2 id="interrupt-handler">6.1. Interrupt handler</h2>
+<p>The interrupt handler is defined according to the <code>itr_handler</code> type in <code>&lt;interrupt.h&gt;</code>. This struct needs to be initialized with the interrupt location <code>it</code> (in this case <code>IT_CONSOLE_UART</code>), the flags for the interrupt (<code>ITRF_TRIGGER_LEVEL</code>) and the handler function. This function can accept a parameter that is the <code>itr_handler</code> structure. When defining this struct, it is (probably) necessary to explicitly state that the interrupt handling is put in the right part of the binary. This is done by declaring <code>DECLARE_KEEP_PAGER(console_itr);</code>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">struct</span> itr_handler {</a>
+<a class="sourceLine" id="cb23-2" title="2">    <span class="dt">size_t</span> it;</a>
+<a class="sourceLine" id="cb23-3" title="3">    <span class="dt">uint32_t</span> flags;</a>
+<a class="sourceLine" id="cb23-4" title="4">    <span class="dt">itr_handler_t</span> handler;</a>
+<a class="sourceLine" id="cb23-5" title="5">    <span class="dt">void</span> *data;</a>
+<a class="sourceLine" id="cb23-6" title="6">    SLIST_ENTRY(itr_handler) link;</a>
+<a class="sourceLine" id="cb23-7" title="7">};</a>
+<a class="sourceLine" id="cb23-8" title="8"></a>
+<a class="sourceLine" id="cb23-9" title="9"><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function(<span class="kw">struct</span> itr_handler *h)</a>
+<a class="sourceLine" id="cb23-10" title="10">{</a>
+<a class="sourceLine" id="cb23-11" title="11">    <span class="co">// Handling code</span></a>
+<a class="sourceLine" id="cb23-12" title="12">    <span class="cf">return</span> ITRR_HANDLED;</a>
+<a class="sourceLine" id="cb23-13" title="13">}</a>
+<a class="sourceLine" id="cb23-14" title="14"></a>
+<a class="sourceLine" id="cb23-15" title="15"><span class="at">static</span> <span class="kw">struct</span> itr_handler handler = {</a>
+<a class="sourceLine" id="cb23-16" title="16">    .it = IT_CONSOLE_UART,</a>
+<a class="sourceLine" id="cb23-17" title="17">    .flags = ITRF_TRIGGER_LEVEL,</a>
+<a class="sourceLine" id="cb23-18" title="18">    .handler = handler_function,</a>
+<a class="sourceLine" id="cb23-19" title="19">};</a>
+<a class="sourceLine" id="cb23-20" title="20">DECLARE_KEEP_PAGER(handler);</a></code></pre></div>
+<p>When the interrupt handler is declared and defined, it can be used to enable the interrupt. First, the interrupt handler must be registered and then the interrupt can be enabled. Adding the interrupt handler is done by <code>itr_add(&amp;handler)</code> and enabling the interrupt is done by <code>itr_enable(handler.it)</code>.</p>
+<h2 id="serial-console-driver">6.2. Serial console driver</h2>
+<p>To accept input from the serial console during the handling of the interrupt, it is necessary to have access to the console chip and driver. Because the driver is initialized during the boot sequence of the platform, the only way to get this access is by hijacking this process, disabling the standard interrupt enabled by the boot process and call our own function to save the serial console access location.</p>
+<p>The original interrupt setup happens in the file <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. A macro called <code>driver_init(...)</code> is called with the function that enables the serial interrupt. This macro ensures that the interrupt enabling routine is called during the boot process. To prevent this from happening, the simplest solution is to comment out this line.</p>
+<p>To save the access location of the console interface, the function <code>console_init(void)</code> in the same file calls a function <code>register_serial_console(...)</code> which is a wrapper for an assign operation. We can imitate this function to do the same for us, by defining our own pointer to the serial chip and using this pointer to access the serial console.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb24-1" title="1"><span class="at">static</span> <span class="kw">struct</span> serial_chip *serial_chip;</a></code></pre></div>
+<h3 id="handling-serial-input">6.2.1. Handling serial input</h3>
+<p>The serial console functions as follows: when data is sent to the serial console (for example by pressing a key in the console), it is accepted by the driver, the data is stored in a buffer and the cpu is notified by means of an interrupt. This interrupt invokes our interrupt handler function.</p>
+<p>It is in this function that we are able to retrieve the data from the buffer. The interrupt keeps triggering if the buffer is not empty, thus it is necessary to empty the buffer after getting its contents. The following while loop gets a single character from the buffer and prints it as long as there are characters left in the buffer. It is here that we use the reference to the serial console.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb25-1" title="1"><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function(<span class="kw">struct</span> itr_handler *h)</a>
+<a class="sourceLine" id="cb25-2" title="2">{</a>
+<a class="sourceLine" id="cb25-3" title="3">    <span class="cf">while</span> (serial_chip-&gt;ops-&gt;have_rx_data(serial_chip)) {</a>
+<a class="sourceLine" id="cb25-4" title="4">        <span class="dt">int</span> ch = serial_chip-&gt;ops-&gt;getchar(serial_chip);</a>
+<a class="sourceLine" id="cb25-5" title="5">        DMSG(<span class="st">&quot;new cpu </span><span class="sc">%zu</span><span class="st">: got 0x</span><span class="sc">%x</span><span class="st">&quot;</span>, get_core_pos(), ch);</a>
+<a class="sourceLine" id="cb25-6" title="6">    }</a>
+<a class="sourceLine" id="cb25-7" title="7"></a>
+<a class="sourceLine" id="cb25-8" title="8">    <span class="cf">return</span> ITRR_HANDLED;</a>
+<a class="sourceLine" id="cb25-9" title="9">}</a></code></pre></div>
+<h2 id="cpu-masks">6.3. CPU masks</h2>
+<p>Each system may have multiple cpus. When assigning an interrupt handler to a certain interrupt and enabling it, this interrupt is assigned to all cpus. This means that when an interrupt happens, both cpus will handle that interrupt, calling the same handler twice leading to undefined behavior.</p>
+<p>To prevent this from happening, one can enable cpu masks on an interrupt to define which cpu is responsible for handling that interrupt. This is done by calling the function <code>itr_set_affinity(&lt;interrupt&gt;, &lt;cpu_mask&gt;)</code> with the interrupt from the handler and a cpu mask that is a sequence of bits, where a 1 at position <span class="math inline"><em>n</em></span> enables the handling of an interrupt by the cpu with number <span class="math inline"><em>n</em></span>.</p>
+<p>It is not yet possible to handle interrupts on a cpu selected at interrupt handle time.</p>
+<h1 id="tips-and-tricks">7. Tips and tricks</h1>
+<h2 id="gdbserver">7.1. gdbserver</h2>
+<p>It is possible to debug host applications in the normal world by compiling OP-TEE using the flag <code>GDBSERVER=y</code>. However, if OP-TEE was compiled before, the compilation process generates the following error:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode txt"><code class="sourceCode default"><a class="sourceLine" id="cb26-1" title="1">-- The C compiler identification is unknown</a>
+<a class="sourceLine" id="cb26-2" title="2">-- Check for working C compiler: /optee/out-br/host/bin/arm-linux-gnueabihf-gcc</a>
+<a class="sourceLine" id="cb26-3" title="3">-- Check for working C compiler: /optee/out-br/host/bin/arm-linux-gnueabihf-gcc -- broken</a>
+<a class="sourceLine" id="cb26-4" title="4">CMake Error at /usr/share/cmake-3.16/Modules/CMakeTestCCompiler.cmake:60 (message):</a>
+<a class="sourceLine" id="cb26-5" title="5">  The C compiler</a>
+<a class="sourceLine" id="cb26-6" title="6"></a>
+<a class="sourceLine" id="cb26-7" title="7">    &quot;&lt;project-dir&gt;/out-br/host/bin/arm-linux-gnueabihf-gcc&quot;</a>
+<a class="sourceLine" id="cb26-8" title="8"></a>
+<a class="sourceLine" id="cb26-9" title="9">  is not able to compile a simple test program.</a>
+<a class="sourceLine" id="cb26-10" title="10"></a>
+<a class="sourceLine" id="cb26-11" title="11">  It fails with the following output:</a>
+<a class="sourceLine" id="cb26-12" title="12">  ...</a></code></pre></div>
+<p>This problem stems from mixing compilations with and without the gdbserver <strong>activated</strong>. The solution is to completely remove <code>&lt;project-dir&gt;/out-br</code> and to start the compilation process again.</p>                    
+                </div>
+            </div>
+            <script src="https://vjs.zencdn.net/5.4.4/video.js"></script>
+        </div>
+    </body>
+</html>
