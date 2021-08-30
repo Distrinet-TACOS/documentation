@@ -2,6 +2,9 @@
 CONFIG ?= make.conf
 include ${CONFIG}
 
+PDF_TEMPLATE = templates/eisvogel.tex
+HTML_TEMPLATE = templates/uikit.html
+
 all: convert
 
 test: convert-html open
@@ -9,10 +12,10 @@ test: convert-html open
 convert: convert-pdf convert-html
 
 convert-pdf: create-out
-	pandoc main.md -f markdown -t latex -o out/main.pdf --template eisvogel.tex --listings --toc
+	. ./.venv/bin/activate; pandoc -N main.md -f markdown -t latex -o out/main.pdf --template $(PDF_TEMPLATE) --listings --toc --filter pandoc-include
 
 convert-html: create-out
-	pandoc main.md -f markdown -t html -o out/main.html --template uikit --toc
+	. ./.venv/bin/activate; pandoc -N main.md -f markdown -t html -o out/main.html --template $(HTML_TEMPLATE) --toc --filter pandoc-include
 
 create-out:
 	@mkdir -p out

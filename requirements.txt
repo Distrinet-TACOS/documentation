@@ -1,0 +1,1 @@
+pandoc-include>=1.0.1

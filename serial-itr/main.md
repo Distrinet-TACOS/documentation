@@ -1,0 +1,70 @@
+# Serial interrupt in secure world
+
+To accept input on the serial console of the secure world, it is necessary to register an interrupt on that serial console. To do this, two things need to be done: a interrupt handler needs to be defined and the handler must be registered for the interrupt. The console interface might be different for QEMU or Sabre Lite, but the general way of working should be the same.
+
+## Interrupt handler
+
+The interrupt handler is defined according to the `itr_handler` type in `<interrupt.h>`. This struct needs to be initialized with the interrupt location `it` (in this case `IT_CONSOLE_UART`), the flags for the interrupt (`ITRF_TRIGGER_LEVEL`) and the handler function. This function can accept a parameter that is the `itr_handler` structure. When defining this struct, it is (probably) necessary to explicitly state that the interrupt handling is put in the right part of the binary. This is done by declaring `DECLARE_KEEP_PAGER(console_itr);`.
+
+``` c++
+struct itr_handler {
+    size_t it;
+    uint32_t flags;
+    itr_handler_t handler;
+    void *data;
+    SLIST_ENTRY(itr_handler) link;
+};
+
+static enum itr_return handler_function(struct itr_handler *h)
+{
+    // Handling code
+    return ITRR_HANDLED;
+}
+
+static struct itr_handler handler = {
+    .it = IT_CONSOLE_UART,
+    .flags = ITRF_TRIGGER_LEVEL,
+    .handler = handler_function,
+};
+DECLARE_KEEP_PAGER(handler);
+```
+
+When the interrupt handler is declared and defined, it can be used to enable the interrupt. First, the interrupt handler must be registered and then the interrupt can be enabled. Adding the interrupt handler is done by `itr_add(&handler)` and enabling the interrupt is done by `itr_enable(handler.it)`.
+
+## Serial console driver
+
+To accept input from the serial console during the handling of the interrupt, it is necessary to have access to the console chip and driver. Because the driver is initialized during the boot sequence of the platform, the only way to get this access is by hijacking this process, disabling the standard interrupt enabled by the boot process and call our own function to save the serial console access location.
+
+The original interrupt setup happens in the file `optee_os/core/arch/arm/plat-vexpress/main.c`. A macro called `driver_init(...)` is called with the function that enables the serial interrupt. This macro ensures that the interrupt enabling routine is called during the boot process. To prevent this from happening, the simplest solution is to comment out this line.
+
+To save the access location of the console interface, the function `console_init(void)` in the same file calls a function `register_serial_console(...)` which is a wrapper for an assign operation. We can imitate this function to do the same for us, by defining our own pointer to the serial chip and using this pointer to access the serial console.
+
+``` c++
+static struct serial_chip *serial_chip;
+```
+
+### Handling serial input
+
+The serial console functions as follows: when data is sent to the serial console (for example by pressing a key in the console), it is accepted by the driver, the data is stored in a buffer and the cpu is notified by means of an interrupt. This interrupt invokes our interrupt handler function.
+
+It is in this function that we are able to retrieve the data from the buffer. The interrupt keeps triggering if the buffer is not empty, thus it is necessary to empty the buffer after getting its contents. The following while loop gets a single character from the buffer and prints it as long as there are characters left in the buffer. It is here that we use the reference to the serial console.
+
+```c++
+static enum itr_return handler_function(struct itr_handler *h)
+{
+    while (serial_chip->ops->have_rx_data(serial_chip)) {
+        int ch = serial_chip->ops->getchar(serial_chip);
+        DMSG("new cpu %zu: got 0x%x", get_core_pos(), ch);
+    }
+
+    return ITRR_HANDLED;
+}
+```
+
+## CPU masks
+
+Each system may have multiple cpus. When assigning an interrupt handler to a certain interrupt and enabling it, this interrupt is assigned to all cpus. This means that when an interrupt happens, both cpus will handle that interrupt, calling the same handler twice leading to undefined behavior.
+
+To prevent this from happening, one can enable cpu masks on an interrupt to define which cpu is responsible for handling that interrupt. This is done by calling the function `itr_set_affinity(<interrupt>, <cpu_mask>)` with the interrupt from the handler and a cpu mask that is a sequence of bits, where a 1 at position $n$ enables the handling of an interrupt by the cpu with number $n$.
+
+It is not yet possible to handle interrupts on a cpu selected at interrupt handle time.

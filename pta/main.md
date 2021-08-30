@@ -1,0 +1,263 @@
+# Custom Pseudo Trusted Application
+
+*Trusted Applications* (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run p in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA's are statically linked against the kernel.
+
+It is possible to create a PTA by adding the sources to `optee_os/core/pta` and including them in the Makefile in the same directory. This way the PTA is included int the os when it is built.
+
+It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA. This application is created by copying an existing example application from `optee_examples` and removing the `ta` subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.
+
+## Example PTA
+
+This example shows a simple PTA that prints some text when called from the normal world.
+
+``` c++
+// File: optee_os/core/pta/testpta.c
+
+#include <kernel/pseudo_ta.h>
+
+#define PTA_NAME "test.pta"
+#define PTA_TEST_PRINT_UUID { 0xd4be3f91, 0xc4e1, 0x436c, \
+    { 0xb2, 0x92, 0xbf, 0xf5, 0x3e, 0x43, 0x04, 0xd5 } }
+
+#define PTA_TEST_PRINT 0
+
+static TEE_Result test_print(uint32_t type, TEE_Param p[TEE_NUM_PARAMS]) {
+    IMSG("This is a test of a pseudo trusted application.");
+
+    return TEE_SUCCESS;
+}
+
+/*
+ * Trusted Application Etnry Points
+ */
+
+static TEE_Result invoke_command(void *session __unused, uint32_t cmd,
+                                 uint32_t ptypes,
+                                 TEE_Param params[TEE_NUM_PARAMS]) {
+  switch (cmd) {
+    case PTA_TEST_PRINT:
+        return test_print(ptypes, params);
+        break;
+    default:
+        break;
+  }
+
+  return TEE_ERROR_NOT_IMPLEMENTED;
+}
+
+pseudo_ta_register(.uuid = PTA_TEST_PRINT_UUID, .name = PTA_NAME,
+    .flags = PTA_DEFAULT_FLAGS, .invoke_command_entry_point = invoke_command);
+```
+
+``` Makefile
+# Added to optee_os/core/pta/sub.mk
+
+srcs-y += testpta.c
+```
+
+The code for the host application:
+
+``` c++
+// File: host/main.c
+
+/*
+ * Copyright (c) 2016, Linaro Limited
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include <err.h>
+#include <stdio.h>
+#include <string.h>
+
+/* OP-TEE TEE client API (built by optee_client) */
+#include <tee_client_api.h>
+
+#define PTA_TEST_PRINT_UUID { 0xd4be3f91, 0xc4e1, 0x436c, \
+    { 0xb2, 0x92, 0xbf, 0xf5, 0x3e, 0x43, 0x04, 0xd5 } }
+
+#define PTA_TEST_PRINT 0
+
+int main(void)
+{
+    TEEC_Result res;
+    TEEC_Context ctx;
+    TEEC_Session sess;
+    TEEC_Operation op;
+    TEEC_UUID uuid = PTA_TEST_PRINT_UUID;
+    uint32_t err_origin;
+
+    /* Initialize a context connecting us to the TEE */
+    res = TEEC_InitializeContext(NULL, &ctx);
+    if (res != TEEC_SUCCESS)
+        errx(1, "TEEC_InitializeContext failed with code 0x%x", res);
+
+    /*
+     * Open a session to the "hello world" TA, the TA will print "hello
+     * world!" in the log when the session is created.
+     */
+    res = TEEC_OpenSession(&ctx, &sess, &uuid,
+                   TEEC_LOGIN_PUBLIC, NULL, NULL, &err_origin);
+    if (res != TEEC_SUCCESS)
+        errx(1, "TEEC_Opensession failed with code 0x%x origin 0x%x",
+            res, err_origin);
+
+    /*
+     * Execute a function in the TA by invoking it, in this case
+     * we're incrementing a number.
+     *
+     * The value of command ID part and how the parameters are
+     * interpreted is part of the interface provided by the TA.
+     */
+
+    /* Clear the TEEC_Operation struct */
+    memset(&op, 0, sizeof(op));
+
+    /*
+     * Prepare the argument. Pass a value in the first parameter,
+     * the remaining three parameters are unused.
+     */
+    op.paramTypes = TEEC_PARAM_TYPES(TEEC_NONE, TEEC_NONE,
+                     TEEC_NONE, TEEC_NONE);
+
+    /*
+     * TA_HELLO_WORLD_CMD_INC_VALUE is the actual function in the TA to be
+     * called.
+     */
+    printf("Invoking PTA to print test.");
+    res = TEEC_InvokeCommand(&sess, PTA_TEST_PRINT, &op, &err_origin);
+    if (res != TEEC_SUCCESS)
+        errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
+            res, err_origin);
+    printf("Test printed.");
+
+    /*
+     * We're done with the TA, close the session and
+     * destroy the context.
+     *
+     * The TA will print "Goodbye!" in the log when the
+     * session is closed.
+     */
+
+    TEEC_CloseSession(&sess);
+
+    TEEC_FinalizeContext(&ctx);
+
+    return 0;
+}
+```
+
+The Makefiles of the new host application:
+
+``` Makefile
+# File: Makefile
+
+export V?=0
+
+# If _HOST or _TA specific compilers are not specified, then use CROSS_COMPILE
+HOST_CROSS_COMPILE ?= $(CROSS_COMPILE)
+
+.PHONY: all
+all:
+    $(MAKE) -C host CROSS_COMPILE="$(HOST_CROSS_COMPILE)" --no-builtin-variables
+
+.PHONY: clean
+clean:
+    $(MAKE) -C host clean
+```
+
+``` Makefile
+# File: host/Makefile
+
+CC      ?= $(CROSS_COMPILE)gcc
+LD      ?= $(CROSS_COMPILE)ld
+AR      ?= $(CROSS_COMPILE)ar
+NM      ?= $(CROSS_COMPILE)nm
+OBJCOPY ?= $(CROSS_COMPILE)objcopy
+OBJDUMP ?= $(CROSS_COMPILE)objdump
+READELF ?= $(CROSS_COMPILE)readelf
+
+OBJS = main.o
+
+CFLAGS += -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
+#Add/link other required libraries here
+LDADD += -lteec -L$(TEEC_EXPORT)/lib
+
+BINARY = optee_example_testpta
+
+.PHONY: all
+all: $(BINARY)
+
+$(BINARY): $(OBJS)
+    $(CC) $(LDFLAGS) -o $@ $< $(LDADD)
+
+.PHONY: clean
+clean:
+    rm -f $(OBJS) $(BINARY)
+
+%.o: %.c
+    $(CC) $(CFLAGS) -c $< -o $@
+
+```
+
+``` Makefile
+# File: CMakeLists.txt
+
+project (optee_example_testpta C)
+
+set (SRC host/main.c)
+
+add_executable (${PROJECT_NAME} ${SRC})
+
+target_include_directories(${PROJECT_NAME}
+            #    PRIVATE ta/include
+               PRIVATE include)
+
+target_link_libraries (${PROJECT_NAME} PRIVATE teec)
+
+install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
+```
+
+``` Makefile
+# File: Android.mk
+
+# ~~~~~~~~~~~~~~~~~~~~~~ optee-testpta ~~~~~~~~~~~~~~~~~~~~~~
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_CFLAGS += -DANDROID_BUILD
+LOCAL_CFLAGS += -Wall
+
+LOCAL_SRC_FILES += host/main.c
+
+# LOCAL_C_INCLUDES := $(LOCAL_PATH)/ta/include
+
+LOCAL_SHARED_LIBRARIES := libteec
+LOCAL_MODULE := optee_example_testpta
+LOCAL_VENDOR_MODULE := true
+LOCAL_MODULE_TAGS := optional
+include $(BUILD_EXECUTABLE)
+
+# include $(LOCAL_PATH)/ta/Android.mk
+```
