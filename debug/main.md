@@ -6,6 +6,6 @@ To debug OP-TEE, some additional steps need to be taken to prepare everything.
 
 !include qemu.md
 
-## Sabre Lite
+<!-- ## Sabre Lite
 
-!include sabre.md
+!include sabre.md -->

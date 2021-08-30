@@ -44,3 +44,5 @@ c
 This will launch QEMU in the current terminal and two new terminals, one serial connection to the secure world and one to the normal world. In the normal world terminal, you can login using the users `root`or `test`, after which it is possible to run programs in the normal world that interact with the secure world.
 
 To test if everything went according to plan, run `xtest` once logged in. If there are no obvious errors, the build process should have completed successfully. You can run the example programs by executing any of the `optee_example_*` programs present in the path.
+
+The command ``make run-only -j `nproc` `` is also available to run QEMU without building the project.

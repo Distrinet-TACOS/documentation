@@ -1,10 +1,14 @@
 ---
-title: "Using OP-TEE and QEMUv7"
+title: "Setup & build guide for OP-TEE"
+subtitle: "Part of the TACOS project"
+subject: "OP-TEE guide"
+keywords: [OP-TEE, TACOS, QEMU]
 author: Tom Van Eyck
 date: \today
 titlepage: true
-titlepage-background: background1.pdf
+titlepage-background: figures/background.pdf
 toc-own-page: true
+lang: "en"
 ...
 
 <!-- Prerequisites -->

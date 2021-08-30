@@ -1,3 +1,4 @@
-.vscode/
+.vscode
 make.conf
 .venv
+out

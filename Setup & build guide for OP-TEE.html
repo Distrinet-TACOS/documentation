@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html  dir="ltr">
+<html  lang="en"  dir="ltr">
 
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Using OP-TEE and QEMUv7</title>
+        <title>Setup &amp; build guide for OP-TEE</title>
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
 
@@ -23,7 +23,7 @@
 
         <meta name="generator" content="pandoc-uikit" />
                 <meta name="author" content="Tom Van Eyck" />
-                        <title>Using OP-TEE and QEMUv7</title>
+                        <title>Setup &amp; build guide for OP-TEE</title>
         <style type="text/css">code{white-space: pre;}</style>
                         <style type="text/css">
             pre > code.sourceCode { white-space: pre; position: relative; }
@@ -100,7 +100,7 @@
 
                         <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
-                    <h1 class="uk-heading-large">Using OP-TEE and QEMUv7</h1>
+                    <h1 class="uk-heading-large">Setup &amp; build guide for OP-TEE</h1>
                                                             <p class="uk-text-large">Tom Van Eyck</p>
                                     </div>
             </div>
@@ -129,7 +129,6 @@
                                                         <li><a href="#build-op-tee"><span class="toc-section-number">2.1.3</span> Build OP-TEE</a></li>
                                                         <li><a href="#running-op-tee"><span class="toc-section-number">2.1.4</span> Running OP-TEE</a></li>
                                                         </ul></li>
-                                                        <li><a href="#sabre-lite"><span class="toc-section-number">2.2</span> Sabre Lite</a></li>
                                                         </ul></li>
                                                         <li><a href="#debugging-op-tee"><span class="toc-section-number">3</span> Debugging OP-TEE</a>
                                                         <ul>
@@ -139,7 +138,6 @@
                                                         <li><a href="#gdb-settings"><span class="toc-section-number">3.1.2</span> Gdb settings</a></li>
                                                         <li><a href="#debugging-op-tee"><span class="toc-section-number">3.1.3</span> Debugging OP-TEE</a></li>
                                                         </ul></li>
-                                                        <li><a href="#sabre-lite"><span class="toc-section-number">3.2</span> Sabre Lite</a></li>
                                                         </ul></li>
                                                         <li><a href="#custom-pseudo-trusted-application"><span class="toc-section-number">4</span> Custom Pseudo Trusted Application</a>
                                                         <ul>
@@ -235,7 +233,10 @@
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">c</span></span></code></pre></div>
 <p>This will launch QEMU in the current terminal and two new terminals, one serial connection to the secure world and one to the normal world. In the normal world terminal, you can login using the users <code>root</code>or <code>test</code>, after which it is possible to run programs in the normal world that interact with the secure world.</p>
 <p>To test if everything went according to plan, run <code>xtest</code> once logged in. If there are no obvious errors, the build process should have completed successfully. You can run the example programs by executing any of the <code>optee_example_*</code> programs present in the path.</p>
-<h2 data-number="2.2" id="sabre-lite"><span class="header-section-number">2.2</span> Sabre Lite</h2>
+<p>The command <code>make run-only -j `nproc`</code> is also available to run QEMU without building the project.</p>
+<!-- ## Sabre Lite
+
+!include sabre.md -->
 <!-- Debug -->
 <h1 data-number="3" id="debugging-op-tee"><span class="header-section-number">3</span> Debugging OP-TEE</h1>
 <p>To debug OP-TEE, some additional steps need to be taken to prepare everything.</p>
@@ -286,7 +287,9 @@ end</code></pre>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Thread <span class="ex">2</span> hit Breakpoint 1, tee_entry_std <span class="er">(</span><span class="va">arg</span><span class="op">=</span>0xe300000, <span class="va">num_params</span><span class="op">=</span>2<span class="kw">)</span> <span class="ex">at</span> core/tee/entry_std.c:528</span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> 528             <span class="cf">return</span> <span class="ex">__tee_entry_std</span><span class="er">(</span><span class="ex">arg,</span> num_params<span class="kw">);</span></span></code></pre></div>
 <p>Now it is possible to further explore OP-TEE using gdb.</p>
-<h2 data-number="3.2" id="sabre-lite"><span class="header-section-number">3.2</span> Sabre Lite</h2>
+<!-- ## Sabre Lite
+
+!include sabre.md -->
 <!-- Custom PTA -->
 <h1 data-number="4" id="custom-pseudo-trusted-application"><span class="header-section-number">4</span> Custom Pseudo Trusted Application</h1>
 <p><em>Trusted Applications</em> (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run p in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA’s are statically linked against the kernel.</p>

@@ -5,7 +5,7 @@ include ${CONFIG}
 PDF_TEMPLATE = templates/eisvogel.tex
 HTML_TEMPLATE = templates/uikit.html
 
-all: convert
+all: convert copy
 
 test: convert-html open
 
@@ -19,6 +19,10 @@ convert-html: create-out
 
 create-out:
 	@mkdir -p out
+
+copy:
+	cp out/main.pdf "Setup & build guide for OP-TEE.pdf"
+	cp out/main.html "Setup & build guide for OP-TEE.html"
 
 open:
 ifdef BROWSER
