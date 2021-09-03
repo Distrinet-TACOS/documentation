@@ -62,10 +62,14 @@ Because repo is installed in `~/bin`, this directory needs to be added to the pa
 ``` bash
  set path so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
-    path="$HOME/bin:$PATH"
+    PATH="$HOME/bin:$PATH"
 fi
 ```
 
 ## QEMU specific
 
-Next, QEMU should be installed. This can be done by executing `sudo apt install qemu`.
+Next, QEMU should be installed. This can be done by executing
+
+```bash
+sudo apt install qemu
+```

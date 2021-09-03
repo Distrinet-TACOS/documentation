@@ -8,7 +8,7 @@ It is then possible to create an application for the normal world that calls thi
 
 ## Example PTA
 
-This example shows a simple PTA that prints some text when called from the normal world.
+This example shows a simple PTA that prints some text when called from the normal world. This example is only applicable to a QEMU environment and will thus only be built when QEMU is the target platform.
 
 ``` c++
 // File: optee_os/core/pta/testpta.c
@@ -52,7 +52,9 @@ pseudo_ta_register(.uuid = PTA_TEST_PRINT_UUID, .name = PTA_NAME,
 ``` Makefile
 # Added to optee_os/core/pta/sub.mk
 
+ifeq ($(PLATFORM),vexpress-qemu_virt)
 srcs-y += testpta.c
+endif
 ```
 
 The code for the host application:
@@ -242,7 +244,7 @@ install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 ``` Makefile
 # File: Android.mk
 
-# ~~~~~~~~~~~~~~~~~~~~~~ optee-testpta ~~~~~~~~~~~~~~~~~~~~~~
+###################### optee-testpta ######################
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)

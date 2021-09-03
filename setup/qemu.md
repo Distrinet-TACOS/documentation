@@ -1,11 +1,11 @@
 ### Download of repositories
 
-OP-TEE uses a [central repository](https://github.com/OP-TEE/manifest.git) containing the manifest files for repo for all architectures. To download all necessary git repositories of the OP-TEE project for the QEMUv7 architecture, execute the following commands:
+OP-TEE uses a [central repository](https://github.com/Distrinet-TACOS/manifest.git) containing the manifest files for repo for all architectures. To download all necessary git repositories of the OP-TEE project for the QEMUv7 architecture, execute the following commands:
 
 ``` bash
 mkdir -p <project-dir>
 cd <project-dir>
-repo init -u https://github.com/OP-TEE/manifest.git -m default.xml
+repo init -u https://github.com/Distrinet-TACOS/manifest.git -m tacos-qemu.xml
 repo sync -j4 --no-clone-bundle
 ```
 

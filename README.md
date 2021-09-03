@@ -27,6 +27,16 @@ make
 
 This will compile a pdf output and a html output, both located in the `out` directory.
 
-## Opening using make
+## Editing the documentation
+
+The documentation is written in Markdown, with Pandoc extensions. The file `main.md` in the root folder is the "entry point" of the documentation. Each top level section is written in a section file (also called `main.md`) placed in its own folder and then included in the root `main.md` via an include directive:
+
+``` Markdown
+!include <folder>/main.md
+```
+
+If there are specific instructions for different platforms, these should be seperated from the section file into their own file (e.g. `qemu.md`) in the same section folder and included in the section file using the same include directive.
+
+## Opening html documentation using make
 
 To open the html file using the documentation, a file name `make.conf` should first be created where the variables `BROWSER` and `DIR` are set to the browser executable and root dir of the documentation respectively. This file should not be added to git.
