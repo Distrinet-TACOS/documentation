@@ -31,6 +31,10 @@ lang: "en"
 
 !include serial-itr/main.md
 
+<!-- Callback on interrupt -->
+
+!include callback/main.md
+
 <!-- Bibliography -->
 
 !include bib.md
