@@ -23,6 +23,7 @@ create-out:
 copy:
 	cp out/main.pdf "Setup and build guide for OP-TEE.pdf"
 	cp out/main.html "Setup and build guide for OP-TEE.html"
+	cp out/main.html docs/index.html
 
 open:
 ifdef BROWSER
