@@ -21,8 +21,8 @@ create-out:
 	@mkdir -p out
 
 copy:
-	cp out/main.pdf "Setup & build guide for OP-TEE.pdf"
-	cp out/main.html "Setup & build guide for OP-TEE.html"
+	cp out/main.pdf "Setup and build guide for OP-TEE.pdf"
+	cp out/main.html "Setup and build guide for OP-TEE.html"
 
 open:
 ifdef BROWSER
