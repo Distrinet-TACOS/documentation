@@ -8,7 +8,7 @@
 
 This guide is based on a clean Ubuntu 20.04 installation on a Hyper-V VM. It should be possible to repeat the results on any Linux distribution and any hypervisor platform, as long as the required packages are available.
 
-At least 30GiB free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to a total system failure without chance of recovery.
+At least 60GiB free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to a total system failure without chance of recovery.
 
 The first thing to do when the operating system is installed, is to update the package manager for the right architectures. Run the following in a command line:
 
