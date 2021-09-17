@@ -1,0 +1,44 @@
+@startuml async-notif
+!theme plain
+!pragma teoz true
+
+hide footbox
+skinparam ParticipantPadding 50
+skinparam BoxPadding 10
+skinparam SequenceBoxBorderColor #bbbbbb
+
+box "Normal world"
+participant "OP-TEE Driver" as driver
+end box
+box "Secure world"
+participant PTA as pta
+end box
+
+activate pta
+activate driver
+pta -> pta: Register interrupt\nhandler
+&driver -> driver: Register interrupt\nhandler
+deactivate pta
+
+pta <- : Interrupt registered
+activate pta
+driver <- pta: Send async notification\nby triggering non-secure\nsoftware interrupt
+activate driver
+deactivate pta
+
+driver -> pta: Get notification value
+activate pta
+return notification value
+
+alt notification value\n = do bottom half
+    driver -> pta: Yielding call
+    activate pta
+    return
+else
+    driver -[hidden]-> pta
+    driver -> driver: Something else
+end
+driver -[hidden]-> pta
+deactivate driver
+
+@enduml

@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Setup &amp; build guide for OP-TEE</title>
+        <title>OP-TEE split driver</title>
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
 
@@ -23,7 +23,7 @@
 
         <meta name="generator" content="pandoc-uikit" />
                 <meta name="author" content="Tom Van Eyck" />
-                        <title>Setup &amp; build guide for OP-TEE</title>
+                        <title>OP-TEE split driver</title>
         <style type="text/css">code{white-space: pre;}</style>
                         <style type="text/css">
             pre > code.sourceCode { white-space: pre; position: relative; }
@@ -100,7 +100,7 @@
 
                         <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
-                    <h1 class="uk-heading-large">Setup &amp; build guide for OP-TEE</h1>
+                    <h1 class="uk-heading-large">OP-TEE split driver</h1>
                                                             <p class="uk-text-large">Tom Van Eyck</p>
                                     </div>
             </div>
@@ -111,57 +111,47 @@
                         <div class="uk-panel uk-panel-box menu-begin" >
 
                                                         <ul>
-                                                        <li><a href="#prerequisites"><span class="toc-section-number">1</span> Prerequisites</a>
+                                                        <li><a href="#setting-up-building-op-tee"><span class="toc-section-number">1</span> Setting up &amp; building OP-TEE</a>
                                                         <ul>
-                                                        <li><a href="#ubuntu"><span class="toc-section-number">1.1</span> Ubuntu</a>
+                                                        <li><a href="#prerequisites"><span class="toc-section-number">1.1</span> Prerequisites</a>
                                                         <ul>
-                                                        <li><a href="#changes-from-original-2"><span class="toc-section-number">1.1.1</span> Changes from original [2]</a></li>
+                                                        <li><a href="#ubuntu"><span class="toc-section-number">1.1.1</span> Ubuntu</a></li>
+                                                        <li><a href="#google-aosp-repo"><span class="toc-section-number">1.1.2</span> Google AOSP repo</a></li>
+                                                        <li><a href="#qemu-specific"><span class="toc-section-number">1.1.3</span> QEMU specific</a></li>
                                                         </ul></li>
-                                                        <li><a href="#google-aosp-repo"><span class="toc-section-number">1.2</span> Google AOSP repo</a></li>
-                                                        <li><a href="#qemu-specific"><span class="toc-section-number">1.3</span> QEMU specific</a></li>
+                                                        <li><a href="#building-running-op-tee"><span class="toc-section-number">1.2</span> Building &amp; running OP-TEE</a>
+                                                        <ul>
+                                                        <li><a href="#qemu"><span class="toc-section-number">1.2.1</span> QEMU</a></li>
                                                         </ul></li>
-                                                        <li><a href="#building-running-op-tee"><span class="toc-section-number">2</span> Building &amp; running OP-TEE</a>
+                                                        <li><a href="#debugging-op-tee"><span class="toc-section-number">1.3</span> Debugging OP-TEE</a>
                                                         <ul>
-                                                        <li><a href="#qemu"><span class="toc-section-number">2.1</span> QEMU</a>
-                                                        <ul>
-                                                        <li><a href="#download-of-repositories"><span class="toc-section-number">2.1.1</span> Download of repositories</a></li>
-                                                        <li><a href="#toolchains"><span class="toc-section-number">2.1.2</span> Toolchains</a></li>
-                                                        <li><a href="#build-op-tee"><span class="toc-section-number">2.1.3</span> Build OP-TEE</a></li>
-                                                        <li><a href="#running-op-tee"><span class="toc-section-number">2.1.4</span> Running OP-TEE</a></li>
+                                                        <li><a href="#qemu"><span class="toc-section-number">1.3.1</span> QEMU</a></li>
                                                         </ul></li>
+                                                        <li><a href="#custom-pseudo-trusted-application"><span class="toc-section-number">1.4</span> Custom Pseudo Trusted Application</a>
+                                                        <ul>
+                                                        <li><a href="#example-pta"><span class="toc-section-number">1.4.1</span> Example PTA</a></li>
                                                         </ul></li>
-                                                        <li><a href="#debugging-op-tee"><span class="toc-section-number">3</span> Debugging OP-TEE</a>
+                                                        <li><a href="#serial-interrupt-in-secure-world"><span class="toc-section-number">1.5</span> Serial interrupt in secure world</a>
                                                         <ul>
-                                                        <li><a href="#qemu"><span class="toc-section-number">3.1</span> QEMU</a>
-                                                        <ul>
-                                                        <li><a href="#download-and-install-gdb-for-arm"><span class="toc-section-number">3.1.1</span> Download and install gdb for ARM</a></li>
-                                                        <li><a href="#gdb-settings"><span class="toc-section-number">3.1.2</span> Gdb settings</a></li>
-                                                        <li><a href="#debugging-op-tee"><span class="toc-section-number">3.1.3</span> Debugging OP-TEE</a></li>
-                                                        </ul></li>
-                                                        </ul></li>
-                                                        <li><a href="#custom-pseudo-trusted-application"><span class="toc-section-number">4</span> Custom Pseudo Trusted Application</a>
-                                                        <ul>
-                                                        <li><a href="#example-pta"><span class="toc-section-number">4.1</span> Example PTA</a></li>
-                                                        </ul></li>
-                                                        <li><a href="#serial-interrupt-in-secure-world"><span class="toc-section-number">5</span> Serial interrupt in secure world</a>
-                                                        <ul>
-                                                        <li><a href="#interrupt-handler"><span class="toc-section-number">5.1</span> Interrupt handler</a></li>
-                                                        <li><a href="#serial-console-driver"><span class="toc-section-number">5.2</span> Serial console driver</a>
-                                                        <ul>
-                                                        <li><a href="#handling-serial-input"><span class="toc-section-number">5.2.1</span> Handling serial input</a></li>
-                                                        </ul></li>
-                                                        <li><a href="#cpu-masks"><span class="toc-section-number">5.3</span> CPU masks</a></li>
-                                                        </ul></li>
-                                                        <li><a href="#normal-world-callback-on-secure-world-interrupt"><span class="toc-section-number">6</span> Normal world callback on secure world interrupt</a>
-                                                        <ul>
-                                                        <li><a href="#feature-state"><span class="toc-section-number">6.1</span> Feature state</a></li>
-                                                        <li><a href="#using-asynchronous-notifications"><span class="toc-section-number">6.2</span> Using asynchronous notifications</a>
-                                                        <ul>
-                                                        <li><a href="#secure-world-to-normal-world"><span class="toc-section-number">6.2.1</span> Secure world to normal world</a></li>
-                                                        <li><a href="#normal-world-to-secure-world"><span class="toc-section-number">6.2.2</span> Normal world to secure world</a></li>
+                                                        <li><a href="#interrupt-handler"><span class="toc-section-number">1.5.1</span> Interrupt handler</a></li>
+                                                        <li><a href="#serial-console-driver"><span class="toc-section-number">1.5.2</span> Serial console driver</a></li>
+                                                        <li><a href="#cpu-masks"><span class="toc-section-number">1.5.3</span> CPU masks</a></li>
                                                         </ul></li>
                                                         </ul></li>
-                                                        <li><a href="#bibliography"><span class="toc-section-number">7</span> Bibliography</a></li>
+                                                        <li><a href="#design-of-a-split-driver"><span class="toc-section-number">2</span> Design of a split driver</a>
+                                                        <ul>
+                                                        <li><a href="#split-driver-for-op-tee"><span class="toc-section-number">2.1</span> Split driver for OP-TEE</a>
+                                                        <ul>
+                                                        <li><a href="#normal-world-callback-on-secure-world-interrupt"><span class="toc-section-number">2.1.1</span> Normal world callback on secure world interrupt</a></li>
+                                                        <li><a href="#split-driver-using-callbacks"><span class="toc-section-number">2.1.2</span> Split driver using callbacks</a></li>
+                                                        </ul></li>
+                                                        <li><a href="#linux-kernel-modules-aka-device-drivers"><span class="toc-section-number">2.2</span> Linux kernel Modules (aka device drivers)</a>
+                                                        <ul>
+                                                        <li><a href="#built-in-modules"><span class="toc-section-number">2.2.1</span> Built-in modules</a></li>
+                                                        <li><a href="#loadable-modules"><span class="toc-section-number">2.2.2</span> Loadable modules</a></li>
+                                                        </ul></li>
+                                                        <li><a href="#bibliography"><span class="toc-section-number">2.3</span> Bibliography</a></li>
+                                                        </ul></li>
                                                         </ul>
                             
                         </div>
@@ -169,14 +159,15 @@
                 </div>
 
                 <div class="uk-width-medium-3-4">
+<h1 data-number="1" id="setting-up-building-op-tee"><span class="header-section-number">1</span> Setting up &amp; building OP-TEE</h1>
 <!-- Prerequisites -->
-<h1 data-number="1" id="prerequisites"><span class="header-section-number">1</span> Prerequisites</h1>
+<h2 data-number="1.1" id="prerequisites"><span class="header-section-number">1.1</span> Prerequisites</h2>
 <ul>
 <li>Ubuntu 20.04 (only this distribution tested)</li>
 <li>Google AOSP repo</li>
 <li>QEMU</li>
 </ul>
-<h2 data-number="1.1" id="ubuntu"><span class="header-section-number">1.1</span> Ubuntu</h2>
+<h3 data-number="1.1.1" id="ubuntu"><span class="header-section-number">1.1.1</span> Ubuntu</h3>
 <p>This guide is based on a clean Ubuntu 20.04 installation on a Hyper-V VM. It should be possible to repeat the results on any Linux distribution and any hypervisor platform, as long as the required packages are available.</p>
 <p>At least 60GiB free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to a total system failure without chance of recovery.</p>
 <p>The first thing to do when the operating system is installed, is to update the package manager for the right architectures. Run the following in a command line:</p>
@@ -192,12 +183,12 @@
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        python3-crypto python-is-python3 python-pyelftools python3-pycryptodome <span class="dt">\</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        python3-pyelftools python3-serial rsync unzip uuid-dev xdg-utils xterm <span class="dt">\</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        xz-utils zlib1g-dev</span></code></pre></div>
-<h3 data-number="1.1.1" id="changes-from-original-2"><span class="header-section-number">1.1.1</span> Changes from original [2]</h3>
+<h4 data-number="1.1.1.1" id="changes-from-original-2"><span class="header-section-number">1.1.1.1</span> Changes from original [2]</h4>
 <ul>
 <li>python-serial is not available for Ubuntu 20.04. This package has thus been removed from the install procedure. This should not have any impact, because only python3 is used.</li>
 <li>As python3 is the only python version available on Ubuntu 20.04 (as it should be), a package is added that links <code>python</code> to <code>python3</code>. This might be troublesome on systems where Python 2 is installed and existing tools use Python 2 by calling <code>python</code>. If this is the case, change these tools to use <code>python2</code> explicitly.</li>
 </ul>
-<h2 data-number="1.2" id="google-aosp-repo"><span class="header-section-number">1.2</span> Google AOSP repo</h2>
+<h3 data-number="1.1.2" id="google-aosp-repo"><span class="header-section-number">1.1.2</span> Google AOSP repo</h3>
 <p>The repo tool from the Google Android Open Source Project (AOSP) allows you to manage multiple git repositories using manifest files. OP-TEE uses these manifests to combine all projects into a single development environment based on the specific architecture to be used.</p>
 <p>Obviously, because repo uses git, git needs to be installed and setup on the system. Configure git with your email and name.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install git</span>
@@ -213,28 +204,28 @@
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">if [ -d &quot;$HOME/bin&quot; ] ; then</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">    PATH=&quot;$HOME/bin:$PATH&quot;</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">fi</span></span></code></pre></div>
-<h2 data-number="1.3" id="qemu-specific"><span class="header-section-number">1.3</span> QEMU specific</h2>
+<h3 data-number="1.1.3" id="qemu-specific"><span class="header-section-number">1.1.3</span> QEMU specific</h3>
 <p>Next, QEMU should be installed. This can be done by executing</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install qemu</span></code></pre></div>
 <!-- Build & run -->
-<h1 data-number="2" id="building-running-op-tee"><span class="header-section-number">2</span> Building &amp; running OP-TEE</h1>
-<h2 data-number="2.1" id="qemu"><span class="header-section-number">2.1</span> QEMU</h2>
-<h3 data-number="2.1.1" id="download-of-repositories"><span class="header-section-number">2.1.1</span> Download of repositories</h3>
+<h2 data-number="1.2" id="building-running-op-tee"><span class="header-section-number">1.2</span> Building &amp; running OP-TEE</h2>
+<h3 data-number="1.2.1" id="qemu"><span class="header-section-number">1.2.1</span> QEMU</h3>
+<h4 data-number="1.2.1.1" id="download-of-repositories"><span class="header-section-number">1.2.1.1</span> Download of repositories</h4>
 <p>OP-TEE uses a <a href="https://github.com/Distrinet-TACOS/manifest.git">central repository</a> containing the manifest files for repo for all architectures. To download all necessary git repositories of the OP-TEE project for the QEMUv7 architecture, execute the following commands:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> init <span class="at">-u</span> https://github.com/Distrinet-TACOS/manifest.git <span class="at">-m</span> tacos-qemu.xml</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> sync <span class="at">-j4</span> <span class="at">--no-clone-bundle</span></span></code></pre></div>
-<h3 data-number="2.1.2" id="toolchains"><span class="header-section-number">2.1.2</span> Toolchains</h3>
+<h4 data-number="1.2.1.2" id="toolchains"><span class="header-section-number">1.2.1.2</span> Toolchains</h4>
 <p>The toolchains required to build any part of OP-TEE are included in one of the repositories downloaded in the previous step. To download the actual toolchains, execute</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j2</span> toolchains</span></code></pre></div>
-<h3 data-number="2.1.3" id="build-op-tee"><span class="header-section-number">2.1.3</span> Build OP-TEE</h3>
+<h4 data-number="1.2.1.3" id="build-op-tee"><span class="header-section-number">1.2.1.3</span> Build OP-TEE</h4>
 <p>The OP-TEE project has three main parts: the operating system, the client API and the trusted applications. These three parts can be built on their own, but to get started it is easier to build the whole system at once. This is as simple as executing</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j</span> <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div>
 <p>This process will take some time.</p>
-<h3 data-number="2.1.4" id="running-op-tee"><span class="header-section-number">2.1.4</span> Running OP-TEE</h3>
+<h4 data-number="1.2.1.4" id="running-op-tee"><span class="header-section-number">1.2.1.4</span> Running OP-TEE</h4>
 <p>QEMU and OP-TEE can be launched by executing</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run <span class="at">-j</span> <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span>
@@ -248,15 +239,15 @@
 
 !include sabre.md -->
 <!-- Debug -->
-<h1 data-number="3" id="debugging-op-tee"><span class="header-section-number">3</span> Debugging OP-TEE</h1>
+<h2 data-number="1.3" id="debugging-op-tee"><span class="header-section-number">1.3</span> Debugging OP-TEE</h2>
 <p>To debug OP-TEE, some additional steps need to be taken to prepare everything.</p>
-<h2 data-number="3.1" id="qemu"><span class="header-section-number">3.1</span> QEMU</h2>
-<h3 data-number="3.1.1" id="download-and-install-gdb-for-arm"><span class="header-section-number">3.1.1</span> Download and install gdb for ARM</h3>
+<h3 data-number="1.3.1" id="qemu"><span class="header-section-number">1.3.1</span> QEMU</h3>
+<h4 data-number="1.3.1.1" id="download-and-install-gdb-for-arm"><span class="header-section-number">1.3.1.1</span> Download and install gdb for ARM</h4>
 <p>Normally, if this guide was followed and the toolchains were built accordingly, gdb should already be present in <code>&lt;project-dir&gt;/toolchains</code>. The necessary tools can be added to the path by adding the following in <code>.profile</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin&quot;</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch64/bin&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin:&lt;project-dir&gt;/toolchains/aarch64/bin:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
-<h3 data-number="3.1.2" id="gdb-settings"><span class="header-section-number">3.1.2</span> Gdb settings</h3>
+<h4 data-number="1.3.1.2" id="gdb-settings"><span class="header-section-number">1.3.1.2</span> Gdb settings</h4>
 <p>To make the initialization of gdb easier, add the following at the end of <code>~/.gdbinit</code>:</p>
 <pre class="conf"><code>set print pretty on
 
@@ -269,7 +260,7 @@ document optee
     Loads and setup the binary (tee.elf) for OP-TEE and also connects to the QEMU
     remote.
 end</code></pre>
-<h3 data-number="3.1.3" id="debugging-op-tee"><span class="header-section-number">3.1.3</span> Debugging OP-TEE</h3>
+<h4 data-number="1.3.1.3" id="debugging-op-tee"><span class="header-section-number">1.3.1.3</span> Debugging OP-TEE</h4>
 <p>Because OP-TEE uses Address Space Layout Randomization (ASLR), it is necessary to disable it when starting QEMU. This is done by adding the flag <code>CFG_CORE_ASLR=n</code>.</p>
 <p>Open two terminals. One will be the terminal where QEMU will be running, the other will be used to debug using gdb. Like before, execute the following with the added flag, but <strong>do not press <code>c</code></strong>!</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</span>
@@ -301,11 +292,11 @@ end</code></pre>
 
 !include sabre.md -->
 <!-- Custom PTA -->
-<h1 data-number="4" id="custom-pseudo-trusted-application"><span class="header-section-number">4</span> Custom Pseudo Trusted Application</h1>
+<h2 data-number="1.4" id="custom-pseudo-trusted-application"><span class="header-section-number">1.4</span> Custom Pseudo Trusted Application</h2>
 <p><em>Trusted Applications</em> (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run p in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA’s are statically linked against the kernel.</p>
 <p>It is possible to create a PTA by adding the sources to <code>optee_os/core/pta</code> and including them in the Makefile in the same directory. This way the PTA is included int the os when it is built.</p>
 <p>It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA. This application is created by copying an existing example application from <code>optee_examples</code> and removing the <code>ta</code> subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.</p>
-<h2 data-number="4.1" id="example-pta"><span class="header-section-number">4.1</span> Example PTA</h2>
+<h3 data-number="1.4.1" id="example-pta"><span class="header-section-number">1.4.1</span> Example PTA</h3>
 <p>This example shows a simple PTA that prints some text when called from the normal world. This example is only applicable to a QEMU environment and will thus only be built when QEMU is the target platform.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// File: optee_os/core/pta/testpta.c</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -538,9 +529,9 @@ end</code></pre>
 <span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="co"># include $(LOCAL_PATH)/ta/Android.mk</span></span></code></pre></div>
 <!-- Serial interrupt -->
-<h1 data-number="5" id="serial-interrupt-in-secure-world"><span class="header-section-number">5</span> Serial interrupt in secure world</h1>
+<h2 data-number="1.5" id="serial-interrupt-in-secure-world"><span class="header-section-number">1.5</span> Serial interrupt in secure world</h2>
 <p>To accept input on the serial console of the secure world, it is necessary to register an interrupt on that serial console. To do this, two things need to be done: a interrupt handler needs to be defined and the handler must be registered for the interrupt. The console interface might be different for QEMU or Sabre Lite, but the general way of working should be the same.</p>
-<h2 data-number="5.1" id="interrupt-handler"><span class="header-section-number">5.1</span> Interrupt handler</h2>
+<h3 data-number="1.5.1" id="interrupt-handler"><span class="header-section-number">1.5.1</span> Interrupt handler</h3>
 <p>The interrupt handler is defined according to the <code>itr_handler</code> type in <code>&lt;interrupt.h&gt;</code>. This struct needs to be initialized with the interrupt location <code>it</code> (in this case <code>IT_CONSOLE_UART</code>), the flags for the interrupt (<code>ITRF_TRIGGER_LEVEL</code>) and the handler function. This function can accept a parameter that is the <code>itr_handler</code> structure. When defining this struct, it is (probably) necessary to explicitly state that the interrupt handling is put in the right part of the binary. This is done by declaring <code>DECLARE_KEEP_PAGER(console_itr);</code>.</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> itr_handler <span class="op">{</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> it<span class="op">;</span></span>
@@ -563,12 +554,12 @@ end</code></pre>
 <span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
 <span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>DECLARE_KEEP_PAGER<span class="op">(</span>handler<span class="op">);</span></span></code></pre></div>
 <p>When the interrupt handler is declared and defined, it can be used to enable the interrupt. First, the interrupt handler must be registered and then the interrupt can be enabled. Adding the interrupt handler is done by <code>itr_add(&amp;handler)</code> and enabling the interrupt is done by <code>itr_enable(handler.it)</code>.</p>
-<h2 data-number="5.2" id="serial-console-driver"><span class="header-section-number">5.2</span> Serial console driver</h2>
+<h3 data-number="1.5.2" id="serial-console-driver"><span class="header-section-number">1.5.2</span> Serial console driver</h3>
 <p>To accept input from the serial console during the handling of the interrupt, it is necessary to have access to the console chip and driver. Because the driver is initialized during the boot sequence of the platform, the only way to get this access is by hijacking this process, disabling the standard interrupt enabled by the boot process and call our own function to save the serial console access location.</p>
 <p>The original interrupt setup happens in the file <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. A macro called <code>driver_init(...)</code> is called with the function that enables the serial interrupt. This macro ensures that the interrupt enabling routine is called during the boot process. To prevent this from happening, the simplest solution is to comment out this line.</p>
 <p>To save the access location of the console interface, the function <code>console_init(void)</code> in the same file calls a function <code>register_serial_console(...)</code> which is a wrapper for an assign operation. We can imitate this function to do the same for us, by defining our own pointer to the serial chip and using this pointer to access the serial console.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">struct</span> serial_chip <span class="op">*</span>serial_chip<span class="op">;</span></span></code></pre></div>
-<h3 data-number="5.2.1" id="handling-serial-input"><span class="header-section-number">5.2.1</span> Handling serial input</h3>
+<h4 data-number="1.5.2.1" id="handling-serial-input"><span class="header-section-number">1.5.2.1</span> Handling serial input</h4>
 <p>The serial console functions as follows: when data is sent to the serial console (for example by pressing a key in the console), it is accepted by the driver, the data is stored in a buffer and the cpu is notified by means of an interrupt. This interrupt invokes our interrupt handler function.</p>
 <p>It is in this function that we are able to retrieve the data from the buffer. The interrupt keeps triggering if the buffer is not empty, thus it is necessary to empty the buffer after getting its contents. The following while loop gets a single character from the buffer and prints it as long as there are characters left in the buffer. It is here that we use the reference to the serial console.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function<span class="op">(</span><span class="kw">struct</span> itr_handler <span class="op">*</span>h<span class="op">)</span></span>
@@ -580,26 +571,100 @@ end</code></pre>
 <span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ITRR_HANDLED<span class="op">;</span></span>
 <span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h2 data-number="5.3" id="cpu-masks"><span class="header-section-number">5.3</span> CPU masks</h2>
+<h3 data-number="1.5.3" id="cpu-masks"><span class="header-section-number">1.5.3</span> CPU masks</h3>
 <p>Each system may have multiple cpus. When assigning an interrupt handler to a certain interrupt and enabling it, this interrupt is assigned to all cpus. This means that when an interrupt happens, both cpus will handle that interrupt, calling the same handler twice leading to undefined behavior.</p>
 <p>To prevent this from happening, one can enable cpu masks on an interrupt to define which cpu is responsible for handling that interrupt. This is done by calling the function <code>itr_set_affinity(&lt;interrupt&gt;, &lt;cpu_mask&gt;)</code> with the interrupt from the handler and a cpu mask that is a sequence of bits, where a 1 at position <span class="math inline"><em>n</em></span> enables the handling of an interrupt by the cpu with number <span class="math inline"><em>n</em></span>.</p>
 <p>It is not yet possible to handle interrupts on a cpu selected at interrupt handle time.</p>
+<h1 data-number="2" id="design-of-a-split-driver"><span class="header-section-number">2</span> Design of a split driver</h1>
+<h2 data-number="2.1" id="split-driver-for-op-tee"><span class="header-section-number">2.1</span> Split driver for OP-TEE</h2>
+<p>Currently, for <em>Trusted Execution Environments</em> (TEE), there exist drivers that can operate as regular devices (think of character devices in Linux operating systems) and enable interaction between user space applications in the normal world and the TEE subsystem in a transparent fashion. This takes all the technicalities out of the communication with these TEE subsystems. This is useful in the case of writing an adapter between existing applications that are already interacting with interfaces of regular devices and the TEE subsystem, such that the applications do not need to be rewritten.</p>
+<p>A split driver for OP-TEE is a driver that consists of two parts: a normal world device with a normal world driver and a secure world driver. These two drivers work together to form a device that is able to react to interrupts in the secure world. It is clear that having such a driver makes it possible for any normal world, user space applications to function normally, without needing refactoring, and interoperate with code running in the secure world. Say a program normally interacts with a serial interface; the handling of the serial interface can be delegated to the secure world and a split driver would act as the serial interface.</p>
 <!-- Callback on interrupt -->
-<h1 data-number="6" id="normal-world-callback-on-secure-world-interrupt"><span class="header-section-number">6</span> Normal world callback on secure world interrupt</h1>
-<p>Now we know how to register interrupts in the secure world, it would be interesting to notify the normal world of some event. This would allow us to register a callback in the normal world, making it possible to react to these events from the secure world.</p>
-<p>The mechanism that is used to notify the normal world is aptly called <em>asynchronous notifications</em>. This is a feature that is added to the Linux kernel, but it is still in the middle of the review process. This feature is thus not yet generally available. To check out this feature, you can clone the <code>tacos-qemu-callback.xml</code> manifest file as explained earlier in the <a href="#download-of-repositories">Download of repositories</a> section. This section will cover the implementation details of this feature.</p>
-<h2 data-number="6.1" id="feature-state"><span class="header-section-number">6.1</span> Feature state</h2>
+<h3 data-number="2.1.1" id="normal-world-callback-on-secure-world-interrupt"><span class="header-section-number">2.1.1</span> Normal world callback on secure world interrupt</h3>
+<p>Because of the design of TEEs, it is not possible to directly communicate with the normal world from the secure world. It is thus not immediately possible to react to a secure world interrupt in the normal world.</p>
+<p>Say that a <a href="https://optee.readthedocs.io/en/latest/architecture/core.html#native-and-foreign-interrupts">secure interrupt</a> is registered on a serial interface of the secure world and that this interrupt event is of importance to the normal world and requires special handling there. The interrupt requires the secure world to handle this interrupt with an earlier defined interrupt handler. The Secure Monitor preempts the normal world and starts execution of this handler in the secure world. But how do we notify the normal world of this event?</p>
+<p>The normal world is able to communicate with the secure world via well defined channels. This means that threads on the Linux based operating system can easily open communication channels to trusted applications in the secure world. This happens through the well known <a href="https://globalplatform.org/specs-library/tee-client-api-specification/">GlobalPlatform Client API</a>. The normal world can launch calls into the secure world with some kind of argument passing or shared memory, as described in the Client API. In this way, the secure world is able to populate those memory locations with data of use to the normal world.</p>
+<p>It is thus possible to approximate communication from the secure world to the normal world by globally saving data or state of the interrupt handler and its results, which can be polled by the normal world. This is however an inefficient solution, as the normal world needs to do constant polling to the secure world, and defeats the purpose of interrupts.</p>
+<p>The solution to this problem is a newly developed mechanism, aptly called <a href="https://optee.readthedocs.io/en/latest/architecture/core.html#notifications"><em>Asynchronous Notifications</em></a>. This is a feature that is added to the Linux kernel, but it is still in the middle of the review process. This feature is thus not yet generally available. To check out this feature, you can clone the <code>tacos-qemu-callback.xml</code> manifest file as explained earlier in the <a href="#download-of-repositories">Download of repositories</a> section. This section will cover the implementation details of this feature.</p>
+<h4 data-number="2.1.1.1" id="feature-state"><span class="header-section-number">2.1.1.1</span> Feature state</h4>
 <p>This notification feature is explained in the OP-TEE documentation in the section about <a href="https://optee.readthedocs.io/en/latest/architecture/core.html#notifications">asynchronous notifications</a>. It consists of two active RFCs, one on the <a href="https://github.com/OP-TEE/optee_os">optee_os</a> repository and on the <a href="https://github.com/linaro-swg/linux">linaro-swg linux</a> repository. Because the changes to the linux repository are actually changes to the Linux kernel itself, these changes need to be upstreamed to the actual Linux kernel. Although this feature is generally well received by the kernel maintainers, this review process is lengthy, with multiple back and forths between the Linaro developers and the maintainers. It generally takes a few months until the changes are accepted. The changes to optee_os are on hold until the upstreaming process is finished.</p>
-<h2 data-number="6.2" id="using-asynchronous-notifications"><span class="header-section-number">6.2</span> Using asynchronous notifications</h2>
+<h4 data-number="2.1.1.2" id="using-asynchronous-notifications"><span class="header-section-number">2.1.1.2</span> Using asynchronous notifications</h4>
 <p>Luckily, the mechanism that is currently being reviewed is in a working state, which means we can pull it in our working copy and use it to our hearts content. The changes have already been applied to our fork of the linux kernel, and can be pulled from git as explained in the introduction of this section.</p>
-<h3 data-number="6.2.1" id="secure-world-to-normal-world"><span class="header-section-number">6.2.1</span> Secure world to normal world</h3>
+<h5 data-number="2.1.1.2.1" id="secure-world-to-normal-world"><span class="header-section-number">2.1.1.2.1</span> Secure world to normal world</h5>
 <p>The notification to the normal world is achieved through triggering a non-secure interrupt. The triggering of this interrupt is platform specific and done via <code>itr_raise_pi()</code>. This call is wrapped in a function called <code>notif_send_async</code>, which can be called in an interrupt handler in the secure world. An example implementation can be found in <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. When this non-secure interrupt has been triggered, the Linux kernel in the normal world launches the normal interrupt handling process. At system startup, a handler for this kind of notification interrupt has been registered, so that handler is used.</p>
 <p>The <em>hard</em> interrupt handler <code>notif_irq_handler</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> of a threaded interrupt with the name <code>optee_notification</code> is registered during the initialization of the kernel. This handler is responsible for deciding what to do with the interrupt thrown, based on the value of the notification. This value is collected by the function called <code>get_async_notif_value</code>. The only value that is currently implemented is <code>OPTEE_SMC_ASYNC_NOTIF_VALUE_DO_BOTTOM_HALF</code>, but the implementation could easily be extended to allow for different notifications.</p>
 <p>Because the interrupt handler in the Linux kernel is a <em>threaded interrupt</em> it is also possible to do further handling in the interrupt handler thread called <code>notif_irq_thread_fn</code>. This is the appropriate way to execute more complex interrupt handling that could block the kernel for quite some time.</p>
-<h3 data-number="6.2.2" id="normal-world-to-secure-world"><span class="header-section-number">6.2.2</span> Normal world to secure world</h3>
+<h5 data-number="2.1.1.2.2" id="normal-world-to-secure-world"><span class="header-section-number">2.1.1.2.2</span> Normal world to secure world</h5>
 <p>On the secure side, a <em>notification driver</em> can be registered, should you want to use the asynchronous notification feature as intended. An example implementation can be found in the file <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. However, to write some kind of split driver over the two worlds, we are not fully using this feature, but just using half of the communication channel: from the secure to the normal world.</p>
-<!-- Bibliography -->
-<h1 data-number="7" id="bibliography"><span class="header-section-number">7</span> Bibliography</h1>
+<h4 data-number="2.1.1.3" id="practical-overview"><span class="header-section-number">2.1.1.3</span> Practical overview</h4>
+<p>The following figure shows the sequence of events defined by the asynchronous notifications feature. The OP-TEE driver is the default driver that manages the TEE and thus OP-TEE OS. This driver always registers an interrupt handler for the asynchronous notifications interrupt line on start up. The PTA also registers an interrupt handler, this time for the external hardware interrupt line.</p>
+<p>When this hardware interrupt is caught by the PTA, the PTA saves the notification value <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and sends an asynchronous notification to the OP-TEE driver by triggering a non-secure software interrupt. This allows the PTA to finish execution before the OP-TEE driver handles the interrupt.</p>
+<p>When the OP-TEE driver interrupt handler starts handling the software interrupt, it asks for the notification value using a fast call to the OP-TEE OS. Based on this value the driver may choose to do a multitude of things. In the current implementation state, the only value that is implemented is, as explained before, <code>OPTEE_SMC_ASYNC_NOTIF_VALUE_DO_BOTTOM_HALF</code>, which launches a yielding call into the secure os. This yielding call is possible because the interrupt handler in the driver is a <a href="https://www.kernel.org/doc/htmldocs/kernel-api/API-request-threaded-irq.html">threaded interrupt handler</a>. This threaded interrupt handler is implemented in such a way that the notification value is requested in the <em>hard interrupt context</em>, but the bottom half yielding call is made in the threaded interrupt context. This yielding call can thus be preempted, functionality that is not inherently present in the OP-TEE OS.</p>
+<figure>
+<img src="design/callback/../figures/async-notif.svg" alt="Sequence diagram showing how asynchronous notifications work." /><figcaption aria-hidden="true">Sequence diagram showing how asynchronous notifications work.</figcaption>
+</figure>
+<h3 data-number="2.1.2" id="split-driver-using-callbacks"><span class="header-section-number">2.1.2</span> Split driver using callbacks</h3>
+<p>Given the new feature described in the previous section, it is possible to construct a split driver over both the normal and the secure world. The added component compared to the previous section is the <em>Normal world split driver</em> (NWSD), which is responsible for the registration of a device in the linux os and the interaction with that device.</p>
+<p>Like previously described, when an interrupt is received in the PTA (now called the <em>Secure world split driver</em> (SWSD)), it sends an asynchronous notification to the OP-TEE driver. This driver notices that the notification comes from the secure world split driver because of the notification value. Different from the previous section, the NWSD is called from the OP-TEE driver using software interrupts. It thus needs to register an interrupt handler for this at initialization time. While registering this interrupt, it notifies the SWSD of its presence by invoking a function in the SWSD. This registers the hardware interrupt and allocates a notification value, which is then passed on to the OP-TEE driver.</p>
+<p>After the software interrupt is triggered, the NWSD catches it. This allows it to make a fast call into the SWSD to get the serial character for which the hardware interrupt was thrown in the first place. This character is then stored in a buffer.</p>
+<p>While this interrupt handling happens, the hardware interrupts are disabled to prevent lost characters. This ca be fixed by implementing a buffer in the SWSD and defining a protocol through which the NWSD gets all characters. Multiple hardware interrupts, thrown in the time it takes to handle one, should however not result in multiple interrupt handling cycles.</p>
+<figure>
+<img src="design/figures/split-driver.svg" alt="Sequence diagram showing the functionality of the split driver." /><figcaption aria-hidden="true">Sequence diagram showing the functionality of the split driver.</figcaption>
+</figure>
+<figure>
+<img src="design/figures/split-driver-comp.svg" alt="Component diagram for the split driver." /><figcaption aria-hidden="true">Component diagram for the split driver.</figcaption>
+</figure>
+<!-- Modules -->
+<h2 data-number="2.2" id="linux-kernel-modules-aka-device-drivers"><span class="header-section-number">2.2</span> Linux kernel Modules (aka device drivers)</h2>
+<p>In the section <a href="#normal-world-callback-on-secure-world-interrupt">Normal world callback on secure world interrupt</a> a mechanism was explained to notify the normal world of a secure world interrupt. We can now use this mechanism to implement a <em>split driver</em> that is responsible for relaying these secure interrupts in the secure world to a device interface in the normal world. It would then be possible to, for instance, write a normal world application that makes use of standardized device interfaces to interact with systems running in the secure world.</p>
+<p>On Linux based operating systems, device drivers are called modules. These modules can be <em>built-in</em>, meaning they are compiled together with the kernel, or <em>loadable</em> at runtime.</p>
+<h3 data-number="2.2.1" id="built-in-modules"><span class="header-section-number">2.2.1</span> Built-in modules</h3>
+<p>Built-in modules are easy to make. It suffices to include very little boilerplate code into the <code>drivers</code> directory in the Linux repository. The structure of an archetypical module is as follows, and for each file a hello world example is given.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>drivers</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>+- ...</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>+- my-module</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>|  +- my-module.c</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>|  +- Makefile</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>+- ...</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>+- Makefile</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">// drivers/my-module/my-module.c</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/module.h&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/kernel.h&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/init.h&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define AUTHOR  &quot;Hello World author&quot;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#define DESC    &quot;Hello World driver&quot;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> hello_init<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>   printk<span class="op">(</span>KERN_ALERT <span class="st">&quot;Hello, world</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> hello_exit<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>   printk<span class="op">(</span>KERN_ALERT <span class="st">&quot;Goodbye, world</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>module_init<span class="op">(</span>hello_init<span class="op">);</span></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>module_exit<span class="op">(</span>hello_exit<span class="op">);</span></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>MODULE_LICENSE<span class="op">(</span><span class="st">&quot;Dual BSD/GPL&quot;</span><span class="op">);</span></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>MODULE_VERSION<span class="op">(</span><span class="st">&quot;v0.1&quot;</span><span class="op">);</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>MODULE_AUTHOR<span class="op">(</span>AUTHOR<span class="op">);</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>MODULE_DESCRIPTION<span class="op">(</span>DESC<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drivers/my-module/Makefile</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="dt">obj-y </span><span class="ch">+=</span><span class="st"> my-module.o</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drivers/Makefile</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="dt">obj-y </span><span class="ch">+=</span><span class="st"> my-module/</span></span></code></pre></div>
+<h3 data-number="2.2.2" id="loadable-modules"><span class="header-section-number">2.2.2</span> Loadable modules</h3>
+<h2 data-number="2.3" id="bibliography"><span class="header-section-number">2.3</span> Bibliography</h2>
 <p>Based on multiple original sources from the OP-TEE team:</p>
 <ul>
 <li>[1] <a href="https://optee.readthedocs.io/en/latest/building/gits/build.html" class="uri">https://optee.readthedocs.io/en/latest/building/gits/build.html</a></li>
@@ -610,6 +675,7 @@ end</code></pre>
 <hr />
 <ol>
 <li id="fn1" role="doc-endnote"><p><code>/drivers/tee/optee/notif.c</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>This value is manually programmed, based on the interrupt the handler will be handling.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>                    
                 </div>

@@ -1,40 +1,17 @@
 ---
-title: "Setup & build guide for OP-TEE"
+title: "OP-TEE split driver"
 subtitle: "Part of the TACOS project"
-subject: "OP-TEE guide"
+subject: "OP-TEE split driver guide"
 keywords: [OP-TEE, TACOS, QEMU]
 author: Tom Van Eyck
 date: \today
 titlepage: true
-titlepage-background: figures/background.pdf
+# titlepage-background: figures/background.pdf
 toc-own-page: true
 lang: "en"
+book: true
+classoption: oneside
+logo: figures/distrinet.png
+pandoc-options:
+  - --filter=pandoc-include
 ...
-
-<!-- Prerequisites -->
-
-!include prerequisites/main.md
-
-<!-- Build & run -->
-
-!include setup/main.md
-
-<!-- Debug -->
-
-!include debug/main.md
-
-<!-- Custom PTA -->
-
-!include pta/main.md
-
-<!-- Serial interrupt -->
-
-!include serial-itr/main.md
-
-<!-- Callback on interrupt -->
-
-!include callback/main.md
-
-<!-- Bibliography -->
-
-!include bib.md

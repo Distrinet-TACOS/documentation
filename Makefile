@@ -12,17 +12,17 @@ test: convert-html open
 convert: convert-pdf convert-html
 
 convert-pdf: create-out
-	. ./.venv/bin/activate; pandoc -N main.md -f markdown -t latex -o out/main.pdf --template $(PDF_TEMPLATE) --listings --toc --filter pandoc-include
+	. ./.venv/bin/activate; pandoc -N -s main.md setup.md design.md bib.md -f markdown -t latex -o out/main.pdf --template $(PDF_TEMPLATE) --listings --toc --filter pandoc-include --top-level-division=part
 
 convert-html: create-out
-	. ./.venv/bin/activate; pandoc -N main.md -f markdown -t html -o out/main.html --template $(HTML_TEMPLATE) --toc --filter pandoc-include
+	. ./.venv/bin/activate; pandoc -N -s main.md setup.md design.md bib.md -f markdown -t html -o out/main.html --template $(HTML_TEMPLATE) --toc --filter pandoc-include --top-level-division=part
 
 create-out:
 	@mkdir -p out
 
 copy:
-	cp out/main.pdf "Setup and build guide for OP-TEE.pdf"
-	cp out/main.html "Setup and build guide for OP-TEE.html"
+	cp out/main.pdf "OP-TEE split driver.pdf"
+	cp out/main.html "OP-TEE split driver.html"
 	cp out/main.html docs/index.html
 
 open:

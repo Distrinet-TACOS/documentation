@@ -1,0 +1,61 @@
+@startuml split-driver
+!theme plain
+!pragma teoz true
+
+hide footbox
+skinparam ParticipantPadding 30
+
+skinparam BoxPadding 0
+
+skinparam SequenceBoxBorderColor #bbbbbb
+
+box "Normal world"
+participant "Normal world\nsplit driver" as normal
+participant "OP-TEE Driver" as driver
+end box
+box "Secure world"
+participant "Secure world\nsplit driver" as pta
+end box
+
+activate driver
+activate normal
+driver -> driver: Register interrupt\nhandler
+&normal -> normal: Register interrupt\nhandler
+activate normal
+normal -> pta: Register interrupt
+activate pta
+pta -> pta: Register interrupt\nhandler
+return Notification id
+normal -> driver: Set notification line
+activate driver
+deactivate normal
+driver -> driver: Register notification
+deactivate driver
+
+...
+
+pta <- : Interrupt registered
+activate pta
+pta -> pta: Disable interrupts
+driver <- pta: Send async notification\nby triggering non-secure\nsoftware interrupt
+activate driver
+deactivate pta
+
+driver -> pta: Get notification value
+activate pta
+return notification value
+
+
+
+driver -> normal: Software interrupt
+activate normal
+deactivate driver
+normal -> pta: Fast call
+activate pta
+pta -> pta: Read serial console
+pta -> pta: Enable interrupts
+normal <-- pta: Serial character
+deactivate pta
+normal -> normal: Store character in buffer
+deactivate normal
+@enduml

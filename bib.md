@@ -1,4 +1,4 @@
-# Bibliography
+## Bibliography
 
 Based on multiple original sources from the OP-TEE team:
 

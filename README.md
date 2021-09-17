@@ -35,7 +35,7 @@ The documentation is written in Markdown, with Pandoc extensions. The file `main
 !include <folder>/main.md
 ```
 
-If there are specific instructions for different platforms, these should be seperated from the section file into their own file (e.g. `qemu.md`) in the same section folder and included in the section file using the same include directive.
+If there are specific instructions for different platforms, these should be separated from the section file into their own file (e.g. `qemu.md`) in the same section folder and included in the section file using the same include directive.
 
 ## Opening html documentation using make
 

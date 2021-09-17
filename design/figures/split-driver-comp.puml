@@ -1,0 +1,38 @@
+@startuml split-driver-comp
+!theme plain
+!pragma teoz true
+
+hide footbox
+skinparam linetype ortho
+skinparam nodesep 150
+skinparam DefaultTextAlignment center
+skinparam ArrowMessageAlignment center
+skinparam SequenceMessageAlignment center
+
+node "Normal world" {
+    component "OP-TEE Driver" as driver
+    component "Normal world\nsplit driver" as normal
+}
+node "Secure world" {
+    component "Secure world\nsplit driver" as pta
+}
+
+pta -> driver: Asynchronous notifications
+driver -down-> normal: Software interrupt
+normal <-right-> pta: Fast call for\ninterrupt data
+
+' [pta] -left> [driver]: Test
+' activate pta
+' activate driver
+' pta -> pta: Register interrupt\nhandler
+' &driver -> driver: Register interrupt\nhandler
+' pta <- : Interrupt registered
+' activate pta
+' driver <- pta: Send async notification\nby triggering non-secure interrupt
+' activate driver
+' |||
+' ...
+' == Bottom half ==
+' driver -> pta: Yielding call
+
+@enduml
