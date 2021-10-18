@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="450px" preserveAspectRatio="none" style="width:1008px;height:450px;background:#FFFFFF;" version="1.1" viewBox="0 0 1008 450" width="1008px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="63.4746" style="stroke:#FFFFFF;stroke-width:0.0;" width="290" x="357.5" y="10"/><text fill="#000000" font-family="Verdana" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="201" x="402" y="37.1182">Split driver flow</text><text fill="#000000" font-family="Verdana" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="280" x="362.5" y="63.8555">Controller termination</text><rect fill="#FFFFFF" height="364.4531" style="stroke:#BBBBBB;stroke-width:1.0;" width="603" x="48" y="80.4746"/><text fill="#000000" font-family="Verdana" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="96" x="301.5" y="93.5444">Normal world</text><rect fill="#FFFFFF" height="364.4531" style="stroke:#BBBBBB;stroke-width:1.0;" width="133" x="694.5" y="80.4746"/><text fill="#000000" font-family="Verdana" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="94" x="714" y="93.5444">Secure world</text><rect fill="#FFFFFF" height="215.5952" style="stroke:#000000;stroke-width:1.0;" width="10" x="338" y="159.3032"/><rect fill="#FFFFFF" height="175.9966" style="stroke:#000000;stroke-width:1.0;" width="10" x="343" y="198.9019"/><rect fill="#FFFFFF" height="224.5952" style="stroke:#000000;stroke-width:1.0;" width="10" x="575" y="159.3032"/><rect fill="#FFFFFF" height="201.5952" style="stroke:#000000;stroke-width:1.0;" width="10" x="756" y="159.3032"/><rect fill="#FFFFFF" height="72.5986" style="stroke:#000000;stroke-width:1.0;" width="10" x="761" y="228.7012"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="115" x2="115" y1="149.3032" y2="392.8984"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="342.5" x2="342.5" y1="149.3032" y2="392.8984"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="580" x2="580" y1="149.3032" y2="392.8984"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="760.5" x2="760.5" y1="149.3032" y2="392.8984"/><rect fill="#FFFFFF" height="48.0293" style="stroke:#000000;stroke-width:1.0;" width="106" x="62" y="100.2739"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="92" x="69" y="121.3491">Normal world</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="74" x="78" y="138.3638">split driver</text><rect fill="#FFFFFF" height="48.0293" style="stroke:#000000;stroke-width:1.0;" width="106" x="62" y="391.8984"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="92" x="69" y="412.9736">Normal world</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="74" x="78" y="429.9883">split driver</text><rect fill="#FFFFFF" height="31.0146" style="stroke:#000000;stroke-width:1.0;" width="161" x="262.5" y="117.2886"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="147" x="269.5" y="138.3638">Split driver controller</text><rect fill="#FFFFFF" height="31.0146" style="stroke:#000000;stroke-width:1.0;" width="161" x="262.5" y="391.8984"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="147" x="269.5" y="412.9736">Split driver controller</text><rect fill="#FFFFFF" height="31.0146" style="stroke:#000000;stroke-width:1.0;" width="114" x="523" y="117.2886"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="100" x="530" y="138.3638">OP-TEE Driver</text><rect fill="#FFFFFF" height="31.0146" style="stroke:#000000;stroke-width:1.0;" width="114" x="523" y="391.8984"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="100" x="530" y="412.9736">OP-TEE Driver</text><rect fill="#FFFFFF" height="48.0293" style="stroke:#000000;stroke-width:1.0;" width="105" x="708.5" y="100.2739"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="91" x="715.5" y="121.3491">Secure world</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="74" x="724" y="138.3638">split driver</text><rect fill="#FFFFFF" height="48.0293" style="stroke:#000000;stroke-width:1.0;" width="105" x="708.5" y="391.8984"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="91" x="715.5" y="412.9736">Secure world</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="74" x="724" y="429.9883">split driver</text><rect fill="#FFFFFF" height="215.5952" style="stroke:#000000;stroke-width:1.0;" width="10" x="338" y="159.3032"/><rect fill="#FFFFFF" height="175.9966" style="stroke:#000000;stroke-width:1.0;" width="10" x="343" y="198.9019"/><rect fill="#FFFFFF" height="224.5952" style="stroke:#000000;stroke-width:1.0;" width="10" x="575" y="159.3032"/><rect fill="#FFFFFF" height="201.5952" style="stroke:#000000;stroke-width:1.0;" width="10" x="756" y="159.3032"/><rect fill="#FFFFFF" height="72.5986" style="stroke:#000000;stroke-width:1.0;" width="10" x="761" y="228.7012"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="5" x2="1001" y1="160.3032" y2="160.3032"/><polygon fill="#000000" points="326,194.9019,336,198.9019,326,202.9019,330,198.9019" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;" x1="5" x2="332" y1="198.9019" y2="198.9019"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="44" x="12" y="178.373">Unload</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="90" x="12" y="194.1724">kernel module</text><polygon fill="#000000" points="749,224.7012,759,228.7012,749,232.7012,753,228.7012" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;" x1="353" x2="755" y1="228.7012" y2="228.7012"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="125" x="360" y="223.9717">Disable notification</text><line style="stroke:#000000;stroke-width:1.0;" x1="771" x2="813" y1="274.2998" y2="274.2998"/><line style="stroke:#000000;stroke-width:1.0;" x1="813" x2="813" y1="274.2998" y2="287.2998"/><line style="stroke:#000000;stroke-width:1.0;" x1="772" x2="813" y1="287.2998" y2="287.2998"/><polygon fill="#000000" points="782,283.2998,772,287.2998,782,291.2998,778,287.2998" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="29" x="778" y="253.771">Free</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="114" x="778" y="269.5703">notification value</text><polygon fill="#000000" points="364,297.2998,354,301.2998,364,305.2998,360,301.2998" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="358" x2="755" y1="301.2998" y2="301.2998"/><polygon fill="#000000" points="563,327.0991,573,331.0991,563,335.0991,567,331.0991" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;" x1="353" x2="569" y1="331.0991" y2="331.0991"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="125" x="360" y="326.3696">Unregister callback</text><polygon fill="#000000" points="749,356.8984,759,360.8984,749,364.8984,753,360.8984" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;" x1="353" x2="755" y1="360.8984" y2="360.8984"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="158" x="360" y="356.1689">Close session &amp; context</text><line style="stroke:#000000;stroke-width:2.0;" x1="752" x2="770" y1="351.8984" y2="369.8984"/><line style="stroke:#000000;stroke-width:2.0;" x1="752" x2="770" y1="369.8984" y2="351.8984"/><polygon fill="#000000" points="16,370.8984,6,374.8984,16,378.8984,12,374.8984" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="10" x2="342" y1="374.8984" y2="374.8984"/><line style="stroke:#000000;stroke-width:2.0;" x1="334" x2="352" y1="365.8984" y2="383.8984"/><line style="stroke:#000000;stroke-width:2.0;" x1="334" x2="352" y1="383.8984" y2="365.8984"/><!--MD5=[38bccb0860fb70fb77a97d601f23ce5d]
+@startuml split-driver
+!theme plain
+
+title Split driver flow\nController initialization
+
+' skinparam ParticipantPadding 30
+' skinparam BoxPadding 10
+skinparam SequenceBoxBorderColor #bbbbbb
+
+box "Normal world"
+participant "Normal world\nsplit driver" as normal
+participant "Split driver controller" as controller
+participant "OP-TEE Driver" as driver
+end box
+box "Secure world"
+participant "Secure world\nsplit driver" as pta
+end box
+
+driver -> driver ++: Boot
+
+-> controller ++: Load\nkernel module
+
+controller -> controller ++: init
+    controller -> pta ++: Create context & session
+
+    controller -> pta ++: Enable notification
+        pta -> pta: Allocate\nnotification value
+        return Notification value
+    
+    controller -> driver: Register callback\nwith notification value
+    <- - controller - -
+
+newpage Split driver flow\nNormal world split driver initialization
+
+-> normal ++: Load driver
+    normal -> normal ++: init
+    normal -> controller ++: Register normal split driver
+        controller -> controller: Create driver specific buffer(s)
+        return
+    normal -> controller ++: Open session
+        controller -> pta ++: Open session
+            pta -> pta: Create driver specific buffer(s)
+            return Session id
+        controller -> pta ++: Enable interrupt
+            pta -> pta: Register driver specific\ninterrupt handler(s)
+            return
+        return
+    normal -> normal: Register device(s)
+    <- - normal - -
+
+newpage Split driver flow\nInterrupt handling
+
+pta <- : Interrupt received
+activate pta
+    pta -> pta: Read serial console &\nsave in driver specific buffer
+    pta -> pta: Set allocated\nnotification value
+    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
+    pta - -> pta - -: ITRR_HANDLED
+
+driver -> pta ++: Get notification value
+return Notification value
+note left
+    Based on this notification value
+    the appropriate action is chosen.
+    Other programs may also use their
+    own notification values.
+end note
+driver -> controller ++: Callback
+    controller -> pta ++: Update buffers
+        return New data only
+
+    controller -> controller: Synchronize buffers
+    loop All registered drivers with updates
+        controller -> normal ++: Notify of updated information
+        normal -> controller ++: Read data
+            return New data only
+        normal -> normal: Store in buffer
+        return    
+    end
+    controller - -> driver - -
+driver - -> driver - -: IRQ_HANDLED
+
+newpage Split driver flow\nInterrupt handling - Real time implementation
+
+' It should be like this (+ threader request in OP-TEE driver)
+pta <- : Interrupt received
+activate pta
+    pta -> pta: Read serial console &\nsave in driver specific buffer
+    pta -> pta: Set allocated\nnotification value
+    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
+    pta - -> pta - -: ITRR_HANDLED
+
+driver -> pta ++: Get notification value
+return Notification value
+note left
+    Based on this notification value
+    the appropriate action is chosen.
+    Other programs may also use their
+    own notification values.
+end note
+driver - -> driver - -: IRQ_WAKE_THREAD
+driver -> driver ++: Threaded interrupt
+driver -> controller ++: Callback
+    controller -> pta ++: Update buffers
+        return New data only
+
+    controller -> controller: Synchronize buffers
+    loop All registered drivers with updates
+        controller -> normal ++: Notify of updated information
+        |||
+    end
+    controller - -> driver - -
+driver - -> driver - -: IRQ_HANDLED
+
+normal -> controller ++: Read data
+    return New data only
+normal -> normal: Store in buffer
+normal - -> normal - -
+
+newpage Split driver flow\nNormal world split driver termination
+
+-> normal++: Unload driver
+    normal -> normal: Unregister device(s)
+    normal -> controller ++: Close session
+        controller -> pta ++: Disable interrupt
+            pta -> pta: Disable driver specific\ninterrupt handler(s)
+            return
+        controller -> pta ++: Close session
+            pta -> pta: Remove driver specific buffer(s)
+            return
+        return
+    normal -> controller ++: Unregister normal split driver
+        controller -> controller: Remove driver specifc buffer(s)
+        return
+    return
+destroy normal
+
+newpage Split driver flow\nController termination
+
+-> controller++: Unload\nkernel module
+    controller -> pta ++: Disable notification
+        pta -> pta: Free\nnotification value
+        return
+    controller -> driver: Unregister callback
+    controller -> pta !!: Close session & context
+return
+destroy controller
+@enduml
+
+@startuml split-driver
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+title Split driver flow\nController initialization
+
+skinparam SequenceBoxBorderColor #bbbbbb
+
+box "Normal world"
+participant "Normal world\nsplit driver" as normal
+participant "Split driver controller" as controller
+participant "OP-TEE Driver" as driver
+end box
+box "Secure world"
+participant "Secure world\nsplit driver" as pta
+end box
+
+driver -> driver ++: Boot
+
+-> controller ++: Load\nkernel module
+
+controller -> controller ++: init
+    controller -> pta ++: Create context & session
+
+    controller -> pta ++: Enable notification
+        pta -> pta: Allocate\nnotification value
+        return Notification value
+    
+    controller -> driver: Register callback\nwith notification value
+    <- - controller - -
+
+newpage Split driver flow\nNormal world split driver initialization
+
+-> normal ++: Load driver
+    normal -> normal ++: init
+    normal -> controller ++: Register normal split driver
+        controller -> controller: Create driver specific buffer(s)
+        return
+    normal -> controller ++: Open session
+        controller -> pta ++: Open session
+            pta -> pta: Create driver specific buffer(s)
+            return Session id
+        controller -> pta ++: Enable interrupt
+            pta -> pta: Register driver specific\ninterrupt handler(s)
+            return
+        return
+    normal -> normal: Register device(s)
+    <- - normal - -
+
+newpage Split driver flow\nInterrupt handling
+
+pta <- : Interrupt received
+activate pta
+    pta -> pta: Read serial console &\nsave in driver specific buffer
+    pta -> pta: Set allocated\nnotification value
+    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
+    pta - -> pta - -: ITRR_HANDLED
+
+driver -> pta ++: Get notification value
+return Notification value
+note left
+    Based on this notification value
+    the appropriate action is chosen.
+    Other programs may also use their
+    own notification values.
+end note
+driver -> controller ++: Callback
+    controller -> pta ++: Update buffers
+        return New data only
+
+    controller -> controller: Synchronize buffers
+    loop All registered drivers with updates
+        controller -> normal ++: Notify of updated information
+        normal -> controller ++: Read data
+            return New data only
+        normal -> normal: Store in buffer
+        return    
+    end
+    controller - -> driver - -
+driver - -> driver - -: IRQ_HANDLED
+
+newpage Split driver flow\nInterrupt handling - Real time implementation
+
+pta <- : Interrupt received
+activate pta
+    pta -> pta: Read serial console &\nsave in driver specific buffer
+    pta -> pta: Set allocated\nnotification value
+    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
+    pta - -> pta - -: ITRR_HANDLED
+
+driver -> pta ++: Get notification value
+return Notification value
+note left
+    Based on this notification value
+    the appropriate action is chosen.
+    Other programs may also use their
+    own notification values.
+end note
+driver - -> driver - -: IRQ_WAKE_THREAD
+driver -> driver ++: Threaded interrupt
+driver -> controller ++: Callback
+    controller -> pta ++: Update buffers
+        return New data only
+
+    controller -> controller: Synchronize buffers
+    loop All registered drivers with updates
+        controller -> normal ++: Notify of updated information
+        |||
+    end
+    controller - -> driver - -
+driver - -> driver - -: IRQ_HANDLED
+
+normal -> controller ++: Read data
+    return New data only
+normal -> normal: Store in buffer
+normal - -> normal - -
+
+newpage Split driver flow\nNormal world split driver termination
+
+-> normal++: Unload driver
+    normal -> normal: Unregister device(s)
+    normal -> controller ++: Close session
+        controller -> pta ++: Disable interrupt
+            pta -> pta: Disable driver specific\ninterrupt handler(s)
+            return
+        controller -> pta ++: Close session
+            pta -> pta: Remove driver specific buffer(s)
+            return
+        return
+    normal -> controller ++: Unregister normal split driver
+        controller -> controller: Remove driver specifc buffer(s)
+        return
+    return
+destroy normal
+
+newpage Split driver flow\nController termination
+
+-> controller++: Unload\nkernel module
+    controller -> pta ++: Disable notification
+        pta -> pta: Free\nnotification value
+        return
+    controller -> driver: Unregister callback
+    controller -> pta !!: Close session & context
+return
+destroy controller
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 14:40:07 CEST 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: Cp1252
+Language: nl
+Country: BE
+--></g></svg>

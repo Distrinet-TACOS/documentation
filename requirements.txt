@@ -1,1 +1,2 @@
-pandoc-include>=1.0.1
+pandoc-include==1.0.1
+pandoc-latex-environment==1.1.6

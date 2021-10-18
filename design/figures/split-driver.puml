@@ -1,61 +1,148 @@
 @startuml split-driver
 !theme plain
-!pragma teoz true
 
-hide footbox
-skinparam ParticipantPadding 30
+title Split driver flow\nController initialization
 
-skinparam BoxPadding 0
-
+' skinparam ParticipantPadding 30
+' skinparam BoxPadding 10
 skinparam SequenceBoxBorderColor #bbbbbb
 
 box "Normal world"
 participant "Normal world\nsplit driver" as normal
+participant "Split driver controller" as controller
 participant "OP-TEE Driver" as driver
 end box
 box "Secure world"
 participant "Secure world\nsplit driver" as pta
 end box
 
-activate driver
-activate normal
-driver -> driver: Register interrupt\nhandler
-&normal -> normal: Register interrupt\nhandler
-activate normal
-normal -> pta: Register interrupt
+driver -> driver ++: Boot
+
+-> controller ++: Load\nkernel module
+
+controller -> controller ++: init
+    controller -> pta ++: Create context & session
+
+    controller -> pta ++: Enable notification
+        pta -> pta: Allocate\nnotification value
+        return Notification value
+    
+    controller -> driver: Register callback\nwith notification value
+    <-- controller --
+
+newpage Split driver flow\nNormal world split driver initialization
+
+-> normal ++: Load driver
+    normal -> normal ++: init
+    normal -> controller ++: Register normal split driver
+        controller -> controller: Create driver specific buffer(s)
+        return
+    normal -> controller ++: Open session
+        controller -> pta ++: Open session
+            pta -> pta: Create driver specific buffer(s)
+            return Session id
+        controller -> pta ++: Enable interrupt
+            pta -> pta: Register driver specific\ninterrupt handler(s)
+            return
+        return
+    normal -> normal: Register device(s)
+    <-- normal --
+
+newpage Split driver flow\nInterrupt handling
+
+pta <- : Interrupt received
 activate pta
-pta -> pta: Register interrupt\nhandler
-return Notification id
-normal -> driver: Set notification line
-activate driver
-deactivate normal
-driver -> driver: Register notification
-deactivate driver
+    pta -> pta: Read serial console &\nsave in driver specific buffer
+    pta -> pta: Set allocated\nnotification value
+    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
+    pta --> pta --: ITRR_HANDLED
 
-...
+driver -> pta ++: Get notification value
+return Notification value
+note left
+    Based on this notification value
+    the appropriate action is chosen.
+    Other programs may also use their
+    own notification values.
+end note
+driver -> controller ++: Callback
+    controller -> pta ++: Update buffers
+        return New data only
 
-pta <- : Interrupt registered
+    controller -> controller: Synchronize buffers
+    loop All registered drivers with updates
+        controller -> normal ++: Notify of updated information
+        normal -> controller ++: Read data
+            return New data only
+        normal -> normal: Store in buffer
+        return    
+    end
+    controller --> driver --
+driver --> driver --: IRQ_HANDLED
+
+newpage Split driver flow\nInterrupt handling - Real time implementation
+
+' It should be like this (+ threader request in OP-TEE driver)
+pta <- : Interrupt received
 activate pta
-pta -> pta: Disable interrupts
-driver <- pta: Send async notification\nby triggering non-secure\nsoftware interrupt
-activate driver
-deactivate pta
+    pta -> pta: Read serial console &\nsave in driver specific buffer
+    pta -> pta: Set allocated\nnotification value
+    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
+    pta --> pta --: ITRR_HANDLED
 
-driver -> pta: Get notification value
-activate pta
-return notification value
+driver -> pta ++: Get notification value
+return Notification value
+note left
+    Based on this notification value
+    the appropriate action is chosen.
+    Other programs may also use their
+    own notification values.
+end note
+driver --> driver --: IRQ_WAKE_THREAD
+driver -> driver ++: Threaded interrupt
+driver -> controller ++: Callback
+    controller -> pta ++: Update buffers
+        return New data only
 
+    controller -> controller: Synchronize buffers
+    loop All registered drivers with updates
+        controller -> normal ++: Notify of updated information
+        |||
+    end
+    controller --> driver --
+driver --> driver --: IRQ_HANDLED
 
+normal -> controller ++: Read data
+    return New data only
+normal -> normal: Store in buffer
+normal --> normal --
 
-driver -> normal: Software interrupt
-activate normal
-deactivate driver
-normal -> pta: Fast call
-activate pta
-pta -> pta: Read serial console
-pta -> pta: Enable interrupts
-normal <-- pta: Serial character
-deactivate pta
-normal -> normal: Store character in buffer
-deactivate normal
+newpage Split driver flow\nNormal world split driver termination
+
+-> normal++: Unload driver
+    normal -> normal: Unregister device(s)
+    normal -> controller ++: Close session
+        controller -> pta ++: Disable interrupt
+            pta -> pta: Disable driver specific\ninterrupt handler(s)
+            return
+        controller -> pta ++: Close session
+            pta -> pta: Remove driver specific buffer(s)
+            return
+        return
+    normal -> controller ++: Unregister normal split driver
+        controller -> controller: Remove driver specifc buffer(s)
+        return
+    return
+destroy normal
+
+newpage Split driver flow\nController termination
+
+-> controller++: Unload\nkernel module
+    controller -> pta ++: Disable notification
+        pta -> pta: Free\nnotification value
+        return
+    controller -> driver: Unregister callback
+    controller -> pta !!: Close session & context
+return
+destroy controller
 @enduml

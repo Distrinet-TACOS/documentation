@@ -1,0 +1,90 @@
+# Linux kernel Modules (aka device drivers)
+
+In the section [Normal world callback on secure world interrupt](#normal-world-callback-on-secure-world-interrupt) a mechanism was explained to notify the normal world of a secure world interrupt. We can now use this mechanism to implement a *split driver* that is responsible for relaying these secure interrupts in the secure world to a device interface in the normal world. It would then be possible to, for instance, write a normal world application that makes use of standardized device interfaces to interact with systems running in the secure world.
+
+On Linux based operating systems, device drivers are called modules. These modules can be *built-in*, meaning they are compiled together with the kernel, or *loadable* at runtime.
+
+## Built-in modules
+
+Built-in modules are easy to make. It suffices to include very little code into the `drivers` directory in the Linux repository. The structure of an archetypical module is as follows, and for each file a hello world example is given.
+
+``` txt
+drivers
++- ...
++- my-module
+|  +- my-module.c
+|  +- Makefile
++- ...
++- Makefile
+```
+
+``` c
+// drivers/my-module/my-module.c
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+#define AUTHOR  "Hello World author"
+#define DESC    "Hello World driver"
+
+static int hello_init(void)
+{
+   printk(KERN_ALERT "Hello, world\n");
+   return 0;
+}
+
+
+static void hello_exit(void)
+{
+   printk(KERN_ALERT "Goodbye, world\n");
+}
+
+
+module_init(hello_init);
+module_exit(hello_exit);
+
+MODULE_LICENSE("Dual BSD/GPL");
+MODULE_VERSION("v0.1");
+MODULE_AUTHOR(AUTHOR);
+MODULE_DESCRIPTION(DESC);
+```
+
+``` Makefile
+# drivers/my-module/Makefile
+
+obj-y += my-module.o
+```
+
+``` Makefile
+# drivers/Makefile
+
+...
+
+obj-y += my-module/
+```
+
+## Loadable kernel modules
+
+Built-in modules are however not very interesting, as these do not allow for speedy development (the whole kernel needs to be compiled every time). Much more interesting are loadable kernel modules. These are separated pieces of code that are compiled against a kernel, making the development cycle much faster. These modules can then be very easily loaded and installed in the kernel during runtime.
+
+It is however very easy to compile the same module code to a standalone loadable module. First, extract all code to a different development directory. Next, the Makefile needs to be changed to call the kernel build system (modules need to be compiled against the Linux kernel). If we are calling make, the environment variable `KERNELRELEASE` will not be set, and `make modules` should be called in the Linux source directory with the current working directory set as well. This will again call make in our module's directory, but now `KERNELRELEASE` will be set and the kernel build system will be used as described in the previous section.
+
+``` Makefile
+# If KERNELRELEASE is defined, we've been invoked from the
+# kernel build system and can use its language.
+ifneq ($(KERNELRELEASE),)
+   obj-m := my-module.o
+
+# Otherwise we were called directly from the command
+# line; invoke the kernel build system.
+else
+   KERNELDIR ?= /lib/modules/$(shell uname -r)/build # or another directory containing the Linux source code
+   PWD := $(shell pwd)
+
+default:
+   $(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+
+endif
+```
+
+Running make will generate a module `.ko` file which can be loaded using `insmod`. `lsmod` shows all loaded modules and `rmmod` removes modules from the system.
