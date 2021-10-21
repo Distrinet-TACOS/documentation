@@ -712,32 +712,37 @@ end</code></pre>
 <h2 data-number="2.3" id="implementation-into-op-tee-os"><span class="header-section-number">2.3</span> Implementation into OP-TEE OS</h2>
 <p>As shown in the figures in the previous sections, both loadable kernel modules and pseudo trusted applications are part of the architecture and thus they all need to be compiled. This requires multiple compile commands in different directories. These commands need to be executed in order (for QEMU):</p>
 <ol type="1">
-<li><p>In <code>build/</code>:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
-<li><p>In <code>optee_client/</code>:</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div></li>
-<li><p>In <code>optee_os/</code>:</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="dt">\</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_BENCHMARK=n <span class="dt">\</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_CORE_LOG_LEVEL=3 <span class="dt">\</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_core=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- <span class="dt">\</span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    DEBUG=1 <span class="dt">\</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    O=out/arm <span class="dt">\</span></span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt</span></code></pre></div></li>
-<li><p>In <code>optee_examples/</code>:</p>
+<li><p>Init repo with the right manifest in the project root directory:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> init <span class="at">-u</span> https://github.com/Distrinet-TACOS/manifest.git <span class="at">-m</span> tacos-qemu-driver.xml</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> sync <span class="at">-j4</span> <span class="at">--no-clone-bundle</span></span></code></pre></div></li>
+<li><p>In <code>&lt;project-dir&gt;/build/</code>:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
+<li><p>In <code>&lt;project-dir&gt;/optee_client/</code>:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div></li>
+<li><p>In <code>&lt;project-dir&gt;/optee_os/</code>:</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="dt">\</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-builtin-variables</span> <span class="dt">\</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    TA_DEV_KIT_DIR=/optee/optee_os/out/arm/export-ta_arm32/ <span class="dt">\</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_BENCHMARK=n <span class="dt">\</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_CORE_LOG_LEVEL=3 <span class="dt">\</span></span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    TEEC_EXPORT=/optee/optee_client/out/export/usr <span class="dt">\</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt <span class="dt">\</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    HOST_CROSS_COMPILE=/optee/toolchains/aarch32/bin/arm-linux-gnueabihf-</span></code></pre></div>
-<p>It might be necessary to first go into specific directories in <code>optee_examples/</code> because of module dependencies. The parent modules should thus be build first using the same command.</p></li>
-<li><p>Finally, in <code>build/</code>:</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_core=arm-linux-gnueabihf- <span class="dt">\</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- <span class="dt">\</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- <span class="dt">\</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    DEBUG=1 <span class="dt">\</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    O=out/arm <span class="dt">\</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt</span></code></pre></div></li>
+<li><p>In <code>&lt;project-dir&gt;/optee_examples/</code>:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="dt">\</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-builtin-variables</span> <span class="dt">\</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    TA_DEV_KIT_DIR=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/optee_os/out/arm/export-ta_arm32/ <span class="dt">\</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE=arm-linux-gnueabihf- <span class="dt">\</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    TEEC_EXPORT=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/optee_client/out/export/usr <span class="dt">\</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt <span class="dt">\</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    HOST_CROSS_COMPILE=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/toolchains/aarch32/bin/arm-linux-gnueabihf-</span></code></pre></div>
+<p>It might be necessary to first go into specific directories in <code>&lt;project-dir&gt;/optee_examples/</code> because of module dependencies. The parent modules should thus be build first using the same command.</p></li>
+<li><p>Finally, in <code>&lt;project-dir&gt;/build/</code>:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
 </ol>
 <h2 data-number="2.4" id="references"><span class="header-section-number">2.4</span> References</h2>
 <p>Based on multiple original sources from the OP-TEE team and others:</p>

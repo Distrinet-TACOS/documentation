@@ -6,8 +6,8 @@ It is possible to debug host applications in the normal world by compiling OP-TE
 
 ``` txt
 -- The C compiler identification is unknown
--- Check for working C compiler: /optee/out-br/host/bin/arm-linux-gnueabihf-gcc
--- Check for working C compiler: /optee/out-br/host/bin/arm-linux-gnueabihf-gcc -- broken
+-- Check for working C compiler: <project-dir>/out-br/host/bin/arm-linux-gnueabihf-gcc
+-- Check for working C compiler: <project-dir>/out-br/host/bin/arm-linux-gnueabihf-gcc -- broken
 CMake Error at /usr/share/cmake-3.16/Modules/CMakeTestCCompiler.cmake:60 (message):
   The C compiler
 
