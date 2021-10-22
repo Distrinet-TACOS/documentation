@@ -1,4 +1,6 @@
-### Download of repositories
+# QEMU
+
+## Download of repositories
 
 OP-TEE uses a [central repository](https://github.com/Distrinet-TACOS/manifest.git) containing the manifest files for repo for all architectures. To download all necessary git repositories of the OP-TEE project for the QEMUv7 architecture, execute the following commands:
 
@@ -9,7 +11,7 @@ repo init -u https://github.com/Distrinet-TACOS/manifest.git -m tacos-qemu.xml
 repo sync -j4 --no-clone-bundle
 ```
 
-### Toolchains
+## Toolchains
 
 The toolchains required to build any part of OP-TEE are included in one of the repositories downloaded in the previous step. To download the actual toolchains, execute
 
@@ -18,7 +20,7 @@ cd <project-dir>/build
 make -j2 toolchains
 ```
 
-### Build OP-TEE
+## Build OP-TEE
 
 The OP-TEE project has three main parts: the operating system, the client API and the trusted applications. These three parts can be built on their own, but to get started it is easier to build the whole system at once. This is as simple as executing
 
@@ -29,7 +31,7 @@ make -j `nproc`
 
 This process will take some time.
 
-### Running OP-TEE
+## Running OP-TEE
 
 QEMU and OP-TEE can be launched by executing
 

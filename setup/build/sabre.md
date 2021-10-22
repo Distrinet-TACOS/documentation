@@ -1,4 +1,6 @@
-### Download of repositories
+# Sabre Lite
+
+## Download of repositories
 
 The i.MX6 build system is based on a customized Buildroot. The TACOS related changes are maintained in a fork of buildroot at [central repository](https://github.com/Distrinet-TACOS/buildroot.git). TO initialize the build environment, create a project directory and clone the buildroot into this directory.
 
@@ -15,7 +17,8 @@ cd <project-dir>
 git clone https://github.com/Distrinet-TACOS/buildroot-external-boundary.git
 ```
 
-### Output folder for buildroot
+## Output folder for buildroot
+
 Use the following command to overlay the i.MX6 related configurations, the Board Support Package (BSP), OPTEE configurations and TACOS related configurations on the Buildroot setup. The following command will create a directory named output and place the configurations in this folder.
 
 ``` bash
@@ -23,7 +26,7 @@ cd <project-dir>
 make BR2_EXTERNAL=$PWD/buildroot-external-boundary/ -C buildroot/ O=$PWD/output nitrogen6x_optee_defconfig
 ```
 
-### Build OP-TEE, Linux and the i.MX6 BSP
+## Build OP-TEE, Linux and the i.MX6 BSP
 
 The simplest way to bootstrap is to issue a make command. This will fetch all the components and build Linux, OPTEE and OPTEE applications. The Linux image is bounded to the OPTEE image and an SD card image is created. 
  
@@ -34,10 +37,20 @@ make -j `nproc`
 
 This process will take some time.
 
+## Creating a bootable SD Card
 
-### Creating a bootable SD Card
-The previous process will create an SD card image in the directory '<project-dir>/output/images/sdcard.img'. You can use an SD card flash tool such as balenaEtcher(https://www.balena.io/etcher/) to flash the image on an SD Card.
+The previous process will create an SD card image in the directory '<project-dir>/output/images/sdcard.img'. You can use an SD card flash tool such as balenaEtcher (https://www.balena.io/etcher/) to flash the image on an SD Card.
 
+## Connecting the BD-SL-i.MX6 Serial
 
-### Connecting the BD-SL-i.MX6 Serial
 The BD-SL-i.MX6 board has two UART connections. The UART connection labled 'Console' will be connected to OPTEE while the other UART will be connected to the Linux running in the Normal world. Once the UART cables are connected and their interfaces are attached to separate console windows. Power up the BD-SL-i.MX6 board and you will see boot logs for OPTEE on the UART labeled console and the Linux logs on the other UART. You can now log in to linux and look around or start an example client application available onboard.
+
+It might be that only one serial connection is used to output both the normal and the secure world consoles. To change this, during the first moments of the boot process, press any key to stop the autoboot. Enter the following in the terminal that appears.
+
+``` txt
+setenv console ttymxc0
+saveenv
+reboot
+```
+
+The device should now use both serial connections.

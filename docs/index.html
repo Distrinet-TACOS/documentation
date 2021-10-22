@@ -257,18 +257,23 @@
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j</span> <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div>
 <p>This process will take some time.</p>
 <h4 data-number="1.2.2.4" id="creating-a-bootable-sd-card"><span class="header-section-number">1.2.2.4</span> Creating a bootable SD Card</h4>
-<p>The previous process will create an SD card image in the directory ‘<project-dir>/output/images/sdcard.img’. You can use an SD card flash tool such as balenaEtcher(https://www.balena.io/etcher/) to flash the image on an SD Card.</p>
+<p>The previous process will create an SD card image in the directory ‘<project-dir>/output/images/sdcard.img’. You can use an SD card flash tool such as balenaEtcher (https://www.balena.io/etcher/) to flash the image on an SD Card.</p>
 <h4 data-number="1.2.2.5" id="connecting-the-bd-sl-i.mx6-serial"><span class="header-section-number">1.2.2.5</span> Connecting the BD-SL-i.MX6 Serial</h4>
 <p>The BD-SL-i.MX6 board has two UART connections. The UART connection labled ‘Console’ will be connected to OPTEE while the other UART will be connected to the Linux running in the Normal world. Once the UART cables are connected and their interfaces are attached to separate console windows. Power up the BD-SL-i.MX6 board and you will see boot logs for OPTEE on the UART labeled console and the Linux logs on the other UART. You can now log in to linux and look around or start an example client application available onboard.</p>
+<p>It might be that only one serial connection is used to output both the normal and the secure world consoles. To change this, during the first moments of the boot process, press any key to stop the autoboot. Enter the following in the terminal that appears.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>setenv console ttymxc0</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>saveenv</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>reboot</span></code></pre></div>
+<p>The device should now use both serial connections.</p>
 <!-- Debug -->
 <h2 data-number="1.3" id="debugging-op-tee"><span class="header-section-number">1.3</span> Debugging OP-TEE</h2>
 <p>To debug OP-TEE, some additional steps need to be taken to prepare everything.</p>
 <h3 data-number="1.3.1" id="qemu"><span class="header-section-number">1.3.1</span> QEMU</h3>
 <h4 data-number="1.3.1.1" id="download-and-install-gdb-for-arm"><span class="header-section-number">1.3.1.1</span> Download and install gdb for ARM</h4>
 <p>Normally, if this guide was followed and the toolchains were built accordingly, gdb should already be present in <code>&lt;project-dir&gt;/toolchains</code>. The necessary tools can be added to the path by adding the following in <code>.profile</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin&quot;</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch64/bin&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin:&lt;project-dir&gt;/toolchains/aarch64/bin:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin&quot;</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch64/bin&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;&lt;project-dir&gt;/toolchains/aarch32/bin:&lt;project-dir&gt;/toolchains/aarch64/bin:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
 <h4 data-number="1.3.1.2" id="gdb-settings"><span class="header-section-number">1.3.1.2</span> Gdb settings</h4>
 <p>To make the initialization of gdb easier, add the following at the end of <code>~/.gdbinit</code>:</p>
 <pre class="conf"><code>set print pretty on
@@ -285,30 +290,30 @@ end</code></pre>
 <h4 data-number="1.3.1.3" id="debugging-op-tee"><span class="header-section-number">1.3.1.3</span> Debugging OP-TEE</h4>
 <p>Because OP-TEE uses Address Space Layout Randomization (ASLR), it is necessary to disable it when starting QEMU. This is done by adding the flag <code>CFG_CORE_ASLR=n</code>.</p>
 <p>Open two terminals. One will be the terminal where QEMU will be running, the other will be used to debug using gdb. Like before, execute the following with the added flag, but <strong>do not press <code>c</code></strong>!</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n <span class="at">-j</span> <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/build</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n <span class="at">-j</span> <span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div>
 <p>Once QEMU is started, start gdb in the second terminal:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/toolchains/aarch32/bin</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arm-linux-gnueabihf-gdb</span> <span class="at">-q</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/toolchains/aarch32/bin</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arm-linux-gnueabihf-gdb</span> <span class="at">-q</span></span></code></pre></div>
 <p>When the gdb prompt appears, run <code>optee</code> to load the symbols and to connect to QEMU. The output below should appear.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">optee</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> SIGTRAP <span class="ex">is</span> used by the debugger.</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Are <span class="ex">you</span> sure you want to change it<span class="pp">?</span> <span class="er">(</span><span class="ex">y</span> or n<span class="kw">)</span> <span class="ex">[answered</span> Y<span class="kw">;</span> <span class="ex">input</span> not from terminal]</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> warning: <span class="ex">No</span> executable has been specified and target does not support</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> determining <span class="ex">executable</span> automatically.  Try using the <span class="st">&quot;file&quot;</span> command.</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> 0x00000000 <span class="er">in</span> <span class="ex">??</span> <span class="er">(</span><span class="kw">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">optee</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> SIGTRAP <span class="ex">is</span> used by the debugger.</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Are <span class="ex">you</span> sure you want to change it<span class="pp">?</span> <span class="er">(</span><span class="ex">y</span> or n<span class="kw">)</span> <span class="ex">[answered</span> Y<span class="kw">;</span> <span class="ex">input</span> not from terminal]</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> warning: <span class="ex">No</span> executable has been specified and target does not support</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> determining <span class="ex">executable</span> automatically.  Try using the <span class="st">&quot;file&quot;</span> command.</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> 0x00000000 <span class="er">in</span> <span class="ex">??</span> <span class="er">(</span><span class="kw">)</span></span></code></pre></div>
 <p>Then it is possible to refer to the symbols in the OP-TEE p. To demonstrate, let’s set a breakpoint on <code>tee_entry_std(...)</code>, an often called function and continue execution. Th</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a> <span class="ex">Set</span> breakpoint</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">b</span> tee_entry_std</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Breakpoint <span class="ex">1</span> at 0xe1347ce: file core/tee/entry_std.c, line 528.</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">Resume</span> execution. Breakpoint should be hit.</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="ex">c</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Continuing.</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [Switching <span class="ex">to</span> Thread 1.2]</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Thread <span class="ex">2</span> hit Breakpoint 1, tee_entry_std <span class="er">(</span><span class="va">arg</span><span class="op">=</span>0xe300000, <span class="va">num_params</span><span class="op">=</span>2<span class="kw">)</span> <span class="ex">at</span> core/tee/entry_std.c:528</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> 528             <span class="cf">return</span> <span class="ex">__tee_entry_std</span><span class="er">(</span><span class="ex">arg,</span> num_params<span class="kw">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a> <span class="ex">Set</span> breakpoint</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">b</span> tee_entry_std</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Breakpoint <span class="ex">1</span> at 0xe1347ce: file core/tee/entry_std.c, line 528.</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">Resume</span> execution. Breakpoint should be hit.</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="ex">c</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Continuing.</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [Switching <span class="ex">to</span> Thread 1.2]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Thread <span class="ex">2</span> hit Breakpoint 1, tee_entry_std <span class="er">(</span><span class="va">arg</span><span class="op">=</span>0xe300000, <span class="va">num_params</span><span class="op">=</span>2<span class="kw">)</span> <span class="ex">at</span> core/tee/entry_std.c:528</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> 528             <span class="cf">return</span> <span class="ex">__tee_entry_std</span><span class="er">(</span><span class="ex">arg,</span> num_params<span class="kw">);</span></span></code></pre></div>
 <p>Now it is possible to further explore OP-TEE using gdb.</p>
 <!-- ## Sabre Lite
 
@@ -320,279 +325,279 @@ end</code></pre>
 <p>It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA. This application is created by copying an existing example application from <code>optee_examples</code> and removing the <code>ta</code> subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.</p>
 <h3 data-number="1.4.1" id="example-pta"><span class="header-section-number">1.4.1</span> Example PTA</h3>
 <p>This example shows a simple PTA that prints some text when called from the normal world. This example is only applicable to a QEMU environment and will thus only be built when QEMU is the target platform.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">// File: optee_os/core/pta/testpta.c</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;kernel/pseudo_ta.h&gt;</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_NAME </span><span class="st">&quot;test.pta&quot;</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT_UUID </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xd4be3f91</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xc4e1</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x436c</span><span class="op">,</span><span class="pp"> </span><span class="op">\</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xb2</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x92</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xbf</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xf5</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x3e</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x43</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x04</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xd5</span><span class="pp"> </span><span class="op">}</span><span class="pp"> </span><span class="op">}</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT </span><span class="dv">0</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> TEE_Result test_print<span class="op">(</span><span class="dt">uint32_t</span> type<span class="op">,</span> TEE_Param p<span class="op">[</span>TEE_NUM_PARAMS<span class="op">])</span> <span class="op">{</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    IMSG<span class="op">(</span><span class="st">&quot;This is a test of a pseudo trusted application.&quot;</span><span class="op">);</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TEE_SUCCESS<span class="op">;</span></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co">/*</span></span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="co"> * Trusted Application Etnry Points</span></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> TEE_Result invoke_command<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>session __unused<span class="op">,</span> <span class="dt">uint32_t</span> cmd<span class="op">,</span></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">uint32_t</span> ptypes<span class="op">,</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>                                 TEE_Param params<span class="op">[</span>TEE_NUM_PARAMS<span class="op">])</span> <span class="op">{</span></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">switch</span> <span class="op">(</span>cmd<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> PTA_TEST_PRINT<span class="op">:</span></span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> test_print<span class="op">(</span>ptypes<span class="op">,</span> params<span class="op">);</span></span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TEE_ERROR_NOT_IMPLEMENTED<span class="op">;</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>pseudo_ta_register<span class="op">(.</span>uuid <span class="op">=</span> PTA_TEST_PRINT_UUID<span class="op">,</span> <span class="op">.</span>name <span class="op">=</span> PTA_NAME<span class="op">,</span></span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>flags <span class="op">=</span> PTA_DEFAULT_FLAGS<span class="op">,</span> <span class="op">.</span>invoke_command_entry_point <span class="op">=</span> invoke_command<span class="op">);</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Added to optee_os/core/pta/sub.mk</span></span>
+<div class="sourceCode" id="cb22"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">// File: optee_os/core/pta/testpta.c</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">ifeq</span> (<span class="ch">$(</span><span class="dt">PLATFORM</span><span class="ch">)</span>,vexpress-qemu_virt)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="dt">srcs-y </span><span class="ch">+=</span><span class="st"> testpta.c</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span></span></code></pre></div>
-<p>The code for the host application:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// File: host/main.c</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;kernel/pseudo_ta.h&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_NAME </span><span class="st">&quot;test.pta&quot;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT_UUID </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xd4be3f91</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xc4e1</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x436c</span><span class="op">,</span><span class="pp"> </span><span class="op">\</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xb2</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x92</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xbf</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xf5</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x3e</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x43</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x04</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xd5</span><span class="pp"> </span><span class="op">}</span><span class="pp"> </span><span class="op">}</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT </span><span class="dv">0</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> TEE_Result test_print<span class="op">(</span><span class="dt">uint32_t</span> type<span class="op">,</span> TEE_Param p<span class="op">[</span>TEE_NUM_PARAMS<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    IMSG<span class="op">(</span><span class="st">&quot;This is a test of a pseudo trusted application.&quot;</span><span class="op">);</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TEE_SUCCESS<span class="op">;</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="co">/*</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="co"> * Trusted Application Etnry Points</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> TEE_Result invoke_command<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>session __unused<span class="op">,</span> <span class="dt">uint32_t</span> cmd<span class="op">,</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">uint32_t</span> ptypes<span class="op">,</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                                 TEE_Param params<span class="op">[</span>TEE_NUM_PARAMS<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">switch</span> <span class="op">(</span>cmd<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> PTA_TEST_PRINT<span class="op">:</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> test_print<span class="op">(</span>ptypes<span class="op">,</span> params<span class="op">);</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TEE_ERROR_NOT_IMPLEMENTED<span class="op">;</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>pseudo_ta_register<span class="op">(.</span>uuid <span class="op">=</span> PTA_TEST_PRINT_UUID<span class="op">,</span> <span class="op">.</span>name <span class="op">=</span> PTA_NAME<span class="op">,</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>flags <span class="op">=</span> PTA_DEFAULT_FLAGS<span class="op">,</span> <span class="op">.</span>invoke_command_entry_point <span class="op">=</span> invoke_command<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Added to optee_os/core/pta/sub.mk</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">/*</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"> * Copyright (c) 2016, Linaro Limited</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"> * All rights reserved.</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"> * Redistribution and use in source and binary forms, with or without</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"> * modification, are permitted provided that the following conditions are met:</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co"> * 1. Redistributions of source code must retain the above copyright notice,</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"> * this list of conditions and the following disclaimer.</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co"> * 2. Redistributions in binary form must reproduce the above copyright notice,</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="co"> * this list of conditions and the following disclaimer in the documentation</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="co"> * and/or other materials provided with the distribution.</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="co"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="co"> * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="co"> * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="co"> * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="co"> * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span></span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a><span class="co"> * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="co"> * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span></span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="co"> * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span></span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a><span class="co"> * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span></span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="co"> * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span></span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="co"> * POSSIBILITY OF SUCH DAMAGE.</span></span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;err.h&gt;</span></span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a><span class="co">/* OP-TEE TEE client API (built by optee_client) */</span></span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;tee_client_api.h&gt;</span></span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT_UUID </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xd4be3f91</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xc4e1</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x436c</span><span class="op">,</span><span class="pp"> </span><span class="op">\</span></span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xb2</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x92</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xbf</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xf5</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x3e</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x43</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x04</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xd5</span><span class="pp"> </span><span class="op">}</span><span class="pp"> </span><span class="op">}</span></span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT </span><span class="dv">0</span></span>
-<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
-<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>    TEEC_Result res<span class="op">;</span></span>
-<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>    TEEC_Context ctx<span class="op">;</span></span>
-<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>    TEEC_Session sess<span class="op">;</span></span>
-<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>    TEEC_Operation op<span class="op">;</span></span>
-<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>    TEEC_UUID uuid <span class="op">=</span> PTA_TEST_PRINT_UUID<span class="op">;</span></span>
-<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> err_origin<span class="op">;</span></span>
-<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* Initialize a context connecting us to the TEE */</span></span>
-<span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> TEEC_InitializeContext<span class="op">(</span>NULL<span class="op">,</span> <span class="op">&amp;</span>ctx<span class="op">);</span></span>
-<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">!=</span> TEEC_SUCCESS<span class="op">)</span></span>
-<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>        errx<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">&quot;TEEC_InitializeContext failed with code 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span> res<span class="op">);</span></span>
-<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
-<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a><span class="co">     * Open a session to the &quot;hello world&quot; TA, the TA will print &quot;hello</span></span>
-<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a><span class="co">     * world!&quot; in the log when the session is created.</span></span>
-<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
-<span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> TEEC_OpenSession<span class="op">(&amp;</span>ctx<span class="op">,</span> <span class="op">&amp;</span>sess<span class="op">,</span> <span class="op">&amp;</span>uuid<span class="op">,</span></span>
-<span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>                   TEEC_LOGIN_PUBLIC<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err_origin<span class="op">);</span></span>
-<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">!=</span> TEEC_SUCCESS<span class="op">)</span></span>
-<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>        errx<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">&quot;TEEC_Opensession failed with code 0x</span><span class="sc">%x</span><span class="st"> origin 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span></span>
-<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a>            res<span class="op">,</span> err_origin<span class="op">);</span></span>
-<span id="cb23-65"><a href="#cb23-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-66"><a href="#cb23-66" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
-<span id="cb23-67"><a href="#cb23-67" aria-hidden="true" tabindex="-1"></a><span class="co">     * Execute a function in the TA by invoking it, in this case</span></span>
-<span id="cb23-68"><a href="#cb23-68" aria-hidden="true" tabindex="-1"></a><span class="co">     * we&#39;re incrementing a number.</span></span>
-<span id="cb23-69"><a href="#cb23-69" aria-hidden="true" tabindex="-1"></a><span class="co">     *</span></span>
-<span id="cb23-70"><a href="#cb23-70" aria-hidden="true" tabindex="-1"></a><span class="co">     * The value of command ID part and how the parameters are</span></span>
-<span id="cb23-71"><a href="#cb23-71" aria-hidden="true" tabindex="-1"></a><span class="co">     * interpreted is part of the interface provided by the TA.</span></span>
-<span id="cb23-72"><a href="#cb23-72" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
-<span id="cb23-73"><a href="#cb23-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-74"><a href="#cb23-74" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* Clear the TEEC_Operation struct */</span></span>
-<span id="cb23-75"><a href="#cb23-75" aria-hidden="true" tabindex="-1"></a>    memset<span class="op">(&amp;</span>op<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>op<span class="op">));</span></span>
-<span id="cb23-76"><a href="#cb23-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-77"><a href="#cb23-77" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
-<span id="cb23-78"><a href="#cb23-78" aria-hidden="true" tabindex="-1"></a><span class="co">     * Prepare the argument. Pass a value in the first parameter,</span></span>
-<span id="cb23-79"><a href="#cb23-79" aria-hidden="true" tabindex="-1"></a><span class="co">     * the remaining three parameters are unused.</span></span>
-<span id="cb23-80"><a href="#cb23-80" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
-<span id="cb23-81"><a href="#cb23-81" aria-hidden="true" tabindex="-1"></a>    op<span class="op">.</span>paramTypes <span class="op">=</span> TEEC_PARAM_TYPES<span class="op">(</span>TEEC_NONE<span class="op">,</span> TEEC_NONE<span class="op">,</span></span>
-<span id="cb23-82"><a href="#cb23-82" aria-hidden="true" tabindex="-1"></a>                     TEEC_NONE<span class="op">,</span> TEEC_NONE<span class="op">);</span></span>
-<span id="cb23-83"><a href="#cb23-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-84"><a href="#cb23-84" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
-<span id="cb23-85"><a href="#cb23-85" aria-hidden="true" tabindex="-1"></a><span class="co">     * TA_HELLO_WORLD_CMD_INC_VALUE is the actual function in the TA to be</span></span>
-<span id="cb23-86"><a href="#cb23-86" aria-hidden="true" tabindex="-1"></a><span class="co">     * called.</span></span>
-<span id="cb23-87"><a href="#cb23-87" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
-<span id="cb23-88"><a href="#cb23-88" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Invoking PTA to print test.&quot;</span><span class="op">);</span></span>
-<span id="cb23-89"><a href="#cb23-89" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> TEEC_InvokeCommand<span class="op">(&amp;</span>sess<span class="op">,</span> PTA_TEST_PRINT<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="op">&amp;</span>err_origin<span class="op">);</span></span>
-<span id="cb23-90"><a href="#cb23-90" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">!=</span> TEEC_SUCCESS<span class="op">)</span></span>
-<span id="cb23-91"><a href="#cb23-91" aria-hidden="true" tabindex="-1"></a>        errx<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">&quot;TEEC_InvokeCommand failed with code 0x</span><span class="sc">%x</span><span class="st"> origin 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span></span>
-<span id="cb23-92"><a href="#cb23-92" aria-hidden="true" tabindex="-1"></a>            res<span class="op">,</span> err_origin<span class="op">);</span></span>
-<span id="cb23-93"><a href="#cb23-93" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Test printed.&quot;</span><span class="op">);</span></span>
-<span id="cb23-94"><a href="#cb23-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-95"><a href="#cb23-95" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
-<span id="cb23-96"><a href="#cb23-96" aria-hidden="true" tabindex="-1"></a><span class="co">     * We&#39;re done with the TA, close the session and</span></span>
-<span id="cb23-97"><a href="#cb23-97" aria-hidden="true" tabindex="-1"></a><span class="co">     * destroy the context.</span></span>
-<span id="cb23-98"><a href="#cb23-98" aria-hidden="true" tabindex="-1"></a><span class="co">     *</span></span>
-<span id="cb23-99"><a href="#cb23-99" aria-hidden="true" tabindex="-1"></a><span class="co">     * The TA will print &quot;Goodbye!&quot; in the log when the</span></span>
-<span id="cb23-100"><a href="#cb23-100" aria-hidden="true" tabindex="-1"></a><span class="co">     * session is closed.</span></span>
-<span id="cb23-101"><a href="#cb23-101" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
-<span id="cb23-102"><a href="#cb23-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-103"><a href="#cb23-103" aria-hidden="true" tabindex="-1"></a>    TEEC_CloseSession<span class="op">(&amp;</span>sess<span class="op">);</span></span>
-<span id="cb23-104"><a href="#cb23-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-105"><a href="#cb23-105" aria-hidden="true" tabindex="-1"></a>    TEEC_FinalizeContext<span class="op">(&amp;</span>ctx<span class="op">);</span></span>
-<span id="cb23-106"><a href="#cb23-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-107"><a href="#cb23-107" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb23-108"><a href="#cb23-108" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>The Makefiles of the new host application:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: Makefile</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">ifeq</span> (<span class="ch">$(</span><span class="dt">PLATFORM</span><span class="ch">)</span>,vexpress-qemu_virt)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="dt">srcs-y </span><span class="ch">+=</span><span class="st"> testpta.c</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span></span></code></pre></div>
+<p>The code for the host application:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">// File: host/main.c</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>export <span class="dt">V</span><span class="ch">?=</span><span class="st">0</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># If _HOST or _TA specific compilers are not specified, then use CROSS_COMPILE</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="dt">HOST_CROSS_COMPILE </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> all</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="dv">all:</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C host CROSS_COMPILE=<span class="st">&quot;</span><span class="ch">$(</span><span class="dt">HOST_CROSS_COMPILE</span><span class="ch">)</span><span class="st">&quot;</span> --no-builtin-variables</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> clean</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="dv">clean:</span></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C host clean</span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: host/Makefile</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">/*</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"> * Copyright (c) 2016, Linaro Limited</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"> * All rights reserved.</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"> * Redistribution and use in source and binary forms, with or without</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"> * modification, are permitted provided that the following conditions are met:</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co"> * 1. Redistributions of source code must retain the above copyright notice,</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"> * this list of conditions and the following disclaimer.</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="co"> * 2. Redistributions in binary form must reproduce the above copyright notice,</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co"> * this list of conditions and the following disclaimer in the documentation</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co"> * and/or other materials provided with the distribution.</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="co"> * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co"> * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="co"> * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co"> * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="co"> * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="co"> * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="co"> * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a><span class="co"> * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="co"> * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a><span class="co"> * POSSIBILITY OF SUCH DAMAGE.</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;err.h&gt;</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a><span class="co">/* OP-TEE TEE client API (built by optee_client) */</span></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;tee_client_api.h&gt;</span></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT_UUID </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xd4be3f91</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xc4e1</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x436c</span><span class="op">,</span><span class="pp"> </span><span class="op">\</span></span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp"> </span><span class="bn">0xb2</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x92</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xbf</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xf5</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x3e</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x43</span><span class="op">,</span><span class="pp"> </span><span class="bn">0x04</span><span class="op">,</span><span class="pp"> </span><span class="bn">0xd5</span><span class="pp"> </span><span class="op">}</span><span class="pp"> </span><span class="op">}</span></span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PTA_TEST_PRINT </span><span class="dv">0</span></span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>    TEEC_Result res<span class="op">;</span></span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>    TEEC_Context ctx<span class="op">;</span></span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>    TEEC_Session sess<span class="op">;</span></span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>    TEEC_Operation op<span class="op">;</span></span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>    TEEC_UUID uuid <span class="op">=</span> PTA_TEST_PRINT_UUID<span class="op">;</span></span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> err_origin<span class="op">;</span></span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* Initialize a context connecting us to the TEE */</span></span>
+<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> TEEC_InitializeContext<span class="op">(</span>NULL<span class="op">,</span> <span class="op">&amp;</span>ctx<span class="op">);</span></span>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">!=</span> TEEC_SUCCESS<span class="op">)</span></span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>        errx<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">&quot;TEEC_InitializeContext failed with code 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span> res<span class="op">);</span></span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
+<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a><span class="co">     * Open a session to the &quot;hello world&quot; TA, the TA will print &quot;hello</span></span>
+<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a><span class="co">     * world!&quot; in the log when the session is created.</span></span>
+<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
+<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> TEEC_OpenSession<span class="op">(&amp;</span>ctx<span class="op">,</span> <span class="op">&amp;</span>sess<span class="op">,</span> <span class="op">&amp;</span>uuid<span class="op">,</span></span>
+<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a>                   TEEC_LOGIN_PUBLIC<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err_origin<span class="op">);</span></span>
+<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">!=</span> TEEC_SUCCESS<span class="op">)</span></span>
+<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a>        errx<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">&quot;TEEC_Opensession failed with code 0x</span><span class="sc">%x</span><span class="st"> origin 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span></span>
+<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a>            res<span class="op">,</span> err_origin<span class="op">);</span></span>
+<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
+<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a><span class="co">     * Execute a function in the TA by invoking it, in this case</span></span>
+<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a><span class="co">     * we&#39;re incrementing a number.</span></span>
+<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a><span class="co">     *</span></span>
+<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a><span class="co">     * The value of command ID part and how the parameters are</span></span>
+<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a><span class="co">     * interpreted is part of the interface provided by the TA.</span></span>
+<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
+<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* Clear the TEEC_Operation struct */</span></span>
+<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a>    memset<span class="op">(&amp;</span>op<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>op<span class="op">));</span></span>
+<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-77"><a href="#cb24-77" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
+<span id="cb24-78"><a href="#cb24-78" aria-hidden="true" tabindex="-1"></a><span class="co">     * Prepare the argument. Pass a value in the first parameter,</span></span>
+<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a><span class="co">     * the remaining three parameters are unused.</span></span>
+<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
+<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a>    op<span class="op">.</span>paramTypes <span class="op">=</span> TEEC_PARAM_TYPES<span class="op">(</span>TEEC_NONE<span class="op">,</span> TEEC_NONE<span class="op">,</span></span>
+<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a>                     TEEC_NONE<span class="op">,</span> TEEC_NONE<span class="op">);</span></span>
+<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
+<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a><span class="co">     * TA_HELLO_WORLD_CMD_INC_VALUE is the actual function in the TA to be</span></span>
+<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a><span class="co">     * called.</span></span>
+<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
+<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Invoking PTA to print test.&quot;</span><span class="op">);</span></span>
+<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> TEEC_InvokeCommand<span class="op">(&amp;</span>sess<span class="op">,</span> PTA_TEST_PRINT<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="op">&amp;</span>err_origin<span class="op">);</span></span>
+<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">!=</span> TEEC_SUCCESS<span class="op">)</span></span>
+<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a>        errx<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">&quot;TEEC_InvokeCommand failed with code 0x</span><span class="sc">%x</span><span class="st"> origin 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span></span>
+<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a>            res<span class="op">,</span> err_origin<span class="op">);</span></span>
+<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Test printed.&quot;</span><span class="op">);</span></span>
+<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a>    <span class="co">/*</span></span>
+<span id="cb24-96"><a href="#cb24-96" aria-hidden="true" tabindex="-1"></a><span class="co">     * We&#39;re done with the TA, close the session and</span></span>
+<span id="cb24-97"><a href="#cb24-97" aria-hidden="true" tabindex="-1"></a><span class="co">     * destroy the context.</span></span>
+<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a><span class="co">     *</span></span>
+<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a><span class="co">     * The TA will print &quot;Goodbye!&quot; in the log when the</span></span>
+<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a><span class="co">     * session is closed.</span></span>
+<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a><span class="co">     */</span></span>
+<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a>    TEEC_CloseSession<span class="op">(&amp;</span>sess<span class="op">);</span></span>
+<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a>    TEEC_FinalizeContext<span class="op">(&amp;</span>ctx<span class="op">);</span></span>
+<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The Makefiles of the new host application:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: Makefile</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="dt">CC      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">gcc</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="dt">LD      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">ld</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="dt">AR      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">ar</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="dt">NM      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">nm</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="dt">OBJCOPY </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">objcopy</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="dt">OBJDUMP </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">objdump</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="dt">READELF </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">readelf</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="dt">OBJS </span><span class="ch">=</span><span class="st"> main.o</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="dt">CFLAGS </span><span class="ch">+=</span><span class="st"> -Wall -I../ta/include -I</span><span class="ch">$(</span><span class="dt">TEEC_EXPORT</span><span class="ch">)</span><span class="st">/include -I./include</span></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Add/link other required libraries here</span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="dt">LDADD </span><span class="ch">+=</span><span class="st"> -lteec -L</span><span class="ch">$(</span><span class="dt">TEEC_EXPORT</span><span class="ch">)</span><span class="st">/lib</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="dt">BINARY </span><span class="ch">=</span><span class="st"> optee_example_testpta</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> all</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="dv">all:</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">BINARY</span><span class="ch">)</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="dv">$(BINARY):</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">OBJS</span><span class="ch">)</span></span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">CC</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">LDFLAGS</span><span class="ch">)</span> -o <span class="ch">$@</span> <span class="ch">$&lt;</span> <span class="ch">$(</span><span class="dt">LDADD</span><span class="ch">)</span></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> clean</span></span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="dv">clean:</span></span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>    rm -f <span class="ch">$(</span><span class="dt">OBJS</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">BINARY</span><span class="ch">)</span></span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a><span class="dv">%.o:</span><span class="dt"> %.c</span></span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">CC</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">CFLAGS</span><span class="ch">)</span> -c <span class="ch">$&lt;</span> -o <span class="ch">$@</span></span></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: CMakeLists.txt</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>export <span class="dt">V</span><span class="ch">?=</span><span class="st">0</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># If _HOST or _TA specific compilers are not specified, then use CROSS_COMPILE</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="dt">HOST_CROSS_COMPILE </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> all</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="dv">all:</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C host CROSS_COMPILE=<span class="st">&quot;</span><span class="ch">$(</span><span class="dt">HOST_CROSS_COMPILE</span><span class="ch">)</span><span class="st">&quot;</span> --no-builtin-variables</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> clean</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="dv">clean:</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C host clean</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: host/Makefile</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>project (optee_example_testpta C)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>set (SRC host/main.c)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>add_executable (<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> <span class="ch">${</span><span class="dt">SRC</span><span class="ch">}</span>)</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>target_include_directories(<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>            <span class="co">#    PRIVATE ta/include</span></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>               PRIVATE <span class="kw">include</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dt">CC      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">gcc</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="dt">LD      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">ld</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="dt">AR      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">ar</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="dt">NM      </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">nm</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="dt">OBJCOPY </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">objcopy</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="dt">OBJDUMP </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">objdump</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="dt">READELF </span><span class="ch">?=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">CROSS_COMPILE</span><span class="ch">)</span><span class="st">readelf</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="dt">OBJS </span><span class="ch">=</span><span class="st"> main.o</span></span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>target_link_libraries (<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> PRIVATE teec)</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>install (TARGETS <span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> DESTINATION <span class="ch">${</span><span class="dt">CMAKE_INSTALL_BINDIR</span><span class="ch">}</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: Android.mk</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="dt">CFLAGS </span><span class="ch">+=</span><span class="st"> -Wall -I../ta/include -I</span><span class="ch">$(</span><span class="dt">TEEC_EXPORT</span><span class="ch">)</span><span class="st">/include -I./include</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Add/link other required libraries here</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="dt">LDADD </span><span class="ch">+=</span><span class="st"> -lteec -L</span><span class="ch">$(</span><span class="dt">TEEC_EXPORT</span><span class="ch">)</span><span class="st">/lib</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="dt">BINARY </span><span class="ch">=</span><span class="st"> optee_example_testpta</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> all</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="dv">all:</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">BINARY</span><span class="ch">)</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a><span class="dv">$(BINARY):</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">OBJS</span><span class="ch">)</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">CC</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">LDFLAGS</span><span class="ch">)</span> -o <span class="ch">$@</span> <span class="ch">$&lt;</span> <span class="ch">$(</span><span class="dt">LDADD</span><span class="ch">)</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a><span class="ot">.PHONY:</span><span class="dt"> clean</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a><span class="dv">clean:</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>    rm -f <span class="ch">$(</span><span class="dt">OBJS</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">BINARY</span><span class="ch">)</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a><span class="dv">%.o:</span><span class="dt"> %.c</span></span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>    <span class="ch">$(</span><span class="dt">CC</span><span class="ch">)</span> <span class="ch">$(</span><span class="dt">CFLAGS</span><span class="ch">)</span> -c <span class="ch">$&lt;</span> -o <span class="ch">$@</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: CMakeLists.txt</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">###################### optee-testpta ######################</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_PATH </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="kw">call</span><span class="st"> my-dir</span><span class="ch">)</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="kw">include</span> <span class="ch">$(</span><span class="dt">CLEAR_VARS</span><span class="ch">)</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_CFLAGS </span><span class="ch">+=</span><span class="st"> -DANDROID_BUILD</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_CFLAGS </span><span class="ch">+=</span><span class="st"> -Wall</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_SRC_FILES </span><span class="ch">+=</span><span class="st"> host/main.c</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># LOCAL_C_INCLUDES := $(LOCAL_PATH)/ta/include</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_SHARED_LIBRARIES </span><span class="ch">:=</span><span class="st"> libteec</span></span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_MODULE </span><span class="ch">:=</span><span class="st"> optee_example_testpta</span></span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_VENDOR_MODULE </span><span class="ch">:=</span><span class="st"> true</span></span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_MODULE_TAGS </span><span class="ch">:=</span><span class="st"> optional</span></span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="kw">include</span> <span class="ch">$(</span><span class="dt">BUILD_EXECUTABLE</span><span class="ch">)</span></span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a><span class="co"># include $(LOCAL_PATH)/ta/Android.mk</span></span></code></pre></div>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>project (optee_example_testpta C)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>set (SRC host/main.c)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>add_executable (<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> <span class="ch">${</span><span class="dt">SRC</span><span class="ch">}</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>target_include_directories(<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>            <span class="co">#    PRIVATE ta/include</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>               PRIVATE <span class="kw">include</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>target_link_libraries (<span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> PRIVATE teec)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>install (TARGETS <span class="ch">${</span><span class="dt">PROJECT_NAME</span><span class="ch">}</span> DESTINATION <span class="ch">${</span><span class="dt">CMAKE_INSTALL_BINDIR</span><span class="ch">}</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File: Android.mk</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">###################### optee-testpta ######################</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_PATH </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="kw">call</span><span class="st"> my-dir</span><span class="ch">)</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="kw">include</span> <span class="ch">$(</span><span class="dt">CLEAR_VARS</span><span class="ch">)</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_CFLAGS </span><span class="ch">+=</span><span class="st"> -DANDROID_BUILD</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_CFLAGS </span><span class="ch">+=</span><span class="st"> -Wall</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_SRC_FILES </span><span class="ch">+=</span><span class="st"> host/main.c</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="co"># LOCAL_C_INCLUDES := $(LOCAL_PATH)/ta/include</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_SHARED_LIBRARIES </span><span class="ch">:=</span><span class="st"> libteec</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_MODULE </span><span class="ch">:=</span><span class="st"> optee_example_testpta</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_VENDOR_MODULE </span><span class="ch">:=</span><span class="st"> true</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="dt">LOCAL_MODULE_TAGS </span><span class="ch">:=</span><span class="st"> optional</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="kw">include</span> <span class="ch">$(</span><span class="dt">BUILD_EXECUTABLE</span><span class="ch">)</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a><span class="co"># include $(LOCAL_PATH)/ta/Android.mk</span></span></code></pre></div>
 <!-- Serial interrupt -->
 <h2 data-number="1.5" id="serial-interrupt-in-secure-world"><span class="header-section-number">1.5</span> Serial interrupt in secure world</h2>
 <p>To accept input on the serial console of the secure world, it is necessary to register an interrupt on that serial console. To do this, two things need to be done: a interrupt handler needs to be defined and the handler must be registered for the interrupt. The console interface might be different for QEMU or Sabre Lite, but the general way of working should be the same.</p>
 <h3 data-number="1.5.1" id="interrupt-handler"><span class="header-section-number">1.5.1</span> Interrupt handler</h3>
 <p>The interrupt handler is defined according to the <code>itr_handler</code> type in <code>&lt;interrupt.h&gt;</code>. This struct needs to be initialized with the interrupt location <code>it</code> (in this case <code>IT_CONSOLE_UART</code>), the flags for the interrupt (<code>ITRF_TRIGGER_LEVEL</code>) and the handler function. This function can accept a parameter that is the <code>itr_handler</code> structure. When defining this struct, it is (probably) necessary to explicitly state that the interrupt handling is put in the right part of the binary. This is done by declaring <code>DECLARE_KEEP_PAGER(console_itr);</code>.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> itr_handler <span class="op">{</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> it<span class="op">;</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> flags<span class="op">;</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">itr_handler_t</span> handler<span class="op">;</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> <span class="op">*</span>data<span class="op">;</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    SLIST_ENTRY<span class="op">(</span>itr_handler<span class="op">)</span> link<span class="op">;</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function<span class="op">(</span><span class="kw">struct</span> itr_handler <span class="op">*</span>h<span class="op">)</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Handling code</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ITRR_HANDLED<span class="op">;</span></span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">struct</span> itr_handler handler <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>it <span class="op">=</span> IT_CONSOLE_UART<span class="op">,</span></span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>flags <span class="op">=</span> ITRF_TRIGGER_LEVEL<span class="op">,</span></span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>handler <span class="op">=</span> handler_function<span class="op">,</span></span>
-<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>DECLARE_KEEP_PAGER<span class="op">(</span>handler<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> itr_handler <span class="op">{</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> it<span class="op">;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> flags<span class="op">;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">itr_handler_t</span> handler<span class="op">;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> <span class="op">*</span>data<span class="op">;</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    SLIST_ENTRY<span class="op">(</span>itr_handler<span class="op">)</span> link<span class="op">;</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function<span class="op">(</span><span class="kw">struct</span> itr_handler <span class="op">*</span>h<span class="op">)</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Handling code</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ITRR_HANDLED<span class="op">;</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">struct</span> itr_handler handler <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>it <span class="op">=</span> IT_CONSOLE_UART<span class="op">,</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>flags <span class="op">=</span> ITRF_TRIGGER_LEVEL<span class="op">,</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>handler <span class="op">=</span> handler_function<span class="op">,</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>DECLARE_KEEP_PAGER<span class="op">(</span>handler<span class="op">);</span></span></code></pre></div>
 <p>When the interrupt handler is declared and defined, it can be used to enable the interrupt. First, the interrupt handler must be registered and then the interrupt can be enabled. Adding the interrupt handler is done by <code>itr_add(&amp;handler)</code> and enabling the interrupt is done by <code>itr_enable(handler.it)</code>.</p>
 <h3 data-number="1.5.2" id="serial-console-driver"><span class="header-section-number">1.5.2</span> Serial console driver</h3>
 <p>To accept input from the serial console during the handling of the interrupt, it is necessary to have access to the console chip and driver. Because the driver is initialized during the boot sequence of the platform, the only way to get this access is by hijacking this process, disabling the standard interrupt enabled by the boot process and call our own function to save the serial console access location.</p>
 <p>The original interrupt setup happens in the file <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. A macro called <code>driver_init(...)</code> is called with the function that enables the serial interrupt. This macro ensures that the interrupt enabling routine is called during the boot process. To prevent this from happening, the simplest solution is to comment out this line.</p>
 <p>To save the access location of the console interface, the function <code>console_init(void)</code> in the same file calls a function <code>register_serial_console(...)</code> which is a wrapper for an assign operation. We can imitate this function to do the same for us, by defining our own pointer to the serial chip and using this pointer to access the serial console.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">struct</span> serial_chip <span class="op">*</span>serial_chip<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">struct</span> serial_chip <span class="op">*</span>serial_chip<span class="op">;</span></span></code></pre></div>
 <h4 data-number="1.5.2.1" id="handling-serial-input"><span class="header-section-number">1.5.2.1</span> Handling serial input</h4>
 <p>The serial console functions as follows: when data is sent to the serial console (for example by pressing a key in the console), it is accepted by the driver, the data is stored in a buffer and the cpu is notified by means of an interrupt. This interrupt invokes our interrupt handler function.</p>
 <p>It is in this function that we are able to retrieve the data from the buffer. The interrupt keeps triggering if the buffer is not empty, thus it is necessary to empty the buffer after getting its contents. The following while loop gets a single character from the buffer and prints it as long as there are characters left in the buffer. It is here that we use the reference to the serial console.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function<span class="op">(</span><span class="kw">struct</span> itr_handler <span class="op">*</span>h<span class="op">)</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>serial_chip<span class="op">-&gt;</span>ops<span class="op">-&gt;</span>have_rx_data<span class="op">(</span>serial_chip<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> ch <span class="op">=</span> serial_chip<span class="op">-&gt;</span>ops<span class="op">-&gt;</span>getchar<span class="op">(</span>serial_chip<span class="op">);</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>        DMSG<span class="op">(</span><span class="st">&quot;new cpu </span><span class="sc">%zu</span><span class="st">: got 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span> get_core_pos<span class="op">(),</span> ch<span class="op">);</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ITRR_HANDLED<span class="op">;</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function<span class="op">(</span><span class="kw">struct</span> itr_handler <span class="op">*</span>h<span class="op">)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>serial_chip<span class="op">-&gt;</span>ops<span class="op">-&gt;</span>have_rx_data<span class="op">(</span>serial_chip<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> ch <span class="op">=</span> serial_chip<span class="op">-&gt;</span>ops<span class="op">-&gt;</span>getchar<span class="op">(</span>serial_chip<span class="op">);</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        DMSG<span class="op">(</span><span class="st">&quot;new cpu </span><span class="sc">%zu</span><span class="st">: got 0x</span><span class="sc">%x</span><span class="st">&quot;</span><span class="op">,</span> get_core_pos<span class="op">(),</span> ch<span class="op">);</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ITRR_HANDLED<span class="op">;</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 data-number="1.5.3" id="cpu-masks"><span class="header-section-number">1.5.3</span> CPU masks</h3>
 <p>Each system may have multiple cpus. When assigning an interrupt handler to a certain interrupt and enabling it, this interrupt is assigned to all cpus. This means that when an interrupt happens, both cpus will handle that interrupt, calling the same handler twice leading to undefined behavior.</p>
 <p>To prevent this from happening, one can enable cpu masks on an interrupt to define which cpu is responsible for handling that interrupt. This is done by calling the function <code>itr_set_affinity(&lt;interrupt&gt;, &lt;cpu_mask&gt;)</code> with the interrupt from the handler and a cpu mask that is a sequence of bits, where a 1 at position <span class="math inline"><em>n</em></span> enables the handling of an interrupt by the cpu with number <span class="math inline"><em>n</em></span>.</p>
@@ -646,103 +651,103 @@ end</code></pre>
 <p>On Linux based operating systems, device drivers are called modules. These modules can be <em>built-in</em>, meaning they are compiled together with the kernel, or <em>loadable</em> at runtime.</p>
 <h3 data-number="2.2.1" id="built-in-modules"><span class="header-section-number">2.2.1</span> Built-in modules</h3>
 <p>Built-in modules are easy to make. It suffices to include very little code into the <code>drivers</code> directory in the Linux repository. The structure of an archetypical module is as follows, and for each file a hello world example is given.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>drivers</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>+- ...</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>+- my-module</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>|  +- my-module.c</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>|  +- Makefile</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>+- ...</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>+- Makefile</span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">// drivers/my-module/my-module.c</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/module.h&gt;</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/kernel.h&gt;</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/init.h&gt;</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define AUTHOR  &quot;Hello World author&quot;</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#define DESC    &quot;Hello World driver&quot;</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> hello_init<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>   printk<span class="op">(</span>KERN_ALERT <span class="st">&quot;Hello, world</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> hello_exit<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>   printk<span class="op">(</span>KERN_ALERT <span class="st">&quot;Goodbye, world</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>module_init<span class="op">(</span>hello_init<span class="op">);</span></span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>module_exit<span class="op">(</span>hello_exit<span class="op">);</span></span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>MODULE_LICENSE<span class="op">(</span><span class="st">&quot;Dual BSD/GPL&quot;</span><span class="op">);</span></span>
-<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>MODULE_VERSION<span class="op">(</span><span class="st">&quot;v0.1&quot;</span><span class="op">);</span></span>
-<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>MODULE_AUTHOR<span class="op">(</span>AUTHOR<span class="op">);</span></span>
-<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>MODULE_DESCRIPTION<span class="op">(</span>DESC<span class="op">);</span></span></code></pre></div>
-<div class="sourceCode" id="cb33"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drivers/my-module/Makefile</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="dt">obj-y </span><span class="ch">+=</span><span class="st"> my-module.o</span></span></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drivers/Makefile</span></span>
+<div class="sourceCode" id="cb32"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>drivers</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>+- ...</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>+- my-module</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>|  +- my-module.c</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>|  +- Makefile</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>+- ...</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>+- Makefile</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">// drivers/my-module/my-module.c</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/module.h&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/kernel.h&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;linux/init.h&gt;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define AUTHOR  &quot;Hello World author&quot;</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#define DESC    &quot;Hello World driver&quot;</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> hello_init<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>   printk<span class="op">(</span>KERN_ALERT <span class="st">&quot;Hello, world</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> hello_exit<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>   printk<span class="op">(</span>KERN_ALERT <span class="st">&quot;Goodbye, world</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>module_init<span class="op">(</span>hello_init<span class="op">);</span></span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>module_exit<span class="op">(</span>hello_exit<span class="op">);</span></span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>MODULE_LICENSE<span class="op">(</span><span class="st">&quot;Dual BSD/GPL&quot;</span><span class="op">);</span></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>MODULE_VERSION<span class="op">(</span><span class="st">&quot;v0.1&quot;</span><span class="op">);</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>MODULE_AUTHOR<span class="op">(</span>AUTHOR<span class="op">);</span></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>MODULE_DESCRIPTION<span class="op">(</span>DESC<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drivers/my-module/Makefile</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>...</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="dt">obj-y </span><span class="ch">+=</span><span class="st"> my-module/</span></span></code></pre></div>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="dt">obj-y </span><span class="ch">+=</span><span class="st"> my-module.o</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drivers/Makefile</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="dt">obj-y </span><span class="ch">+=</span><span class="st"> my-module/</span></span></code></pre></div>
 <h3 data-number="2.2.2" id="loadable-kernel-modules"><span class="header-section-number">2.2.2</span> Loadable kernel modules</h3>
 <p>Built-in modules are however not very interesting, as these do not allow for speedy development (the whole kernel needs to be compiled every time). Much more interesting are loadable kernel modules. These are separated pieces of code that are compiled against a kernel, making the development cycle much faster. These modules can then be very easily loaded and installed in the kernel during runtime.</p>
 <p>It is however very easy to compile the same module code to a standalone loadable module. First, extract all code to a different development directory. Next, the Makefile needs to be changed to call the kernel build system (modules need to be compiled against the Linux kernel). If we are calling make, the environment variable <code>KERNELRELEASE</code> will not be set, and <code>make modules</code> should be called in the Linux source directory with the current working directory set as well. This will again call make in our module’s directory, but now <code>KERNELRELEASE</code> will be set and the kernel build system will be used as described in the previous section.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If KERNELRELEASE is defined, we&#39;ve been invoked from the</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># kernel build system and can use its language.</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="cf">ifneq</span> (<span class="ch">$(</span><span class="dt">KERNELRELEASE</span><span class="ch">)</span>,)</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">obj-m </span><span class="ch">:=</span><span class="st"> my-module.o</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Otherwise we were called directly from the command</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># line; invoke the kernel build system.</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>   <span class="dt">KERNELDIR </span><span class="ch">?=</span><span class="st"> /lib/modules/</span><span class="ch">$(</span><span class="kw">shell</span><span class="st"> uname -r</span><span class="ch">)</span><span class="st">/build # or another directory containing the Linux source code</span></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>   <span class="dt">PWD </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="kw">shell</span><span class="st"> pwd</span><span class="ch">)</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="dv">default:</span></span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>   <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C <span class="ch">$(</span><span class="dt">KERNELDIR</span><span class="ch">)</span> M=<span class="ch">$(</span><span class="dt">PWD</span><span class="ch">)</span> modules</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If KERNELRELEASE is defined, we&#39;ve been invoked from the</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># kernel build system and can use its language.</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="cf">ifneq</span> (<span class="ch">$(</span><span class="dt">KERNELRELEASE</span><span class="ch">)</span>,)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">obj-m </span><span class="ch">:=</span><span class="st"> my-module.o</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Otherwise we were called directly from the command</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># line; invoke the kernel build system.</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>   <span class="dt">KERNELDIR </span><span class="ch">?=</span><span class="st"> /lib/modules/</span><span class="ch">$(</span><span class="kw">shell</span><span class="st"> uname -r</span><span class="ch">)</span><span class="st">/build # or another directory containing the Linux source code</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>   <span class="dt">PWD </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="kw">shell</span><span class="st"> pwd</span><span class="ch">)</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="dv">default:</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>   <span class="ch">$(</span><span class="dt">MAKE</span><span class="ch">)</span> -C <span class="ch">$(</span><span class="dt">KERNELDIR</span><span class="ch">)</span> M=<span class="ch">$(</span><span class="dt">PWD</span><span class="ch">)</span> modules</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span></span></code></pre></div>
 <p>Running make will generate a module <code>.ko</code> file which can be loaded using <code>insmod</code>. <code>lsmod</code> shows all loaded modules and <code>rmmod</code> removes modules from the system.</p>
 <!-- Implementation -->
 <h2 data-number="2.3" id="implementation-into-op-tee-os"><span class="header-section-number">2.3</span> Implementation into OP-TEE OS</h2>
 <p>As shown in the figures in the previous sections, both loadable kernel modules and pseudo trusted applications are part of the architecture and thus they all need to be compiled. This requires multiple compile commands in different directories. These commands need to be executed in order (for QEMU):</p>
 <ol type="1">
 <li><p>Init repo with the right manifest in the project root directory:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> init <span class="at">-u</span> https://github.com/Distrinet-TACOS/manifest.git <span class="at">-m</span> tacos-qemu-driver.xml</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> sync <span class="at">-j4</span> <span class="at">--no-clone-bundle</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb37"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> init <span class="at">-u</span> https://github.com/Distrinet-TACOS/manifest.git <span class="at">-m</span> tacos-qemu-driver.xml</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="ex">repo</span> sync <span class="at">-j4</span> <span class="at">--no-clone-bundle</span></span></code></pre></div></li>
 <li><p>In <code>&lt;project-dir&gt;/build/</code>:</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb38"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
 <li><p>In <code>&lt;project-dir&gt;/optee_client/</code>:</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb39"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div></li>
 <li><p>In <code>&lt;project-dir&gt;/optee_os/</code>:</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="dt">\</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_BENCHMARK=n <span class="dt">\</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_CORE_LOG_LEVEL=3 <span class="dt">\</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_core=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- <span class="dt">\</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    DEBUG=1 <span class="dt">\</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    O=out/arm <span class="dt">\</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt</span></code></pre></div></li>
-<li><p>In <code>&lt;project-dir&gt;/optee_examples/</code>:</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="dt">\</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-builtin-variables</span> <span class="dt">\</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    TA_DEV_KIT_DIR=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/optee_os/out/arm/export-ta_arm32/ <span class="dt">\</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_BENCHMARK=n <span class="dt">\</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    CFG_TEE_CORE_LOG_LEVEL=3 <span class="dt">\</span></span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE=arm-linux-gnueabihf- <span class="dt">\</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    TEEC_EXPORT=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/optee_client/out/export/usr <span class="dt">\</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt <span class="dt">\</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    HOST_CROSS_COMPILE=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/toolchains/aarch32/bin/arm-linux-gnueabihf-</span></code></pre></div>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_core=arm-linux-gnueabihf- <span class="dt">\</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- <span class="dt">\</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- <span class="dt">\</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    DEBUG=1 <span class="dt">\</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    O=out/arm <span class="dt">\</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt</span></code></pre></div></li>
+<li><p>In <code>&lt;project-dir&gt;/optee_examples/</code>:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="dt">\</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-builtin-variables</span> <span class="dt">\</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    TA_DEV_KIT_DIR=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/optee_os/out/arm/export-ta_arm32/ <span class="dt">\</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    CROSS_COMPILE=arm-linux-gnueabihf- <span class="dt">\</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    TEEC_EXPORT=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/optee_client/out/export/usr <span class="dt">\</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    PLATFORM=vexpress-qemu_virt <span class="dt">\</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    HOST_CROSS_COMPILE=<span class="op">&lt;</span>project-dir<span class="op">&gt;</span>/toolchains/aarch32/bin/arm-linux-gnueabihf-</span></code></pre></div>
 <p>It might be necessary to first go into specific directories in <code>&lt;project-dir&gt;/optee_examples/</code> because of module dependencies. The parent modules should thus be build first using the same command.</p></li>
 <li><p>Finally, in <code>&lt;project-dir&gt;/build/</code>:</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb42"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="ex">nproc</span><span class="kw">`</span></span></code></pre></div></li>
 </ol>
 <h2 data-number="2.4" id="references"><span class="header-section-number">2.4</span> References</h2>
 <p>Based on multiple original sources from the OP-TEE team and others:</p>

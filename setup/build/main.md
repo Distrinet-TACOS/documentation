@@ -1,9 +1,5 @@
 # Building & running OP-TEE
 
-## QEMU
+!include`incrementSection=1` qemu.md
 
-!include qemu.md
-
-## Sabre Lite
-
-!include sabre.md
+!include`incrementSection=1` sabre.md
