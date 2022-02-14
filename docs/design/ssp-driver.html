@@ -220,15 +220,18 @@
 </figure>
 </div>
 <p>This figure also shows that communication from the normal to the secure world is delivered by an existing API (the GlobalPlatform TEE Client API<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>). This API provides access to TAs running in the secure world based on their identifying UUID, and secured by access control. The normal SSP driver may thus call arbitrary functionality, implemented by the developer of a specific application, of the secure SSP driver. The secure SSP driver may thus also implement some kind of mixer logic if required.</p>
-<div class="callout-note callout callout-style-simple">
-<div class="callout-body d-flex">
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-body-container">
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p><em>Mixer Logic</em></p>
 <p>Consider a display as a SSP. This display normally shows output of a normal world application, but overlays some output of a secure application (e.g.&nbsp;warnings etc.). In this case the secure SSP driver needs to combine both output buffers in a way that the secure output is always shown on top of the normal output. The logic required for this operation is called mixer logic.</p>
-</div>
 </div>
 </div>
 <p>To allow other applications, both on the normal and the secure side, to interact with the hardware as well, both drivers should provide facilities that expose the necessary functionality. In the secure world, the communication with the secure driver happens through the GlobalPlatform Internal Core API<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>, version 1.1. Mission-critical control software like PLC controllers etc. can thus be separated from the hardware driver and moved to user space.</p>

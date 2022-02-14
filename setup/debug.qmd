@@ -18,7 +18,7 @@ fi
 
 To make the initialization of gdb easier, add the following at the end of `~/.gdbinit`:
 
-``` conf
+``` txt
 set print pretty on
 
 define optee
@@ -35,6 +35,29 @@ end
 ### Debugging OP-TEE
 
 Because OP-TEE uses Address Space Layout Randomization (ASLR), it is necessary to disable it when starting QEMU. This is done by adding the flag `CFG_CORE_ASLR=n`.
+
+:::{.callout-caution collapse="true"}
+## Compilation error
+
+If OP-TEE was compiled before, the compilation process can generate an error similar to:
+
+``` txt
+-- The C compiler identification is unknown
+-- Check for working C compiler: <project-dir>/out-br/host/bin/arm-linux-gnueabihf-gcc
+-- Check for working C compiler: <project-dir>/out-br/host/bin/arm-linux-gnueabihf-gcc -- broken
+CMake Error at /usr/share/cmake-3.16/Modules/CMakeTestCCompiler.cmake:60 (message):
+  The C compiler
+
+    "<project-dir>/out-br/host/bin/arm-linux-gnueabihf-gcc"
+
+  is not able to compile a simple test program.
+
+  It fails with the following output:
+  ...
+```
+
+This problem originates from mixing compilations with and without `gdbserver` activated. The solution is to completely delete `<project-dir>/out-br` and to start the compilation process again.
+:::
 
 Open two terminals. One will be the terminal where QEMU will be running, the other will be used to debug using gdb. Like before, execute the following with the added flag, but **do not press `c`**!
 
@@ -80,3 +103,5 @@ c
 Now it is possible to further explore OP-TEE using gdb.
 
 ## SABRE Lite
+
+Debugging Linux on hardware boards is pretty difficult. `printk`statements can be used to print execution flow and memory values to the console.

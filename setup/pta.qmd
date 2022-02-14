@@ -1,14 +1,14 @@
 # Custom Pseudo Trusted Application
 
-*Trusted Applications* (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run p in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA's are statically linked against the kernel.
+*Trusted Applications* (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run them in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA's are statically linked against the OP-TEE kernel.
 
-It is possible to create a PTA by adding the sources to `optee_os/core/pta` and including them in the Makefile in the same directory. This way the PTA is included int the os when it is built.
+It is possible to create a PTA by adding the sources to `optee_os/core/pta` and including them in the Makefile in the same directory. This way the PTA is included in the os when it is built. It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA.
 
-It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA. This application is created by copying an existing example application from `optee_examples` and removing the `ta` subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.
+The example host application is created by copying an existing example application from `optee_examples` and removing the `ta` subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.
 
 ## Example PTA
 
-This example shows a simple PTA that prints some text when called from the normal world. This example is only applicable to a QEMU environment and will thus only be built when QEMU is the target platform.
+This example shows a simple PTA that prints some text when called from the normal world.
 
 ``` c++
 // File: optee_os/core/pta/testpta.c

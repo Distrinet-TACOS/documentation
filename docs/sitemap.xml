@@ -2,23 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/index.html</loc>
-    <lastmod>2022-02-14T14:49:33.908Z</lastmod>
+    <lastmod>2022-02-14T15:48:37.723Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/prerequisites.html</loc>
-    <lastmod>2022-02-14T14:49:33.924Z</lastmod>
+    <lastmod>2022-02-14T15:32:53.583Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/build.html</loc>
-    <lastmod>2022-02-14T14:49:33.926Z</lastmod>
+    <lastmod>2022-02-14T15:52:58.618Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/debug.html</loc>
-    <lastmod>2022-02-14T14:49:33.929Z</lastmod>
+    <lastmod>2022-02-14T16:04:57.855Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/pta.html</loc>
-    <lastmod>2022-02-14T14:49:33.935Z</lastmod>
+    <lastmod>2022-02-14T16:15:52.882Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/serial-itr.html</loc>
@@ -26,7 +26,7 @@
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/design/ssp-driver.html</loc>
-    <lastmod>2022-02-14T14:49:33.938Z</lastmod>
+    <lastmod>2022-02-14T15:48:24.630Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/design/modules.html</loc>

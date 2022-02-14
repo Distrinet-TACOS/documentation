@@ -44,11 +44,13 @@ bibliography: references.bib
 csl: templates/ieee-with-url.csl
 reference-section-title: References
 
-callout-appearance: simple
+# callout-appearance: simple
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: cosmo
+      dark: superhero
     logo: figures/distrinet.png
     code-copy: true
     code-overflow: wrap
