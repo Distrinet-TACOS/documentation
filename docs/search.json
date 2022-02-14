@@ -21,11 +21,11 @@
     "text": "1.2 Google AOSP repo\nThe repo tool from the Google Android Open Source Project (AOSP) allows you to manage multiple git repositories using manifest files. OP-TEE uses these manifests to combine all projects into a single development environment based on the specific architecture to be used.\nObviously, because repo uses git, git needs to be installed and setup on the system. Configure git with your email and name.\nsudo apt install git\ngit config --global user.email \"<email>\"\ngit config --global user.name \"<name>\"\nAfter that, repo can be installed:\nmkdir -p ~/bin\nPATH=\"${HOME}/bin:${PATH}\"\ncurl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo\nchmod a+rx ~/bin/repo\nBecause repo is installed in ~/bin, this directory needs to be added to the path. This should already been taken care of by Ubuntu, this can be checked if the following is present in ~/.profile. If not, it should be added to the end of the file.\n set path so it includes user's private bin if it exists\nif [ -d \"$HOME/bin\" ] ; then\n    PATH=\"$HOME/bin:$PATH\"\nfi"
   },
   {
-    "objectID": "setup/prerequisites.html#qemu-specific",
-    "href": "setup/prerequisites.html#qemu-specific",
+    "objectID": "setup/prerequisites.html#qemu",
+    "href": "setup/prerequisites.html#qemu",
     "title": "1  Prerequisites",
-    "section": "1.3 QEMU specific",
-    "text": "1.3 QEMU specific\nNext, QEMU should be installed. This can be done by executing\nsudo apt install qemu"
+    "section": "1.3 QEMU",
+    "text": "1.3 QEMU\nNext, QEMU should be installed. This can be done by executing\nsudo apt install qemu"
   },
   {
     "objectID": "setup/build.html#qemu",
@@ -117,12 +117,5 @@
     "title": "8  Implementation into OP-TEE OS",
     "section": "8.1 Build instructions",
     "text": "8.1 Build instructions\n\n8.1.1 QEMU\nAs shown in the figures in the previous sections, both loadable kernel modules and pseudo trusted applications are part of the architecture and thus they all need to be compiled. This requires multiple compile commands in different directories. These commands need to be executed in order (for QEMU):\n\nInit repo with the right manifest in the project root directory:\nmkdir -p <project-dir>\ncd <project-dir>\nrepo init -u https://github.com/Distrinet-TACOS/manifest.git -m tacos-qemu-driver.xml\nrepo sync -j4 --no-clone-bundle\nIn <project-dir>/build/:\nmake CFG_CORE_ASLR=n GDBSERVER=y -j`nproc`\nIn <project-dir>/optee_client/:\nmake\nIn <project-dir>/optee_os/:\nmake \\\n    CFG_TEE_BENCHMARK=n \\\n    CFG_TEE_CORE_LOG_LEVEL=3 \\\n    CROSS_COMPILE=arm-linux-gnueabihf- \\\n    CROSS_COMPILE_core=arm-linux-gnueabihf- \\\n    CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- \\\n    CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- \\\n    DEBUG=1 \\\n    O=out/arm \\\n    PLATFORM=vexpress-qemu_virt\nIn <project-dir>/optee_examples/:\nmake \\\n    --no-builtin-variables \\\n    TA_DEV_KIT_DIR=<project-dir>/optee_os/out/arm/export-ta_arm32/ \\\n    CROSS_COMPILE=arm-linux-gnueabihf- \\\n    TEEC_EXPORT=<project-dir>/optee_client/out/export/usr \\\n    PLATFORM=vexpress-qemu_virt \\\n    HOST_CROSS_COMPILE=<project-dir>/toolchains/aarch32/bin/arm-linux-gnueabihf-\nIt might be necessary to first go into specific directories in <project-dir>/optee_examples/ because of module dependencies. The parent modules should thus be build first using the same command.\nFinally, in <project-dir>/build/:\nmake run CFG_CORE_ASLR=n GDBSERVER=y -j`nproc`\n\n\n\n8.1.2 SABRE Lite\nAs explained earlier in this documentation, the Buildroot build system is used to build the complete package for the Sabre Lite board. For this process, the same steps are followed as explained in that section. However, an extra external Buildroot tree is added"
-  },
-  {
-    "objectID": "setup/prerequisites.html#qemu",
-    "href": "setup/prerequisites.html#qemu",
-    "title": "1  Prerequisites",
-    "section": "1.3 QEMU",
-    "text": "1.3 QEMU\nNext, QEMU should be installed. This can be done by executing\nsudo apt install qemu"
   }
 ]
