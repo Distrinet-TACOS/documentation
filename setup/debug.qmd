@@ -1,0 +1,82 @@
+# Debugging OP-TEE
+
+To debug OP-TEE, some additional steps need to be taken to prepare everything.
+
+## QEMU
+
+### Download and install gdb for ARM
+
+Normally, if this guide was followed and the toolchains were built accordingly, gdb should already be present in `<project-dir>/toolchains`. The necessary tools can be added to the path by adding the following in `.profile`.
+
+``` bash
+if [ -d "<project-dir>/toolchains/aarch32/bin" ] && [ -d "<project-dir>/toolchains/aarch64/bin" ]; then
+        PATH="<project-dir>/toolchains/aarch32/bin:<project-dir>/toolchains/aarch64/bin:$PATH"
+fi
+```
+
+### Gdb settings
+
+To make the initialization of gdb easier, add the following at the end of `~/.gdbinit`:
+
+``` conf
+set print pretty on
+
+define optee
+    handle SIGTRAP noprint nostop pass
+    symbol-file <project-dir>/optee_os/out/arm/core/tee.elf
+    target remote localhost:1234
+end
+document optee
+    Loads and setup the binary (tee.elf) for OP-TEE and also connects to the QEMU
+    remote.
+end
+```
+
+### Debugging OP-TEE
+
+Because OP-TEE uses Address Space Layout Randomization (ASLR), it is necessary to disable it when starting QEMU. This is done by adding the flag `CFG_CORE_ASLR=n`.
+
+Open two terminals. One will be the terminal where QEMU will be running, the other will be used to debug using gdb. Like before, execute the following with the added flag, but **do not press `c`**!
+
+``` bash
+cd <project-dir>/build
+make run CFG_CORE_ASLR=n -j `nproc`
+```
+
+Once QEMU is started, start gdb in the second terminal:
+
+``` bash
+cd <project-dir>/toolchains/aarch32/bin
+./arm-linux-gnueabihf-gdb -q
+```
+
+When the gdb prompt appears, run `optee` to load the symbols and to connect to QEMU. The output below should appear.
+
+``` bash
+optee
+> SIGTRAP is used by the debugger.
+> Are you sure you want to change it? (y or n) [answered Y; input not from terminal]
+> warning: No executable has been specified and target does not support
+> determining executable automatically.  Try using the "file" command.
+> 0x00000000 in ?? ()
+```
+
+Then it is possible to refer to the symbols in the OP-TEE p. To demonstrate, let's set a breakpoint on `tee_entry_std(...)`, an often called function and continue execution. Th
+
+``` bash
+ Set breakpoint
+b tee_entry_std
+> Breakpoint 1 at 0xe1347ce: file core/tee/entry_std.c, line 528.
+
+ Resume execution. Breakpoint should be hit.
+c
+> Continuing.
+> [Switching to Thread 1.2]
+>
+> Thread 2 hit Breakpoint 1, tee_entry_std (arg=0xe300000, num_params=2) at core/tee/entry_std.c:528
+> 528             return __tee_entry_std(arg, num_params);
+```
+
+Now it is possible to further explore OP-TEE using gdb.
+
+## SABRE Lite

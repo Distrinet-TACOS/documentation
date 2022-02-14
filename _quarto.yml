@@ -1,0 +1,66 @@
+project:
+  type: book
+  output-dir: docs
+
+year: 2022
+
+book:
+  title: "OP-TEE Shared Secure Peripherals"
+  subtitle: "Part of the TACOS project"
+  subject: "OP-TEE Shared Secure Peripherals guide"
+  keywords: [OP-TEE, TACOS, QEMU, SABRE Lite]
+  author: Tom Van Eyck, Hassaan Janjua
+  date: \today
+  lang: en-US
+  page-footer:
+    left: "Copyright {{< meta year >}}, TACOS project"
+    right:
+      - icon: github
+        href: https://github.com/Distrinet-TACOS
+
+  site-url: https://distrinet-tacos.github.io/documentation/
+  repo-url: https://github.com/Distrinet-TACOS/documentation/
+  repo-actions: [edit, issue]
+  repo-branch: main
+  downloads: pdf
+
+  chapters:
+    - index.qmd
+    - part: Setting up & building OP-TEE
+      chapters:
+        - setup/prerequisites.qmd
+        - setup/build.qmd
+        - setup/debug.qmd
+        - setup/pta.qmd
+        - setup/serial-itr.qmd
+    - part: Design & implementation of a driver for Shared Secure Peripherals
+      chapters:
+        - design/ssp-driver.qmd
+        - design/modules.qmd
+        - design/implementation.qmd
+    # - references.qmd
+
+bibliography: references.bib
+csl: templates/ieee-with-url.csl
+reference-section-title: References
+
+callout-appearance: simple
+
+format:
+  html:
+    theme: cosmo
+    logo: figures/distrinet.png
+    code-copy: true
+    code-overflow: wrap
+    search: true
+    
+
+  pdf:
+    classoption: oneside
+    toc: true
+
+    # Eisvogel template:
+    template: templates/eisvogel.tex
+    titlepage: true
+    toc-own-page: true
+    logo: figures/distrinet.png

@@ -1,63 +1,74 @@
-@startuml split-driver
+@startuml SSP-driver
 !theme plain
 
-title Split driver flow\nController initialization
+title SSP driver flow\nController initialization
 
 ' skinparam ParticipantPadding 30
 ' skinparam BoxPadding 10
 skinparam SequenceBoxBorderColor #bbbbbb
 
 box "Normal world"
-participant "Normal world\nsplit driver" as normal
-participant "Split driver controller" as controller
+participant "Normal world\nSSP driver" as normal
+participant "Normal world\nSSP controller" as norm_cont
 participant "OP-TEE Driver" as driver
 end box
 box "Secure world"
-participant "Secure world\nsplit driver" as pta
+participant "Secure world\nSSP Controller" as sec_cont
+participant "Secure world\nSSP driver" as secure
 end box
 
 driver -> driver ++: Boot
 
--> controller ++: Load\nkernel module
+-> norm_cont ++: Load\nkernel module
 
-controller -> controller ++: init
-    controller -> pta ++: Create context & session
+norm_cont -> norm_cont ++: init
+    norm_cont -> sec_cont ++: Create context
+    norm_cont -> sec_cont ++: Create session
+        return Session id
 
-    controller -> pta ++: Enable notification
-        pta -> pta: Allocate\nnotification value
+    norm_cont -> sec_cont ++: Enable notification
+        sec_cont -> sec_cont: Allocate\nnotification value
         return Notification value
     
-    controller -> driver: Register callback\nwith notification value
-    <-- controller --
+    norm_cont -> driver ++: Register callback\nwith notification value
+        return
+    <-- norm_cont --
 
-newpage Split driver flow\nNormal world split driver initialization
+newpage SSP driver flow\nNormal world SSP driver initialization
 
 -> normal ++: Load driver
     normal -> normal ++: init
-    normal -> controller ++: Register normal split driver
-        controller -> controller: Create driver specific buffer(s)
+    normal -> secure ++: Create context
+
+    normal -> norm_cont ++: Register normal SSP driver\nusing the UUID of the secure\nworld SSP driver
+        norm_cont -> norm_cont: Register notification callback
         return
-    normal -> controller ++: Open session
-        controller -> pta ++: Open session
-            pta -> pta: Create driver specific buffer(s)
-            return Session id
-        controller -> pta ++: Enable interrupt
-            pta -> pta: Register driver specific\ninterrupt handler(s)
-            return
+
+    normal -> secure ++: Create session
+        secure -> secure: Create driver specific buffer(s)
+        return Session id
+
+    normal -> secure ++: Enable interrupt
+        secure -> secure: Register interrupt for driver
         return
+
     normal -> normal: Register device(s)
     <-- normal --
 
-newpage Split driver flow\nInterrupt handling
+newpage SSP driver flow\nInterrupt handling
 
-pta <- : Interrupt received
-activate pta
-    pta -> pta: Read serial console &\nsave in driver specific buffer
-    pta -> pta: Set allocated\nnotification value
-    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
-    pta --> pta --: ITRR_HANDLED
+secure <- : Interrupt received
+activate secure
+    secure -> secure: Read serial console &\nsave in driver specific buffer
+    secure -> sec_cont ++: Notify controller\nof interrupt
+        sec_cont -> sec_cont: Save the driver's UUID
+        sec_cont -> sec_cont: Set allocated\nnotification value
+        sec_cont -> driver ++: Send notification by triggering\nnon-secure interrupt
+        sec_cont --> secure --
+    
+    secure --> secure --: ITRR_HANDLED
 
-driver -> pta ++: Get notification value
+driver -> sec_cont ++: Get notification value
 return Notification value
 note left
     Based on this notification value
@@ -65,84 +76,56 @@ note left
     Other programs may also use their
     own notification values.
 end note
-driver -> controller ++: Callback
-    controller -> pta ++: Update buffers
-        return New data only
 
-    controller -> controller: Synchronize buffers
-    loop All registered drivers with updates
-        controller -> normal ++: Notify of updated information
-        normal -> controller ++: Read data
-            return New data only
-        normal -> normal: Store in buffer
-        return    
-    end
-    controller --> driver --
-driver --> driver --: IRQ_HANDLED
-
-newpage Split driver flow\nInterrupt handling - Real time implementation
-
-' It should be like this (+ threader request in OP-TEE driver)
-pta <- : Interrupt received
-activate pta
-    pta -> pta: Read serial console &\nsave in driver specific buffer
-    pta -> pta: Set allocated\nnotification value
-    pta -> driver ++: Send notification by\ntriggering non-secure\ninterrupt
-    pta --> pta --: ITRR_HANDLED
-
-driver -> pta ++: Get notification value
-return Notification value
-note left
-    Based on this notification value
-    the appropriate action is chosen.
-    Other programs may also use their
-    own notification values.
-end note
 driver --> driver --: IRQ_WAKE_THREAD
-driver -> driver ++: Threaded interrupt
-driver -> controller ++: Callback
-    controller -> pta ++: Update buffers
-        return New data only
+driver -> driver ++: Wake threaded\ninterrupt handler
+note left
+    It is necessary to handle the rest
+    of the interrupt in a threaded
+    context as making normal calls into
+    OP-TEE is not possible in a hard IRQ
+    context.
+end note
 
-    controller -> controller: Synchronize buffers
-    loop All registered drivers with updates
-        controller -> normal ++: Notify of updated information
-        |||
+driver -> norm_cont ++: Callback
+    norm_cont -> secure ++: Get the UUIDs of the secure\nworld SSP drivers that\nreceived interrupts
+        return UUIDs
+
+    loop Normal world SSP drivers\nthat registered each UUID
+        norm_cont -> normal ++: Notify of updated information
+        normal -> secure ++: Update buffer
+            return
+        return
     end
-    controller --> driver --
+    norm_cont --> driver --
 driver --> driver --: IRQ_HANDLED
 
-normal -> controller ++: Read data
-    return New data only
-normal -> normal: Store in buffer
-normal --> normal --
+' newpage SSP driver flow\nNormal world SSP driver termination
 
-newpage Split driver flow\nNormal world split driver termination
+' -> normal++: Unload driver
+'     normal -> normal: Unregister device(s)
+'     normal -> norm_cont ++: Close session
+'         norm_cont -> secure ++: Disable interrupt
+'             secure -> secure: Disable driver specific\ninterrupt handler(s)
+'             return
+'         norm_cont -> secure ++: Close session
+'             secure -> secure: Remove driver specific buffer(s)
+'             return
+'         return
+'     normal -> norm_cont ++: Unregister normal SSP driver
+'         norm_cont -> norm_cont: Remove driver specifc buffer(s)
+'         return
+'     return
+' destroy normal
 
--> normal++: Unload driver
-    normal -> normal: Unregister device(s)
-    normal -> controller ++: Close session
-        controller -> pta ++: Disable interrupt
-            pta -> pta: Disable driver specific\ninterrupt handler(s)
-            return
-        controller -> pta ++: Close session
-            pta -> pta: Remove driver specific buffer(s)
-            return
-        return
-    normal -> controller ++: Unregister normal split driver
-        controller -> controller: Remove driver specifc buffer(s)
-        return
-    return
-destroy normal
+' ' newpage SSP driver flow\nController termination
 
-newpage Split driver flow\nController termination
-
--> controller++: Unload\nkernel module
-    controller -> pta ++: Disable notification
-        pta -> pta: Free\nnotification value
-        return
-    controller -> driver: Unregister callback
-    controller -> pta !!: Close session & context
-return
-destroy controller
+' -> norm_cont++: Unload\nkernel module
+'     norm_cont -> secure ++: Disable notification
+'         secure -> secure: Free\nnotification value
+'         return
+'     norm_cont -> driver: Unregister callback
+'     norm_cont -> secure !!: Close session & context
+' return
+' destroy norm_cont
 @enduml
