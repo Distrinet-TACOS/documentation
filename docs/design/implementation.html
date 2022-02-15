@@ -229,6 +229,7 @@
 <li><a href="#qemu" class="nav-link" data-scroll-target="#qemu"> <span class="header-section-number">8.1.1</span> QEMU</a></li>
 <li><a href="#sabre-lite" class="nav-link" data-scroll-target="#sabre-lite"> <span class="header-section-number">8.1.2</span> SABRE Lite</a></li>
 </ul></li>
+<li><a href="#technical-details" class="nav-link" data-scroll-target="#technical-details"> <span class="header-section-number">8.2</span> Technical details</a></li>
 </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/design/implementation.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -242,7 +243,7 @@
 <h2 data-number="8.1" class="anchored" data-anchor-id="build-instructions"><span class="header-section-number">8.1</span> Build instructions</h2>
 <section id="qemu" class="level3" data-number="8.1.1">
 <h3 data-number="8.1.1" class="anchored" data-anchor-id="qemu"><span class="header-section-number">8.1.1</span> QEMU</h3>
-<p>As shown in the figures in the previous sections, both loadable kernel modules and pseudo trusted applications are part of the architecture and thus they all need to be compiled. This requires multiple compile commands in different directories. These commands need to be executed in order (for QEMU):</p>
+<p>As shown in the figures in the previous sections, both loadable kernel modules and pseudo trusted applications are part of the architecture and thus they all need to be compiled. This requires multiple compile commands in different directories. These commands need to be executed in order:</p>
 <ol type="1">
 <li><p>Init repo with the right manifest in the project root directory:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
@@ -279,10 +280,38 @@
 </section>
 <section id="sabre-lite" class="level3" data-number="8.1.2">
 <h3 data-number="8.1.2" class="anchored" data-anchor-id="sabre-lite"><span class="header-section-number">8.1.2</span> SABRE Lite</h3>
-<p>As explained earlier in this documentation, the <em>Buildroot</em> build system is used to build the complete package for the Sabre Lite board. For this process, the same steps are followed as explained in that section. However, an extra external Buildroot tree is added</p>
-
-
+<p>As explained in <a href="../setup/build.html#sec-build-sabrelite">Section&nbsp;<span>2.2</span></a>, the <em>Buildroot</em> build system is used to build the complete package for the Sabre Lite board. For this process, the same steps are followed as explained in that section. However, an extra external Buildroot tree is added which contains the kernel modules for the normal world, while the secure world components are contained on a custom branch of our OP-TEE OS fork. It is thus easiest to start with an empty workspace.</p>
+<ol type="1">
+<li><p>Start by cloning the necessary repositories:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">mkdir</span> <span class="at">-p</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a> <span class="bu">cd</span> <span class="op">&lt;</span>project-dir<span class="op">&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">git</span> clone https://github.com/Distrinet-TACOS/buildroot.git</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">git</span> clone https://github.com/Distrinet-TACOS/buildroot-external-boundary.git</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">git</span> clone https://github.com/Distrinet-TACOS/shared-secure-peripherals.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>Now generate the output folder using the following command:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> BR2_EXTERNAL=<span class="va">$PWD</span>/buildroot-external-boundary/:<span class="va">$PWD</span>/shared-secure-peripherals/ <span class="at">-C</span> buildroot/ O=<span class="va">$PWD</span>/output imx6q_sabrelite_defconfig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>The build and flash steps are the same as in <a href="../setup/build.html#sec-build-sabrelite">Section&nbsp;<span>2.2</span></a>.</p></li>
+<li><p>To actually test the functionality, after booting and logging in, enter the following on the normal world console:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a> <span class="ex">modprobe</span> normal-controller</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a> <span class="ex">modprobe</span> normal-ssp-driver</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This loads the normal world controller and driver into the Linux kernel.</p></li>
+<li><p>It is now possible to interact with the secure world serial console. Everything that you type in that console gets sent to the normal world driver, which acts as a character device. To display its buffer, execute:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /dev/normal-ssp-driver</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
 </section>
+</section>
+<section id="technical-details" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="technical-details"><span class="header-section-number">8.2</span> Technical details</h2>
+<p>During the implementation of these shared secure peripherals on the SABRE Lite board we encountered some interesting difficulties:</p>
+<ul>
+<li>The UART driver present for iMX.6 boards did not enable serial interrupts at boot. We added the necessary logic so that it does. The initialization of the UART subsystem is carried over from U-Boot after which the necessary bits are set.</li>
+<li>The device tree for the iMX.6 SABRE Lite boards did not contain an interrupt parent for the optee firmware node. The fix was to introduce the parent <code>intc: interrupt-controller@a01000</code> at the main node of the tree.</li>
+<li>While trying to handle the notification from the secure world in the hard IRQ context of the asynchronous notification, we had difficulties with doing a normal call into the secure world. After investigating this it became clear that this was not supported behavior. The call into the secure world is thus made in a threaded IRQ context.</li>
+</ul>
+<p>The actual and detailed control flow of our implementation can be seen in the following figures:</p>
+<p><img src="figures/SSP-driver-page1.png" class="img-fluid"> <img src="figures/SSP-driver-page2.png" class="img-fluid"> <img src="figures/SSP-driver-page3.png" class="img-fluid"></p>
+
+
 </section>
 </main> <!-- /main -->
 <script type="application/javascript">

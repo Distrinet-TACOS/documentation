@@ -1,34 +1,26 @@
 @startuml
 
 !theme plain
-autonumber 1.1
+' autonumber 1.1
 
 skinparam SequenceBoxBorderColor #bbbbbb
 
 box "Normal world"
-participant "Normal\nSSP driver" as nsd
-participant "Normal controller" as normcont
+participant "Normal world\nSSP driver" as nsd
+participant "Normal world\nSSP controller" as normcont
 end box
 box "Secure world"
-participant "Secure controller" as seccont
-participant "Secure\nSSP driver" as ssd
+participant "Secure world\nSSP Controller" as seccont
+participant "Secure world\nSSP driver" as ssd
 end box
 
-ssd -> ssd ++: Boot
-    ssd -> seccont ++: ssp_register(uuid)
-        seccont -> normcont ++: Save uuid
-            return
-        return
-
-autonumber inc A
 nsd -> nsd ++: Load
-    nsd -> normcont ++: nsp_register(uuid, notif_handler)
+    nsd -> normcont ++: norm_ssp_register(sec_uuid, notif_handler)
         return
 
-autonumber inc A
 ssd <- ++: Interrupt
-    ssd -> seccont ++: ssp_notify(uuid)
-        seccont -> normcont ++: Interrupt
+    ssd -> seccont ++: sec_ssp_notify(sec_uuid)
+        seccont --> normcont ++: Interrupt
             seccont --> ssd --: Handled
         ssd --> ssd --: Handled
 

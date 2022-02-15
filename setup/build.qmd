@@ -51,7 +51,7 @@ To test if everything went according to plan, run `xtest` once logged in. If the
 
 The command ``make run-only -j `nproc` `` is also available to run QEMU without building the project.
 
-## Sabre Lite
+## Sabre Lite {#sec-build-sabrelite}
 
 ### Download of repositories
 
@@ -85,7 +85,7 @@ The simplest way to bootstrap is to issue a make command. This will fetch all th
  
 ``` bash
 cd <project-dir>/output
-make -j `nproc`
+make BR2_JLEVEL="$(nproc)" all
 ```
 
 This process will take some time.

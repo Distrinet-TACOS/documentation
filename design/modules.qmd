@@ -1,6 +1,6 @@
 # Linux kernel Modules (aka device drivers)
 
-In the section [Normal world callback on secure world interrupt](#normal-world-callback-on-secure-world-interrupt) a mechanism was explained to notify the normal world of a secure world interrupt. We can now use this mechanism to implement a *Shared Secure Peripheral driver* that is responsible for relaying these secure interrupts in the secure world to a device interface in the normal world. It would then be possible to, for instance, write a normal world application that makes use of standardized device interfaces to interact with systems running in the secure world.
+In @sec-callback-on-interrupt a mechanism was explained to notify the normal world of a secure world interrupt. We can now use this mechanism to implement a *Shared Secure Peripheral driver* that is responsible for relaying these secure interrupts in the secure world to a device interface in the normal world. It would then be possible to, for instance, write a normal world application that makes use of standardized device interfaces to interact with systems running in the secure world.
 
 On Linux based operating systems, device drivers are called modules. These modules can be *built-in*, meaning they are compiled together with the kernel, or *loadable* at runtime.
 

@@ -236,7 +236,7 @@
 <h1 class="title d-none d-lg-block display-7"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></h1>
 </header>
 
-<p>In the section <a href="ssp-driver.html#normal-world-callback-on-secure-world-interrupt">Normal world callback on secure world interrupt</a> a mechanism was explained to notify the normal world of a secure world interrupt. We can now use this mechanism to implement a <em>Shared Secure Peripheral driver</em> that is responsible for relaying these secure interrupts in the secure world to a device interface in the normal world. It would then be possible to, for instance, write a normal world application that makes use of standardized device interfaces to interact with systems running in the secure world.</p>
+<p>In <a href="ssp-driver.html#sec-callback-on-interrupt">Section&nbsp;<span>6.1</span></a> a mechanism was explained to notify the normal world of a secure world interrupt. We can now use this mechanism to implement a <em>Shared Secure Peripheral driver</em> that is responsible for relaying these secure interrupts in the secure world to a device interface in the normal world. It would then be possible to, for instance, write a normal world application that makes use of standardized device interfaces to interact with systems running in the secure world.</p>
 <p>On Linux based operating systems, device drivers are called modules. These modules can be <em>built-in</em>, meaning they are compiled together with the kernel, or <em>loadable</em> at runtime.</p>
 <section id="built-in-modules" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="built-in-modules"><span class="header-section-number">7.1</span> Built-in modules</h2>
