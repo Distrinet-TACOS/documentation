@@ -3,7 +3,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OP-TEE Shared Secure Peripherals - 1&nbsp; Prerequisites</title>
+  <title>OP-TEE Shared Secure Peripherals - 3&nbsp; Developing changes for OPTEE-OS</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -83,8 +83,8 @@
   <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
   <script src="../site_libs/quarto-search/fuse.min.js"></script>
   <script src="../site_libs/quarto-search/quarto-search.js"></script>
-  <link href="../setup/build.html" rel="next">
-  <link href="../index.html" rel="prev">
+  <link href="../setup/debug.html" rel="next">
+  <link href="../setup/build.html" rel="prev">
   <script src="../site_libs/quarto-html/quarto.js"></script>
   <script src="../site_libs/quarto-html/popper.min.js"></script>
   <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -124,7 +124,7 @@
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></h1>
       <button type="button" class="quarto-btn-toggle btn">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -167,7 +167,7 @@
     <ul id="quarto-sidebar-section-setting-up--building-op-tee" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/prerequisites.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></a>
+  <a href="../setup/prerequisites.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -177,7 +177,7 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
+  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -230,73 +230,49 @@
         <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#ubuntu" class="nav-link active" data-scroll-target="#ubuntu"> <span class="header-section-number">1.1</span> Ubuntu</a>
-<ul class="collapse">
-<li><a href="#changes-from-original-2" class="nav-link" data-scroll-target="#changes-from-original-2"> <span class="header-section-number">1.1.1</span> Changes from original [2]</a></li>
-</ul></li>
-<li><a href="#google-aosp-repo" class="nav-link" data-scroll-target="#google-aosp-repo"> <span class="header-section-number">1.2</span> Google AOSP repo</a></li>
-<li><a href="#qemu" class="nav-link" data-scroll-target="#qemu"> <span class="header-section-number">1.3</span> QEMU</a></li>
+<li><a href="#qemu" class="nav-link active" data-scroll-target="#qemu"> <span class="header-section-number">3.1</span> QEMU</a></li>
+<li><a href="#sabre-lite" class="nav-link" data-scroll-target="#sabre-lite"> <span class="header-section-number">3.2</span> SABRE Lite</a></li>
 </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/setup/prerequisites.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/setup/developing.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 <header id="title-block-header" class="quarto-title-block default">
 
-<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></h1></div></header>
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></h1></div></header>
 
-<ul>
-<li>Ubuntu 20.04 (only this distribution tested)</li>
-<li>Google AOSP repo</li>
-<li>QEMU</li>
-</ul>
-<section id="ubuntu" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="ubuntu"><span class="header-section-number">1.1</span> Ubuntu</h2>
-<p>This guide is based on a clean Ubuntu 20.04 installation in a VM. It should be possible to repeat the results on any Linux distribution and any hypervisor platform, as long as the required packages are available.</p>
-<p>At least 60GiB free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to system crashes.</p>
-<p>The first thing to do when the operating system is installed, is to update the package manager for the right architectures. Run the following in a command line:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dpkg <span class="at">--add-architecture</span> i386</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Then the required packages can be installed:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install android-tools-adb android-tools-fastboot autoconf <span class="dt">\</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>        automake bc bison build-essential ccache cscope curl device-tree-compiler <span class="dt">\</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        expect flex ftp-upload gdisk iasl libattr1-dev libcap-dev <span class="dt">\</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        libfdt-dev libftdi-dev libglib2.0-dev libgmp-dev libhidapi-dev <span class="dt">\</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        libmpc-dev libncurses5-dev libncursesw5-dev libpixman-1-dev libpython2.7 <span class="dt">\</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        libssl-dev libtool make mtools netcat ninja-build python-crypto <span class="dt">\</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        python3-crypto python-is-python3 python-pyelftools python3-pycryptodome <span class="dt">\</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        python3-pyelftools python3-serial rsync unzip uuid-dev xdg-utils xterm <span class="dt">\</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        xz-utils zlib1g-dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="changes-from-original-2" class="level3" data-number="1.1.1">
-<h3 data-number="1.1.1" class="anchored" data-anchor-id="changes-from-original-2"><span class="header-section-number">1.1.1</span> Changes from original [2]</h3>
-<ul>
-<li>python-serial is not available for Ubuntu 20.04. This package has thus been removed from the install procedure. This should not have any impact, because only python3 is used.</li>
-<li>As python3 is the only python version available on Ubuntu 20.04, a package is added that links <code>python</code> to <code>python3</code>. This might be troublesome on systems where Python 2 is installed and existing tools use Python 2 by calling <code>python</code>. If this is the case, change these tools to use <code>python2</code> explicitly.</li>
-</ul>
+<section id="qemu" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="qemu"><span class="header-section-number">3.1</span> QEMU</h2>
+<p>It is very easy to make changes to the OPTEE-OS components on QEMU. Just change what you want in the respective directory in <code>&lt;project-dir&gt;</code> and rebuild in <code>&lt;project-dir&gt;/build</code>.</p>
 </section>
-</section>
-<section id="google-aosp-repo" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="google-aosp-repo"><span class="header-section-number">1.2</span> Google AOSP repo</h2>
-<p>The repo tool from the Google Android Open Source Project (AOSP) allows you to manage multiple git repositories using manifest files. OP-TEE uses these manifests to combine all projects into a single development environment based on the specific architecture to be used.</p>
-<p>Obviously, because repo uses git, git needs to be installed and setup on the system. Configure git with your email and name.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install git</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"&lt;email&gt;"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"&lt;name&gt;"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>After that, repo can be installed:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/bin</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span><span class="st">"</span><span class="va">${HOME}</span><span class="st">/bin:</span><span class="va">${PATH}</span><span class="st">"</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> https://storage.googleapis.com/git-repo-downloads/repo <span class="op">&gt;</span> ~/bin/repo</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> a+rx ~/bin/repo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Because repo is installed in <code>~/bin</code>, this directory needs to be added to the path. This should already been taken care of by Ubuntu, this can be checked if the following is present in <code>~/.profile</code>. If not, it should be added to the end of the file.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a> <span class="bu">set</span> path so it includes user<span class="st">'s private bin if it exists</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">if [ -d "$HOME/bin" ] ; then</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">    PATH="$HOME/bin:$PATH"</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="qemu" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="qemu"><span class="header-section-number">1.3</span> QEMU</h2>
-<p>Next, QEMU should be installed. This can be done by executing</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install qemu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="sabre-lite" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sabre-lite"><span class="header-section-number">3.2</span> SABRE Lite</h2>
+<p>Because Buildroot is meant as more of a deployment than a development system, making changes to the components requires some work. We will be following the <a href="https://buildroot.org/downloads/manual/manual.html#_using_buildroot_during_development">Buildroot documentation</a>.</p>
+<ol type="1">
+<li><p>First, clone the repositories of the components you want to in a separate directory. Let’s use <code>&lt;changes-dir&gt;</code> for this example.</p></li>
+<li><p>Create a file in <code>&lt;project-dir&gt;/output</code> called <code>local.mk</code> and add the following lines for each component that you cloned locally (in this case OPTEE-OS and Linux):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>OPTEE_OS_OVERRIDE_SRCDIR = &lt;changes-dir&gt;/optee_os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>LINUX_OVERRIDE_SRCDIR = &lt;changes-dir&gt;/linux</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will tell Buildroot that it should not pull the build files from the remote repositories, but should instead use the locally cloned files.</p></li>
+<li><p>Then issue the following command after every change you made to these files (again for OPTEE-OS and Linux):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> BR2_JLEVEL=<span class="st">"</span><span class="va">$(</span><span class="fu">nproc</span><span class="va">)</span><span class="st">"</span> optee-os-rebuild linux-rebuild all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will copy the files from the local clones to <code>&lt;project-dir&gt;/output/build/...</code></p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It might be necessary to first run</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> optee-os-dirclean linux-dirclean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>to remove the current build files. This <em>will</em> remove all files in <code>&lt;project-dir&gt;/output/build/...</code>, so make sure that any changes are backed up first.</p>
+</div>
+</div></li>
+</ol>
 
 
 </section>
@@ -476,13 +452,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="../setup/build.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Building &amp; running OP-TEE</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../setup/build.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Building &amp; running OP-TEE</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../setup/debug.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

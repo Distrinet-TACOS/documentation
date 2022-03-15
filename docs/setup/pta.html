@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.13">
+  <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OP-TEE Shared Secure Peripherals - 4&nbsp; Custom Pseudo Trusted Application</title>
+  <title>OP-TEE Shared Secure Peripherals - 5&nbsp; Custom Pseudo Trusted Application</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -124,7 +124,7 @@
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></h1>
       <button type="button" class="quarto-btn-toggle btn">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -177,17 +177,22 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
+  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
+  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
   </div>
 </li>
     </ul>
@@ -202,17 +207,17 @@
     <ul id="quarto-sidebar-section-design--implementation-of-a-driver-for-shared-secure-peripherals" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
+  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
+  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
+  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
   </div>
 </li>
     </ul>
@@ -225,21 +230,21 @@
         <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#example-pta" class="nav-link active" data-scroll-target="#example-pta"> <span class="header-section-number">4.1</span> Example PTA</a></li>
+<li><a href="#example-pta" class="nav-link active" data-scroll-target="#example-pta"> <span class="header-section-number">5.1</span> Example PTA</a></li>
 </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/setup/pta.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
-<header id="title-block-header">
-<h1 class="title d-none d-lg-block display-7"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></h1>
-</header>
+<header id="title-block-header" class="quarto-title-block default">
+
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></h1></div></header>
 
 <p><em>Trusted Applications</em> (TA) normally run in user mode in the Trusted Execution Environment. They are dynamically loaded when executed. When you want to run them in kernel mode, a Pseudo TA (PTA) is necessary. During compilation, PTA’s are statically linked against the OP-TEE kernel.</p>
 <p>It is possible to create a PTA by adding the sources to <code>optee_os/core/pta</code> and including them in the Makefile in the same directory. This way the PTA is included in the os when it is built. It is then possible to create an application for the normal world that calls this PTA using its UUID and the right parameters, just like a normal TA.</p>
 <p>The example host application is created by copying an existing example application from <code>optee_examples</code> and removing the <code>ta</code> subfolder (as there will be no TA compiled separately). The Makefile of the host application should be updated with the right binary name and the build instructions for a TA should be removed from the parent (C)Makefiles.</p>
-<section id="example-pta" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="example-pta"><span class="header-section-number">4.1</span> Example PTA</h2>
+<section id="example-pta" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="example-pta"><span class="header-section-number">5.1</span> Example PTA</h2>
 <p>This example shows a simple PTA that prints some text when called from the normal world.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// File: optee_os/core/pta/testpta.c</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -651,12 +656,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../setup/debug.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../setup/serial-itr.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -668,7 +673,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/Distrinet-TACOS">
-      <i class="bi-github" role="img">
+      <i class="bi bi-github" role="img">
 </i> 
     </a>
   </li>  

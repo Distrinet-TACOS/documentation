@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.13">
+  <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OP-TEE Shared Secure Peripherals - 6&nbsp; Shared Secure Peripherals for OP-TEE</title>
+  <title>OP-TEE Shared Secure Peripherals - 7&nbsp; Shared Secure Peripherals for OP-TEE</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -61,7 +61,7 @@
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></h1>
       <button type="button" class="quarto-btn-toggle btn">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -114,17 +114,22 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
+  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
+  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
   </div>
 </li>
     </ul>
@@ -139,17 +144,17 @@
     <ul id="quarto-sidebar-section-design--implementation-of-a-driver-for-shared-secure-peripherals" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
+  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
+  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
+  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
   </div>
 </li>
     </ul>
@@ -162,72 +167,72 @@
         <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#sec-callback-on-interrupt" class="nav-link active" data-scroll-target="#sec-callback-on-interrupt"> <span class="header-section-number">6.1</span> Normal world callback on secure world interrupt</a>
+<li><a href="#sec-callback-on-interrupt" class="nav-link active" data-scroll-target="#sec-callback-on-interrupt"> <span class="header-section-number">7.1</span> Normal world callback on secure world interrupt</a>
 <ul class="collapse">
-<li><a href="#feature-state" class="nav-link" data-scroll-target="#feature-state"> <span class="header-section-number">6.1.1</span> Feature state</a></li>
-<li><a href="#using-asynchronous-notifications" class="nav-link" data-scroll-target="#using-asynchronous-notifications"> <span class="header-section-number">6.1.2</span> Using asynchronous notifications</a></li>
-<li><a href="#practical-overview" class="nav-link" data-scroll-target="#practical-overview"> <span class="header-section-number">6.1.3</span> Practical overview</a></li>
+<li><a href="#feature-state" class="nav-link" data-scroll-target="#feature-state"> <span class="header-section-number">7.1.1</span> Feature state</a></li>
+<li><a href="#using-asynchronous-notifications" class="nav-link" data-scroll-target="#using-asynchronous-notifications"> <span class="header-section-number">7.1.2</span> Using asynchronous notifications</a></li>
+<li><a href="#practical-overview" class="nav-link" data-scroll-target="#practical-overview"> <span class="header-section-number">7.1.3</span> Practical overview</a></li>
 </ul></li>
-<li><a href="#ssp-driver-using-callbacks" class="nav-link" data-scroll-target="#ssp-driver-using-callbacks"> <span class="header-section-number">6.2</span> SSP driver using callbacks</a></li>
+<li><a href="#ssp-driver-using-callbacks" class="nav-link" data-scroll-target="#ssp-driver-using-callbacks"> <span class="header-section-number">7.2</span> SSP driver using callbacks</a></li>
 </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/design/ssp-driver.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
-<header id="title-block-header">
-<h1 class="title d-none d-lg-block display-7"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></h1>
-</header>
+<header id="title-block-header" class="quarto-title-block default">
+
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></h1></div></header>
 
 <p>Currently, for <em>Trusted Execution Environments</em> (TEE), there exist no drivers that can operate as regular devices (think of character devices in Linux operating systems) and enable interaction between user space applications in the normal world and the TEE subsystem in a transparent fashion. Such a driver could take all the technicalities out of the communication with these TEE subsystems. This is useful in the case of writing an adapter between existing applications, which are already interacting with interfaces of regular devices, and the TEE subsystem, such that the applications do not need to be rewritten.</p>
 <p>A <em>Shared Secure Peripheral</em> (SSP) driver for OP-TEE consists of two parts: a <em>Normal World SSP Controller</em> and a <em>Secure World Controller</em>. These two controllers work together to form a bridge across the gap between both worlds that allows devices in the normal world to react to interrupts in the secure world. Using such a driver makes it possible for any normal world, user space applications to interoperate with code running in the secure world without needing major refactoring.</p>
-<section id="sec-callback-on-interrupt" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="sec-callback-on-interrupt"><span class="header-section-number">6.1</span> Normal world callback on secure world interrupt</h2>
+<section id="sec-callback-on-interrupt" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-callback-on-interrupt"><span class="header-section-number">7.1</span> Normal world callback on secure world interrupt</h2>
 <p>Because of the design of TEEs, it is not possible to directly communicate with the normal world from the secure world. It is thus not immediately possible to react to a secure world interrupt in the normal world.</p>
 <p>Say that a secure interrupt is registered on a serial interface of the secure world and that this interrupt event is of importance to the normal world and requires special handling there. The interrupt infrastructure dictates that the secure world handles this interrupt with an earlier defined interrupt handler. The <a href="https://optee.readthedocs.io/en/latest/architecture/core.html"><em>Secure Monitor</em></a> preempts the normal world and starts execution of this handler in the secure world. But how do we notify the normal world of this event?</p>
 <p>The normal world is able to communicate with the secure world via well defined channels. This means that threads on the Linux based operating system can easily open communication channels to trusted applications in the secure world. This happens through the well known <a href="https://globalplatform.org/specs-library/tee-client-api-specification/">GlobalPlatform Client API</a>. The normal world can launch calls into the secure world with some kind of argument passing or shared memory, as described in the Client API. In this way, the secure world is able to populate those memory locations with data of use to the normal world.</p>
 <p>It is thus possible to approximate communication from the secure world to the normal world by globally saving data or state of the interrupt handler and its results, which can be polled by the normal world. This is however an inefficient solution, as the normal world needs to do constant polling to the secure world, and defeats the purpose of interrupts.</p>
 <p>The solution to this problem is a newly developed mechanism, aptly called <a href="https://optee.readthedocs.io/en/latest/architecture/core.html#notifications"><em>Asynchronous Notifications</em></a>. This is a feature that is added to the Linux kernel, but it is still in the middle of the review process and is thus not yet generally available. To check out this feature, you can clone the <code>tacos-qemu-callback.xml</code> manifest file as explained earlier in the <a href="../setup/build.html#download-of-repositories">Download of repositories</a> section. This section will cover the implementation details of this feature.</p>
-<section id="feature-state" class="level3" data-number="6.1.1">
-<h3 data-number="6.1.1" class="anchored" data-anchor-id="feature-state"><span class="header-section-number">6.1.1</span> Feature state</h3>
+<section id="feature-state" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="feature-state"><span class="header-section-number">7.1.1</span> Feature state</h3>
 <p>This notification feature is explained in the OP-TEE documentation in the section about <a href="https://optee.readthedocs.io/en/latest/architecture/core.html#notifications">asynchronous notifications</a>. It consists of two active RFCs, one on the <a href="https://github.com/OP-TEE/optee_os">optee_os</a> repository and on the <a href="https://github.com/linaro-swg/linux">linaro-swg linux</a> repository. Because the changes to the linux repository are actually changes to the Linux kernel itself, these changes need to be upstreamed to the actual Linux kernel. Although this feature is generally well received by the kernel maintainers, this review process is lengthy, with multiple back and forths between the Linaro developers and the maintainers. It generally takes a few months until the changes are accepted. The changes to optee_os are on hold until the upstreaming process is finished.</p>
 </section>
-<section id="using-asynchronous-notifications" class="level3" data-number="6.1.2">
-<h3 data-number="6.1.2" class="anchored" data-anchor-id="using-asynchronous-notifications"><span class="header-section-number">6.1.2</span> Using asynchronous notifications</h3>
+<section id="using-asynchronous-notifications" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="using-asynchronous-notifications"><span class="header-section-number">7.1.2</span> Using asynchronous notifications</h3>
 <p>Luckily, the mechanism that is currently being reviewed is in a working state, which means we can pull it in our working copy and use it to our hearts content. The changes have already been applied to our fork of the linux kernel, and can be pulled from git as explained in the introduction of this section.</p>
-<section id="secure-world-to-normal-world" class="level4" data-number="6.1.2.1">
-<h4 data-number="6.1.2.1" class="anchored" data-anchor-id="secure-world-to-normal-world"><span class="header-section-number">6.1.2.1</span> Secure world to normal world</h4>
+<section id="secure-world-to-normal-world" class="level4" data-number="7.1.2.1">
+<h4 data-number="7.1.2.1" class="anchored" data-anchor-id="secure-world-to-normal-world"><span class="header-section-number">7.1.2.1</span> Secure world to normal world</h4>
 <p>The notification to the normal world is achieved through triggering a non-secure interrupt. The triggering of this interrupt is platform specific and done via <code>itr_raise_pi()</code>. This call is wrapped in a function called <code>notif_send_async</code>, which can be called in an interrupt handler in the secure world. An example implementation can be found in <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. When this non-secure interrupt has been triggered, the Linux kernel in the normal world launches the normal interrupt handling process. At system startup, a handler for this kind of notification interrupt has been registered, so that handler is used.</p>
 <p>The <em>hard</em> interrupt handler <code>notif_irq_handler</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> of a threaded interrupt with the name <code>optee_notification</code> is registered during the initialization of the kernel. This handler is responsible for deciding what to do with the interrupt thrown, based on the value of the notification. This value is collected by the function called <code>get_async_notif_value</code>. The only value that is currently implemented is <code>OPTEE_SMC_ASYNC_NOTIF_VALUE_DO_BOTTOM_HALF</code>, but the implementation could easily be extended to allow for different notifications.</p>
 <p>Because the interrupt handler in the Linux kernel is a <em>threaded interrupt</em> it is also possible to do further handling in the interrupt handler thread called <code>notif_irq_thread_fn</code>. This is the appropriate way to execute more complex interrupt handling that could block the kernel for quite some time.</p>
 </section>
-<section id="normal-world-to-secure-world" class="level4" data-number="6.1.2.2">
-<h4 data-number="6.1.2.2" class="anchored" data-anchor-id="normal-world-to-secure-world"><span class="header-section-number">6.1.2.2</span> Normal world to secure world</h4>
+<section id="normal-world-to-secure-world" class="level4" data-number="7.1.2.2">
+<h4 data-number="7.1.2.2" class="anchored" data-anchor-id="normal-world-to-secure-world"><span class="header-section-number">7.1.2.2</span> Normal world to secure world</h4>
 <p>On the secure side, a <em>notification driver</em> can be registered, should you want to use the asynchronous notification feature as intended. An example implementation can be found in the file <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. However, to write some kind of driver split over the two worlds, we are not fully using this feature, but just using half of the communication channel: from the secure to the normal world.</p>
 </section>
 </section>
-<section id="practical-overview" class="level3" data-number="6.1.3">
-<h3 data-number="6.1.3" class="anchored" data-anchor-id="practical-overview"><span class="header-section-number">6.1.3</span> Practical overview</h3>
-<p><a href="#fig-async-notifs">Figure&nbsp;<span>6.1</span></a> shows the sequence of events defined by the asynchronous notifications feature. The OP-TEE driver is the default driver that manages the TEE and thus OP-TEE OS. This driver always registers an interrupt handler for the asynchronous notifications interrupt line on start up. The PTA also registers an interrupt handler, this time for the external hardware interrupt line.</p>
+<section id="practical-overview" class="level3" data-number="7.1.3">
+<h3 data-number="7.1.3" class="anchored" data-anchor-id="practical-overview"><span class="header-section-number">7.1.3</span> Practical overview</h3>
+<p><a href="#fig-async-notifs">Figure&nbsp;<span>7.1</span></a> shows the sequence of events defined by the asynchronous notifications feature. The OP-TEE driver is the default driver that manages the TEE and thus OP-TEE OS. This driver always registers an interrupt handler for the asynchronous notifications interrupt line on start up. The PTA also registers an interrupt handler, this time for the external hardware interrupt line.</p>
 <p>When this hardware interrupt is caught by the PTA, the PTA saves the notification value <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and sends an asynchronous notification to the OP-TEE driver by triggering a non-secure software interrupt. This allows the PTA to finish execution before the OP-TEE driver handles the interrupt.</p>
 <p>When the OP-TEE driver interrupt handler starts handling the software interrupt, it asks for the notification value using a fast call to the OP-TEE OS. Based on this value the driver may choose to do a multitude of things. In the current implementation state, the only value that is implemented is, as explained before, <code>OPTEE_SMC_ASYNC_NOTIF_VALUE_DO_BOTTOM_HALF</code>, which launches a yielding call into the secure os. This yielding call is possible because the interrupt handler in the driver is a <a href="https://www.kernel.org/doc/htmldocs/kernel-api/API-request-threaded-irq.html">threaded interrupt handler</a>. This threaded interrupt handler is implemented in such a way that the notification value is requested in the <em>hard interrupt context</em>, but the bottom half yielding call is made in the threaded interrupt context. This yielding call can thus be preempted, functionality that is not inherently present in OP-TEE OS.</p>
 <div id="fig-async-notifs" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="figures/async-notif.png" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 6.1: Sequence diagram showing the way asynchronous notifications work.</figcaption><p></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 7.1: Sequence diagram showing the way asynchronous notifications work.</figcaption><p></p>
 </figure>
 </div>
 </section>
 </section>
-<section id="ssp-driver-using-callbacks" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="ssp-driver-using-callbacks"><span class="header-section-number">6.2</span> SSP driver using callbacks</h2>
-<p>Given the new feature described in the previous section, it is possible to construct a driver that crosses over the normal and the secure world barrier. We created a pair of drivers, a <em>normal world SSP driver</em> and a <em>secure world SSP driver</em>, that are responsible for providing access to SSPs. The secure SSP driver directly interacts with the SSP hardware, while the normal SSP driver needs to go through the secure driver for their interaction with that hardware. <a href="#fig-components">Figure&nbsp;<span>6.2</span></a> shows the overview of the architecture of the drivers and the system supporting and provided by its functionality.</p>
+<section id="ssp-driver-using-callbacks" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="ssp-driver-using-callbacks"><span class="header-section-number">7.2</span> SSP driver using callbacks</h2>
+<p>Given the new feature described in the previous section, it is possible to construct a driver that crosses over the normal and the secure world barrier. We created a pair of drivers, a <em>normal world SSP driver</em> and a <em>secure world SSP driver</em>, that are responsible for providing access to SSPs. The secure SSP driver directly interacts with the SSP hardware, while the normal SSP driver needs to go through the secure driver for their interaction with that hardware. <a href="#fig-components">Figure&nbsp;<span>7.2</span></a> shows the overview of the architecture of the drivers and the system supporting and provided by its functionality.</p>
 <div id="fig-components" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="figures/components.png" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 6.2: Component diagram for the SSP system.</figcaption><p></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 7.2: Component diagram for the SSP system.</figcaption><p></p>
 </figure>
 </div>
-<p><a href="#fig-components">Figure&nbsp;<span>6.2</span></a> also shows that communication from the normal to the secure world is delivered by an existing API (the <a href="https://globalplatform.org/specs-library/tee-client-api-specification/">GlobalPlatform TEE Client API</a>). This API provides access to TAs running in the secure world based on their identifying UUID, and secured by access control. The normal SSP driver may thus call arbitrary functionality, implemented by the developer of a specific application, of the secure SSP driver. The secure SSP driver may thus also implement some kind of mixer logic if required.</p>
+<p><a href="#fig-components">Figure&nbsp;<span>7.2</span></a> also shows that communication from the normal to the secure world is delivered by an existing API (the <a href="https://globalplatform.org/specs-library/tee-client-api-specification/">GlobalPlatform TEE Client API</a>). This API provides access to TAs running in the secure world based on their identifying UUID, and secured by access control. The normal SSP driver may thus call arbitrary functionality, implemented by the developer of a specific application, of the secure SSP driver. The secure SSP driver may thus also implement some kind of mixer logic if required.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -243,18 +248,18 @@ Note
 </div>
 </div>
 <p>To allow other applications, both on the normal and the secure side, to interact with the hardware as well, both drivers should provide facilities that expose the necessary functionality. In the secure world, the communication with the secure driver happens through the <a href="https://globalplatform.org/specs-library/tee-internal-core-api-specification/">GlobalPlatform Internal Core API</a>, version 1.1. Mission-critical control software like PLC controllers etc. can thus be separated from the hardware driver and moved to user space.</p>
-<p>When the secure world SSP Driver wants to notify the normal world of some event, it cannot use existing APIs, as these only provide a one way communication from the normal to the secure world. This is why we provide a simple and concise package that implements just this functionality. These can be seen in the previous figure as the <em>controller</em> elements. The normal controller provides an API to register drivers to the notification system using the function <code>norm_ssp_register(sec_uuid, notif_handler)</code>. This method accepts an UUID, which is used to uniquely identify each secure application and a handler for incoming notifications. After registering the notification handler, the secure SSP driver can notify the normal SSP driver by calling <code>sec_ssp_notify(sec_uuid)</code>. This will internally trigger a hardware interrupt that will be caught by the normal controller, which in turn calls the notification handler of the normal SSP driver. The complete and detailed controlThis flow through the system can be seen in <a href="#fig-control-flow">Figure&nbsp;<span>6.3</span></a>.</p>
+<p>When the secure world SSP Driver wants to notify the normal world of some event, it cannot use existing APIs, as these only provide a one way communication from the normal to the secure world. This is why we provide a simple and concise package that implements just this functionality. These can be seen in the previous figure as the <em>controller</em> elements. The normal controller provides an API to register drivers to the notification system using the function <code>norm_ssp_register(sec_uuid, notif_handler)</code>. This method accepts an UUID, which is used to uniquely identify each secure application and a handler for incoming notifications. After registering the notification handler, the secure SSP driver can notify the normal SSP driver by calling <code>sec_ssp_notify(sec_uuid)</code>. This will internally trigger a hardware interrupt that will be caught by the normal controller, which in turn calls the notification handler of the normal SSP driver. The complete and detailed controlThis flow through the system can be seen in <a href="#fig-control-flow">Figure&nbsp;<span>7.3</span></a>.</p>
 <div id="fig-control-flow" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="figures/ssp-seq.png" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 6.3: Control flow of the SSP system.</figcaption><p></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 7.3: Control flow of the SSP system.</figcaption><p></p>
 </figure>
 </div>
 
 
 </section>
-<section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2>Footnotes</h2>
-
+<section class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
 <ol>
 <li id="fn1" role="doc-endnote"><p><code>/drivers/tee/optee/notif.c</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p>This value is manually programmed, based on the interrupt the handler will be handling.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
@@ -437,12 +442,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../setup/serial-itr.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../design/modules.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -454,7 +459,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/Distrinet-TACOS">
-      <i class="bi-github" role="img">
+      <i class="bi bi-github" role="img">
 </i> 
     </a>
   </li>  

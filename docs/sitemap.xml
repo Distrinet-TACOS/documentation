@@ -2,42 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/index.html</loc>
-    <lastmod>2022-02-15T15:54:47.187Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.590Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/prerequisites.html</loc>
-    <lastmod>2022-02-15T15:54:47.201Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.605Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/build.html</loc>
-    <lastmod>2022-02-15T15:54:47.203Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.608Z</lastmod>
+  </url>
+  <url>
+    <loc>https://distrinet-tacos.github.io/documentation/setup/developing.html</loc>
+    <lastmod>2022-03-15T16:53:53.610Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/debug.html</loc>
-    <lastmod>2022-02-15T15:54:47.206Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.612Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/pta.html</loc>
-    <lastmod>2022-02-15T15:54:47.212Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.616Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/setup/serial-itr.html</loc>
-    <lastmod>2022-02-15T15:54:47.213Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.618Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/design/ssp-driver.html</loc>
-    <lastmod>2022-02-15T15:54:47.215Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.620Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/design/modules.html</loc>
-    <lastmod>2022-02-15T15:54:47.216Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.621Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/design/implementation.html</loc>
-    <lastmod>2022-02-15T15:54:47.218Z</lastmod>
+    <lastmod>2022-03-15T16:53:53.623Z</lastmod>
   </url>
   <url>
     <loc>https://distrinet-tacos.github.io/documentation/OP-TEE-Shared-Secure-Peripherals.pdf</loc>
-    <lastmod>2022-02-15T15:54:46.520Z</lastmod>
+    <lastmod>2022-03-15T16:53:52.954Z</lastmod>
   </url>
 </urlset>

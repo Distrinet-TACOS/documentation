@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.13">
+  <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OP-TEE Shared Secure Peripherals - 8&nbsp; Implementation into OP-TEE OS</title>
+  <title>OP-TEE Shared Secure Peripherals - 9&nbsp; Implementation into OP-TEE OS</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -123,7 +123,7 @@
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></h1>
       <button type="button" class="quarto-btn-toggle btn">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -176,17 +176,22 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
+  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
+  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
   </div>
 </li>
     </ul>
@@ -201,17 +206,17 @@
     <ul id="quarto-sidebar-section-design--implementation-of-a-driver-for-shared-secure-peripherals" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
+  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
+  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
+  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
   </div>
 </li>
     </ul>
@@ -224,25 +229,25 @@
         <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#build-instructions" class="nav-link active" data-scroll-target="#build-instructions"> <span class="header-section-number">8.1</span> Build instructions</a>
+<li><a href="#build-instructions" class="nav-link active" data-scroll-target="#build-instructions"> <span class="header-section-number">9.1</span> Build instructions</a>
 <ul class="collapse">
-<li><a href="#qemu" class="nav-link" data-scroll-target="#qemu"> <span class="header-section-number">8.1.1</span> QEMU</a></li>
-<li><a href="#sabre-lite" class="nav-link" data-scroll-target="#sabre-lite"> <span class="header-section-number">8.1.2</span> SABRE Lite</a></li>
+<li><a href="#qemu" class="nav-link" data-scroll-target="#qemu"> <span class="header-section-number">9.1.1</span> QEMU</a></li>
+<li><a href="#sabre-lite" class="nav-link" data-scroll-target="#sabre-lite"> <span class="header-section-number">9.1.2</span> SABRE Lite</a></li>
 </ul></li>
-<li><a href="#technical-details" class="nav-link" data-scroll-target="#technical-details"> <span class="header-section-number">8.2</span> Technical details</a></li>
+<li><a href="#technical-details" class="nav-link" data-scroll-target="#technical-details"> <span class="header-section-number">9.2</span> Technical details</a></li>
 </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/design/implementation.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
-<header id="title-block-header">
-<h1 class="title d-none d-lg-block display-7"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></h1>
-</header>
+<header id="title-block-header" class="quarto-title-block default">
 
-<section id="build-instructions" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="build-instructions"><span class="header-section-number">8.1</span> Build instructions</h2>
-<section id="qemu" class="level3" data-number="8.1.1">
-<h3 data-number="8.1.1" class="anchored" data-anchor-id="qemu"><span class="header-section-number">8.1.1</span> QEMU</h3>
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></h1></div></header>
+
+<section id="build-instructions" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="build-instructions"><span class="header-section-number">9.1</span> Build instructions</h2>
+<section id="qemu" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="qemu"><span class="header-section-number">9.1.1</span> QEMU</h3>
 <p>As shown in the figures in the previous sections, both loadable kernel modules and pseudo trusted applications are part of the architecture and thus they all need to be compiled. This requires multiple compile commands in different directories. These commands need to be executed in order:</p>
 <ol type="1">
 <li><p>Init repo with the right manifest in the project root directory:</p>
@@ -278,8 +283,8 @@
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run CFG_CORE_ASLR=n GDBSERVER=y <span class="at">-j</span><span class="kw">`</span><span class="fu">nproc</span><span class="kw">`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ol>
 </section>
-<section id="sabre-lite" class="level3" data-number="8.1.2">
-<h3 data-number="8.1.2" class="anchored" data-anchor-id="sabre-lite"><span class="header-section-number">8.1.2</span> SABRE Lite</h3>
+<section id="sabre-lite" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="sabre-lite"><span class="header-section-number">9.1.2</span> SABRE Lite</h3>
 <p>As explained in <a href="../setup/build.html#sec-build-sabrelite">Section&nbsp;<span>2.2</span></a>, the <em>Buildroot</em> build system is used to build the complete package for the Sabre Lite board. For this process, the same steps are followed as explained in that section. However, an extra external Buildroot tree is added which contains the kernel modules for the normal world, while the secure world components are contained on a custom branch of our OP-TEE OS fork. It is thus easiest to start with an empty workspace.</p>
 <ol type="1">
 <li><p>Start by cloning the necessary repositories:</p>
@@ -300,8 +305,8 @@
 </ol>
 </section>
 </section>
-<section id="technical-details" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="technical-details"><span class="header-section-number">8.2</span> Technical details</h2>
+<section id="technical-details" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="technical-details"><span class="header-section-number">9.2</span> Technical details</h2>
 <p>During the implementation of these shared secure peripherals on the SABRE Lite board we encountered some interesting difficulties:</p>
 <ul>
 <li>The UART driver present for iMX.6 boards did not enable serial interrupts at boot. We added the necessary logic so that it does. The initialization of the UART subsystem is carried over from U-Boot after which the necessary bits are set.</li>
@@ -490,7 +495,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../design/modules.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -504,7 +509,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/Distrinet-TACOS">
-      <i class="bi-github" role="img">
+      <i class="bi bi-github" role="img">
 </i> 
     </a>
   </li>  

@@ -30,6 +30,7 @@ book:
       chapters:
         - setup/prerequisites.qmd
         - setup/build.qmd
+        - setup/developing.qmd
         - setup/debug.qmd
         - setup/pta.qmd
         - setup/serial-itr.qmd

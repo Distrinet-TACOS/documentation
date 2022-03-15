@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.13">
+  <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <meta name="author" content="Tom Van Eyck, Hassaan Janjua">
   <title>OP-TEE Shared Secure Peripherals</title>
@@ -133,17 +133,22 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
+  <a href="./setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  <a href="./setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
+  <a href="./setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
   </div>
 </li>
     </ul>
@@ -158,17 +163,17 @@
     <ul id="quarto-sidebar-section-design--implementation-of-a-driver-for-shared-secure-peripherals" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
+  <a href="./design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
+  <a href="./design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
+  <a href="./design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
   </div>
 </li>
     </ul>
@@ -188,11 +193,11 @@
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
-<header id="title-block-header">
-<h1 class="title d-none d-lg-block display-7">OP-TEE Shared Secure Peripherals</h1>
-<p class="subtitle lead">Part of the TACOS project</p>
-<p class="author">Tom Van Eyck, Hassaan Janjua</p>
-</header>
+<header id="title-block-header" class="quarto-title-block default">
+
+
+
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7">OP-TEE Shared Secure Peripherals</h1><p class="subtitle lead">Part of the TACOS project</p></div><div class="quarto-title-meta"><div><div class="quarto-title-meta-heading">Author</div><div class="quarto-title-meta-contents"><div class="quarto-title-authors"><p>Tom Van Eyck, Hassaan Janjua</p></div></div></div></div></header>
 
 <section id="preface" class="level1 unnumbered">
 <h1 class="unnumbered">Preface</h1>
@@ -408,7 +413,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/Distrinet-TACOS">
-      <i class="bi-github" role="img">
+      <i class="bi bi-github" role="img">
 </i> 
     </a>
   </li>  

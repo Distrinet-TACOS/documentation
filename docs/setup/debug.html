@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.13">
+  <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OP-TEE Shared Secure Peripherals - 3&nbsp; Debugging OP-TEE</title>
+  <title>OP-TEE Shared Secure Peripherals - 4&nbsp; Debugging OP-TEE</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -84,7 +84,7 @@
   <script src="../site_libs/quarto-search/fuse.min.js"></script>
   <script src="../site_libs/quarto-search/quarto-search.js"></script>
   <link href="../setup/pta.html" rel="next">
-  <link href="../setup/build.html" rel="prev">
+  <link href="../setup/developing.html" rel="prev">
   <script src="../site_libs/quarto-html/quarto.js"></script>
   <script src="../site_libs/quarto-html/popper.min.js"></script>
   <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -124,7 +124,7 @@
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></h1>
       <button type="button" class="quarto-btn-toggle btn">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -177,17 +177,22 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
+  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
+  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
   </div>
 </li>
     </ul>
@@ -202,17 +207,17 @@
     <ul id="quarto-sidebar-section-design--implementation-of-a-driver-for-shared-secure-peripherals" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
+  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
+  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
+  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
   </div>
 </li>
     </ul>
@@ -225,34 +230,34 @@
         <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#qemu" class="nav-link active" data-scroll-target="#qemu"> <span class="header-section-number">3.1</span> QEMU</a>
+<li><a href="#qemu" class="nav-link active" data-scroll-target="#qemu"> <span class="header-section-number">4.1</span> QEMU</a>
 <ul class="collapse">
-<li><a href="#download-and-install-gdb-for-arm" class="nav-link" data-scroll-target="#download-and-install-gdb-for-arm"> <span class="header-section-number">3.1.1</span> Download and install gdb for ARM</a></li>
-<li><a href="#gdb-settings" class="nav-link" data-scroll-target="#gdb-settings"> <span class="header-section-number">3.1.2</span> Gdb settings</a></li>
-<li><a href="#debugging-op-tee" class="nav-link" data-scroll-target="#debugging-op-tee"> <span class="header-section-number">3.1.3</span> Debugging OP-TEE</a></li>
+<li><a href="#download-and-install-gdb-for-arm" class="nav-link" data-scroll-target="#download-and-install-gdb-for-arm"> <span class="header-section-number">4.1.1</span> Download and install gdb for ARM</a></li>
+<li><a href="#gdb-settings" class="nav-link" data-scroll-target="#gdb-settings"> <span class="header-section-number">4.1.2</span> Gdb settings</a></li>
+<li><a href="#debugging-op-tee" class="nav-link" data-scroll-target="#debugging-op-tee"> <span class="header-section-number">4.1.3</span> Debugging OP-TEE</a></li>
 </ul></li>
-<li><a href="#sabre-lite" class="nav-link" data-scroll-target="#sabre-lite"> <span class="header-section-number">3.2</span> SABRE Lite</a></li>
+<li><a href="#sabre-lite" class="nav-link" data-scroll-target="#sabre-lite"> <span class="header-section-number">4.2</span> SABRE Lite</a></li>
 </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/setup/debug.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
-<header id="title-block-header">
-<h1 class="title d-none d-lg-block display-7"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></h1>
-</header>
+<header id="title-block-header" class="quarto-title-block default">
+
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></h1></div></header>
 
 <p>To debug OP-TEE, some additional steps need to be taken to prepare everything.</p>
-<section id="qemu" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="qemu"><span class="header-section-number">3.1</span> QEMU</h2>
-<section id="download-and-install-gdb-for-arm" class="level3" data-number="3.1.1">
-<h3 data-number="3.1.1" class="anchored" data-anchor-id="download-and-install-gdb-for-arm"><span class="header-section-number">3.1.1</span> Download and install gdb for ARM</h3>
+<section id="qemu" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="qemu"><span class="header-section-number">4.1</span> QEMU</h2>
+<section id="download-and-install-gdb-for-arm" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="download-and-install-gdb-for-arm"><span class="header-section-number">4.1.1</span> Download and install gdb for ARM</h3>
 <p>Normally, if this guide was followed and the toolchains were built accordingly, gdb should already be present in <code>&lt;project-dir&gt;/toolchains</code>. The necessary tools can be added to the path by adding the following in <code>.profile</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"&lt;project-dir&gt;/toolchains/aarch32/bin"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"&lt;project-dir&gt;/toolchains/aarch64/bin"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">PATH</span><span class="op">=</span><span class="st">"&lt;project-dir&gt;/toolchains/aarch32/bin:&lt;project-dir&gt;/toolchains/aarch64/bin:</span><span class="va">$PATH</span><span class="st">"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="gdb-settings" class="level3" data-number="3.1.2">
-<h3 data-number="3.1.2" class="anchored" data-anchor-id="gdb-settings"><span class="header-section-number">3.1.2</span> Gdb settings</h3>
+<section id="gdb-settings" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="gdb-settings"><span class="header-section-number">4.1.2</span> Gdb settings</h3>
 <p>To make the initialization of gdb easier, add the following at the end of <code>~/.gdbinit</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>set print pretty on</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -266,8 +271,8 @@
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    remote.</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>end</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="debugging-op-tee" class="level3" data-number="3.1.3">
-<h3 data-number="3.1.3" class="anchored" data-anchor-id="debugging-op-tee"><span class="header-section-number">3.1.3</span> Debugging OP-TEE</h3>
+<section id="debugging-op-tee" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="debugging-op-tee"><span class="header-section-number">4.1.3</span> Debugging OP-TEE</h3>
 <p>Because OP-TEE uses Address Space Layout Randomization (ASLR), it is necessary to disable it when starting QEMU. This is done by adding the flag <code>CFG_CORE_ASLR=n</code>.</p>
 <div class="callout-caution callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target="#callout-1" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
@@ -277,7 +282,7 @@
 <div class="callout-caption-container flex-fill">
 Compilation error
 </div>
-<button type="button" class="callout-btn-toggle btn d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></button>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-1" class="callout-collapse collapse">
 <div class="callout-body-container callout-body">
@@ -312,7 +317,7 @@ Compilation error
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> determining <span class="ex">executable</span> automatically.  Try using the <span class="st">"file"</span> command.</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> 0x00000000 <span class="er">in</span> <span class="ex">??</span> <span class="er">(</span><span class="kw">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Then it is possible to refer to the symbols in the OP-TEE p.&nbsp;To demonstrate, let’s set a breakpoint on <code>tee_entry_std(...)</code>, an often called function and continue execution. Th</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a> <span class="ex">Set</span> breakpoint</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Set</span> breakpoint</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">b</span> tee_entry_std</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Breakpoint <span class="ex">1</span> at 0xe1347ce: file core/tee/entry_std.c, line 528.</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -326,9 +331,9 @@ Compilation error
 <p>Now it is possible to further explore OP-TEE using gdb.</p>
 </section>
 </section>
-<section id="sabre-lite" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="sabre-lite"><span class="header-section-number">3.2</span> SABRE Lite</h2>
-<p>Debugging Linux on hardware boards is pretty difficult. <code>printk</code>statements can be used to print execution flow and memory values to the console.</p>
+<section id="sabre-lite" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sabre-lite"><span class="header-section-number">4.2</span> SABRE Lite</h2>
+<p>Debugging Linux on hardware boards is pretty difficult. <code>printk</code> statements can be used to print execution flow and memory values to the console.</p>
 
 
 </section>
@@ -508,13 +513,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../setup/build.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Building &amp; running OP-TEE</span></span>
+      <a href="../setup/developing.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../setup/pta.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -526,7 +531,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/Distrinet-TACOS">
-      <i class="bi-github" role="img">
+      <i class="bi bi-github" role="img">
 </i> 
     </a>
   </li>  

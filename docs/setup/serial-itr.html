@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.13">
+  <meta name="generator" content="quarto-0.9.101">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OP-TEE Shared Secure Peripherals - 5&nbsp; Serial interrupt in secure world</title>
+  <title>OP-TEE Shared Secure Peripherals - 6&nbsp; Serial interrupt in secure world</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -125,7 +125,7 @@
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></h1>
       <button type="button" class="quarto-btn-toggle btn">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -178,17 +178,22 @@
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
+  <a href="../setup/developing.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Developing changes for OPTEE-OS</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  <a href="../setup/debug.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Debugging OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
+  <a href="../setup/pta.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../setup/serial-itr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></a>
   </div>
 </li>
     </ul>
@@ -203,17 +208,17 @@
     <ul id="quarto-sidebar-section-design--implementation-of-a-driver-for-shared-secure-peripherals" class="collapse list-unstyled sidebar-section depth1 show">  
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
+  <a href="../design/ssp-driver.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
+  <a href="../design/modules.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Linux kernel Modules (aka device drivers)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
+  <a href="../design/implementation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Implementation into OP-TEE OS</span></a>
   </div>
 </li>
     </ul>
@@ -226,24 +231,24 @@
         <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#interrupt-handler" class="nav-link active" data-scroll-target="#interrupt-handler"> <span class="header-section-number">5.1</span> Interrupt handler</a></li>
-<li><a href="#serial-console-driver" class="nav-link" data-scroll-target="#serial-console-driver"> <span class="header-section-number">5.2</span> Serial console driver</a>
+<li><a href="#interrupt-handler" class="nav-link active" data-scroll-target="#interrupt-handler"> <span class="header-section-number">6.1</span> Interrupt handler</a></li>
+<li><a href="#serial-console-driver" class="nav-link" data-scroll-target="#serial-console-driver"> <span class="header-section-number">6.2</span> Serial console driver</a>
 <ul class="collapse">
-<li><a href="#handling-serial-input" class="nav-link" data-scroll-target="#handling-serial-input"> <span class="header-section-number">5.2.1</span> Handling serial input</a></li>
+<li><a href="#handling-serial-input" class="nav-link" data-scroll-target="#handling-serial-input"> <span class="header-section-number">6.2.1</span> Handling serial input</a></li>
 </ul></li>
-<li><a href="#cpu-masks" class="nav-link" data-scroll-target="#cpu-masks"> <span class="header-section-number">5.3</span> CPU masks</a></li>
+<li><a href="#cpu-masks" class="nav-link" data-scroll-target="#cpu-masks"> <span class="header-section-number">6.3</span> CPU masks</a></li>
 </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Distrinet-TACOS/documentation/edit/main/setup/serial-itr.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Distrinet-TACOS/documentation/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
-<header id="title-block-header">
-<h1 class="title d-none d-lg-block display-7"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></h1>
-</header>
+<header id="title-block-header" class="quarto-title-block default">
+
+<div class="quarto-title"><h1 class="title d-none d-lg-block display-7"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Serial interrupt in secure world</span></h1></div></header>
 
 <p>To accept input on the serial console of the secure world, it is necessary to register an interrupt on that serial console. To do this, two things need to be done: a interrupt handler needs to be defined and the handler must be registered for the interrupt. The console interface might be different for QEMU or Sabre Lite, but the general way of working should be the same.</p>
-<section id="interrupt-handler" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="interrupt-handler"><span class="header-section-number">5.1</span> Interrupt handler</h2>
+<section id="interrupt-handler" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="interrupt-handler"><span class="header-section-number">6.1</span> Interrupt handler</h2>
 <p>The interrupt handler is defined according to the <code>itr_handler</code> type in <code>&lt;interrupt.h&gt;</code>. This struct needs to be initialized with the interrupt location <code>it</code> (in this case <code>IT_CONSOLE_UART</code>), the flags for the interrupt (<code>ITRF_TRIGGER_LEVEL</code>) and the handler function. This function can accept a parameter that is the <code>itr_handler</code> structure. When defining this struct, it is (probably) necessary to explicitly state that the interrupt handling is put in the right part of the binary. This is done by declaring <code>DECLARE_KEEP_PAGER(console_itr);</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> itr_handler <span class="op">{</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> it<span class="op">;</span></span>
@@ -267,14 +272,14 @@
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>DECLARE_KEEP_PAGER<span class="op">(</span>handler<span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>When the interrupt handler is declared and defined, it can be used to enable the interrupt. First, the interrupt handler must be registered and then the interrupt can be enabled. Adding the interrupt handler is done by <code>itr_add(&amp;handler)</code> and enabling the interrupt is done by <code>itr_enable(handler.it)</code>.</p>
 </section>
-<section id="serial-console-driver" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="serial-console-driver"><span class="header-section-number">5.2</span> Serial console driver</h2>
+<section id="serial-console-driver" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="serial-console-driver"><span class="header-section-number">6.2</span> Serial console driver</h2>
 <p>To accept input from the serial console during the handling of the interrupt, it is necessary to have access to the console chip and driver. Because the driver is initialized during the boot sequence of the platform, the only way to get this access is by hijacking this process, disabling the standard interrupt enabled by the boot process and call our own function to save the serial console access location.</p>
 <p>The original interrupt setup happens in the file <code>optee_os/core/arch/arm/plat-vexpress/main.c</code>. A macro called <code>driver_init(...)</code> is called with the function that enables the serial interrupt. This macro ensures that the interrupt enabling routine is called during the boot process. To prevent this from happening, the simplest solution is to comment out this line.</p>
 <p>To save the access location of the console interface, the function <code>console_init(void)</code> in the same file calls a function <code>register_serial_console(...)</code> which is a wrapper for an assign operation. We can imitate this function to do the same for us, by defining our own pointer to the serial chip and using this pointer to access the serial console.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">struct</span> serial_chip <span class="op">*</span>serial_chip<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="handling-serial-input" class="level3" data-number="5.2.1">
-<h3 data-number="5.2.1" class="anchored" data-anchor-id="handling-serial-input"><span class="header-section-number">5.2.1</span> Handling serial input</h3>
+<section id="handling-serial-input" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="handling-serial-input"><span class="header-section-number">6.2.1</span> Handling serial input</h3>
 <p>The serial console functions as follows: when data is sent to the serial console (for example by pressing a key in the console), it is accepted by the driver, the data is stored in a buffer and the cpu is notified by means of an interrupt. This interrupt invokes our interrupt handler function.</p>
 <p>It is in this function that we are able to retrieve the data from the buffer. The interrupt keeps triggering if the buffer is not empty, thus it is necessary to empty the buffer after getting its contents. The following while loop gets a single character from the buffer and prints it as long as there are characters left in the buffer. It is here that we use the reference to the serial console.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">static</span> <span class="kw">enum</span> itr_return handler_function<span class="op">(</span><span class="kw">struct</span> itr_handler <span class="op">*</span>h<span class="op">)</span></span>
@@ -288,8 +293,8 @@
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
-<section id="cpu-masks" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="cpu-masks"><span class="header-section-number">5.3</span> CPU masks</h2>
+<section id="cpu-masks" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="cpu-masks"><span class="header-section-number">6.3</span> CPU masks</h2>
 <p>Each system may have multiple cpus. When assigning an interrupt handler to a certain interrupt and enabling it, this interrupt is assigned to all cpus. This means that when an interrupt happens, both cpus will handle that interrupt, calling the same handler twice leading to undefined behavior.</p>
 <p>To prevent this from happening, one can enable cpu masks on an interrupt to define which cpu is responsible for handling that interrupt. This is done by calling the function <code>itr_set_affinity(&lt;interrupt&gt;, &lt;cpu_mask&gt;)</code> with the interrupt from the handler and a cpu mask that is a sequence of bits, where a 1 at position <span class="math inline">\(n\)</span> enables the handling of an interrupt by the cpu with number <span class="math inline">\(n\)</span>.</p>
 <p>It is not yet possible to handle interrupts on a cpu selected at interrupt handle time.</p>
@@ -473,12 +478,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../setup/pta.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Custom Pseudo Trusted Application</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../design/ssp-driver.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Shared Secure Peripherals for OP-TEE</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -490,7 +495,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/Distrinet-TACOS">
-      <i class="bi-github" role="img">
+      <i class="bi bi-github" role="img">
 </i> 
     </a>
   </li>  

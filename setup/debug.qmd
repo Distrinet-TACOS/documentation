@@ -87,7 +87,7 @@ optee
 Then it is possible to refer to the symbols in the OP-TEE p. To demonstrate, let's set a breakpoint on `tee_entry_std(...)`, an often called function and continue execution. Th
 
 ``` bash
- Set breakpoint
+Set breakpoint
 b tee_entry_std
 > Breakpoint 1 at 0xe1347ce: file core/tee/entry_std.c, line 528.
 
@@ -104,4 +104,4 @@ Now it is possible to further explore OP-TEE using gdb.
 
 ## SABRE Lite
 
-Debugging Linux on hardware boards is pretty difficult. `printk`statements can be used to print execution flow and memory values to the console.
+Debugging Linux on hardware boards is pretty difficult. `printk` statements can be used to print execution flow and memory values to the console.
