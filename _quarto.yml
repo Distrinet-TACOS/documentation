@@ -2,7 +2,7 @@ project:
   type: website
   output-dir: public
 
-year: {{< meta year >}}
+year: 2023
 lang: en-US
 
 website:

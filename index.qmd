@@ -8,7 +8,9 @@ abstract: |
     Our research project makes use of hardware Trusted Execution Environments (TEE), now readily available on even low-end commodity devices, to provide a secure and always available execution context for safety-critical programs. By integrating a real-time scheduler inside of OP-TEE OS running in an Arm TrustZone TEE, it is possible to safeguard the real-time execution requirements of these programs, even under the influence of Linux kernel panics and remote attackers with root privileges. This presentation will explain the system architecture that resulted from our research, its implementation on a common Arm processor and a quick demo showcasing the core functionality.
 
 author:
-    - Tom Van Eyck
+    - name: "[Tom Van Eyck](https://www.kuleuven.be/wieiswie/nl/person/00146921)"
+      affiliations:
+        - name: " "
     - Hamdi Trimech
     - Majid Salehi
     - Thanh-Liem Ta
