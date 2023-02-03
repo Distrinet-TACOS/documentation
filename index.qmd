@@ -9,6 +9,12 @@ abstract: |
 
 author:
     - Tom Van Eyck
+    - Hamdi Trimech
+    - Majid Salehi
+    - Thanh-Liem Ta
+    - Sam Michiels
+    - Danny Hughes
+    - Hassaan Janjua
 date: 2023-2-5
 datformat: long
 
