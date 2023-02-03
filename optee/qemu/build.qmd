@@ -1,0 +1,52 @@
+---
+title: Building & running OP-TEE
+---
+
+## Download of repositories
+
+OP-TEE uses a [central repository](https://github.com/Distrinet-TACOS/manifest.git) containing the manifest files for repo for all architectures. To download all necessary git repositories of the OP-TEE project for the QEMUv7 architecture, execute the following commands:
+
+``` bash
+mkdir -p <project-dir>
+cd <project-dir>
+repo init -u https://github.com/Distrinet-TACOS/manifest.git -m tacos-qemu.xml
+repo sync -j4 --no-clone-bundle
+```
+
+## Toolchains
+
+The toolchains required to build any part of OP-TEE are included in one of the repositories downloaded in the previous step. To download the actual toolchains, execute
+
+``` bash
+cd <project-dir>/build
+make -j2 toolchains
+```
+
+## Build OP-TEE
+
+The OP-TEE project has three main parts: the operating system, the client API and the trusted applications. These three parts can be built on their own, but to get started it is easier to build the whole system at once. This is as simple as executing
+
+``` bash
+cd <project-dir>/build
+make -j `nproc`
+```
+
+This process will take some time.
+
+## Running OP-TEE
+
+QEMU and OP-TEE can be launched by executing
+
+``` bash
+cd <project-dir>/build
+make run -j `nproc`
+
+# After the command prompt (qemu) appears, press c to start execution.
+c
+```
+
+This will launch QEMU in the current terminal and two new terminals, one serial connection to the secure world and one to the normal world. In the normal world terminal, you can login using the users `root`or `test`, after which it is possible to run programs in the normal world that interact with the secure world.
+
+To test if everything went according to plan, run `xtest` once logged in. If there are no obvious errors, the build process should have completed successfully. You can run the example programs by executing any of the `optee_example_*` programs present in the path.
+
+The command ``make run-only -j `nproc` `` is also available to run QEMU without building the project.

@@ -1,0 +1,27 @@
+---
+title: Keeping safety-critical programs alive when Linux isn’t able to
+subtitle: Using OP-TEE to deliver availability to applications in a Trusted Execution Environment.
+
+abstract: |
+    Increasingly, industry is using Linux on embedded systems to take advantage of its flexibility and existing (open source) functionality. This allows them to connect Cyber-Physical Systems, which have stringent safety requirements, to the Internet so that they can do remote management and monitoring. However, the flip side of the flexibility coin is decreased availability. Not only can a lot more go wrong in such a complex operating system, if an attacker would be able to get root access on such systems, all bets are off.
+
+    Our research project makes use of hardware Trusted Execution Environments (TEE), now readily available on even low-end commodity devices, to provide a secure and always available execution context for safety-critical programs. By integrating a real-time scheduler inside of OP-TEE OS running in an Arm TrustZone TEE, it is possible to safeguard the real-time execution requirements of these programs, even under the influence of Linux kernel panics and remote attackers with root privileges. This presentation will explain the system architecture that resulted from our research, its implementation on a common Arm processor and a quick demo showcasing the core functionality.
+
+author:
+    - Tom Van Eyck
+date: 2023-2-5
+datformat: long
+
+bibliography: references.bib
+nocite: |
+    @*
+---
+
+<!-- ## Preface -->
+
+This is the documentation for the [FOSDEM 2023 talk "Keeping safety-critical programs alive when Linux isn’t able to"](https://fosdem.org/2023/schedule/event/cc_mrtee/). It explains the details of a TEE implementation that provides hardware isolation and real-time execution of safety-critical applications for Cyber-Physical systems, while transparantly sharing peripherals with little developer overhead.
+
+With the support of VLAIO. [![VLAIO](figures/vlaio.png){height=50}](https://vlaio.be)
+
+This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 101020416. [![EU](figures/eu.jpg){height=50}](https://cordis.europa.eu/project/id/101020416)
+

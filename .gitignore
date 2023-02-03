@@ -1,0 +1,6 @@
+.vscode
+make.conf
+.venv
+out
+/.quarto/
+public

@@ -1,0 +1,27 @@
+---
+title: Prerequisites
+---
+
+## Ubuntu
+
+This guide is based on a clean Ubuntu 20.04 installation in a VM. It should be possible to repeat the results on any Linux distribution and any hypervisor platform, as long as the required packages are available.
+
+At least 60GiB (estimate) free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to system crashes.
+
+## Buildroot
+
+We use Buildroot as the build system for the i.MX6.
+The required packages need to be installed by executing:
+
+```bash
+sudo apt update
+sudo apt install which sed make binutils build-essential diffutils gcc g++ \
+         bash patch gzip bzip2 perl tar cpio unzip rsync file bc findutils \
+         wget python ncurses5 git 
+```
+
+:::{.callout-note}
+Some optional packages are also available, see the [Buildroot Documentation](https://buildroot.org/downloads/manual/manual.html#requirement) for more information.
+:::
+
+We will install a Buildroot environment on the next page.

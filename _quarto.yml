@@ -1,0 +1,81 @@
+project:
+  type: website
+  output-dir: public
+
+year: {{< meta year >}}
+lang: en-US
+
+website:
+  title: "Keeping safety-critical programs alive when Linux isn't able to"
+
+  page-footer:
+    left: "Copyright {{< meta year >}}, [imec-DistriNet](https://distrinet.cs.kuleuven.be)"
+    center: "With the support of VLAIO. [![VLAIO](/figures/vlaio.png){height=15}](https://vlaio.be)</br>\
+      This project has received funding from the European Union's Horizon 2020<br>\
+      research and innovation programme under grant agreement No 101020416. [![EU](/figures/eu.jpg){height=15}](https://cordis.europa.eu/project/id/101020416)"
+    right:
+      - icon: github
+        href: https://github.com/Distrinet-TACOS
+
+  site-url: https://distrinet-tacos.github.io/documentation/
+
+  repo-url: https://github.com/Distrinet-TACOS/documentation/
+  repo-actions: [edit, issue]
+  repo-branch: main
+  
+  page-navigation: true
+
+  sidebar:
+    search: true
+    tools:
+      - icon: github
+        href: https://github.com/Distrinet-TACOS
+    style: floating
+    collapse-level: 3
+    contents:
+      - section: "Get started"
+        contents:
+          - section: OP-TEE
+            contents:
+              - section: Qemu (Virtualized)
+                contents:
+                  - optee/qemu/prereq.qmd
+                  - text: Building & Running
+                    file: optee/qemu/build.qmd
+                  - text: Developing
+                    file: optee/qemu/developing.qmd
+              - section: i.MX6
+                contents:
+                  - optee/imx6/prereq.qmd
+                  - text: Building & Running
+                    file: optee/imx6/build.qmd
+                  - text: Developing
+                    file: optee/imx6/developing.qmd
+              - section: optee/reference.qmd
+                contents:
+                  - text: Serial Interrupts in the Secure World
+                    file: setup/serial-itr.qmd
+
+bibliography: references.bib
+csl: templates/association-for-computing-machinery.csl
+reference-section-title: References
+
+callout-appearance: simple
+
+format:
+  html:
+    theme:
+      light:
+        - cosmo
+        - custom.scss
+      dark:
+        - superhero
+        - custom.scss
+    code-copy: true
+    code-overflow: wrap
+    toc: true
+    code-block-bg: true
+    code-block-border-left: primary
+    highlight-style: github
+    link-external-icon: true
+    link-external-newwindow: true

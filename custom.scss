@@ -1,0 +1,57 @@
+$font-prefix: 'fonts/ibm-plex';
+@import 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=IBM+Plex+Serif&family=IBM+Plex+Mono';
+
+/*-- scss:defaults --*/
+
+$font-size-root: 17px !default;
+
+$font-family-sans-serif: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+$font-family-monospace: 'IBM Plex Mono', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', Courier, monospace;
+$font-family-serif: 'IBM Plex Serif', 'Georgia', Times, serif;
+
+/*-- scss:rules --*/
+
+
+.quarto-title-meta {
+    column-gap: 1em;
+}
+
+code {
+    color: $body-color;
+}
+
+div.sourceCode {
+    margin-left: 0;
+}
+
+table {
+    border-top: solid 1px $table-border-color;
+
+    thead {
+        border-top: none!important;
+    }
+}
+
+.method {
+    border: 1px solid $border-color;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: monospace;
+        display: inline;
+    }
+    
+    table:last-child {
+        margin-bottom: 0rem;
+    }
+}
+
+details[open]:not(.method details) summary::after {
+    content: "Click to close";
+}
+
+details:not([open], .method details) summary::after {
+    content: "Clik to open";
+}
