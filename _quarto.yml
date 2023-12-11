@@ -6,13 +6,10 @@ year: 2023
 lang: en-US
 
 website:
-  title: "Keeping safety-critical programs alive when Linux isn't able to"
+  title: Mr-TEE
 
   page-footer:
-    left: "Copyright {{< meta year >}}, [imec-DistriNet](https://distrinet.cs.kuleuven.be)"
-    center: "With the support of VLAIO. [![VLAIO](/figures/vlaio.png){height=15}](https://vlaio.be)</br>\
-      This project has received funding from the European Union's Horizon 2020<br>\
-      research and innovation programme under grant agreement No 101020416. [![EU](/figures/eu.jpg){height=15}](https://cordis.europa.eu/project/id/101020416)"
+    left: "Copyright {{< meta year >}}, [DistriNet](https://distrinet.cs.kuleuven.be)"
     right:
       - icon: github
         href: https://github.com/Distrinet-TACOS
@@ -33,30 +30,28 @@ website:
     style: floating
     collapse-level: 3
     contents:
-      - section: "Get started"
+      - get-started.qmd
+      - section: Qemu (Virtualized)
         contents:
-          - section: OP-TEE
-            contents:
-              - section: Qemu (Virtualized)
-                contents:
-                  - optee/qemu/prereq.qmd
-                  - text: Building & Running
-                    file: optee/qemu/build.qmd
-                  - text: Developing
-                    file: optee/qemu/developing.qmd
-              - section: i.MX6
-                contents:
-                  - optee/imx6/prereq.qmd
-                  - text: Building & Running
-                    file: optee/imx6/build.qmd
-                  - text: Developing
-                    file: optee/imx6/developing.qmd
-              - section: optee/reference.qmd
-                contents:
-                  - text: Serial Interrupts in the Secure World
-                    file: setup/serial-itr.qmd
+          - qemu/prereq.qmd
+          - text: Building & Running
+            file: qemu/build.qmd
+          - text: Developing
+            file: qemu/developing.qmd
+      - section: i.MX6
+        contents:
+          - imx6/prereq.qmd
+          - text: Building & Running
+            file: imx6/build.qmd
+          - text: Developing
+            file: imx6/developing.qmd
+      - section: Reference
+        contents:
+          - file: reference/reference.qmd
+          - text: Serial Interrupts in the Secure World
+            file: reference/serial-itr.qmd
 
-bibliography: references.bib
+bibliography: mr-tee.bib
 csl: templates/association-for-computing-machinery.csl
 reference-section-title: References
 
@@ -77,5 +72,5 @@ format:
     code-block-bg: true
     code-block-border-left: primary
     highlight-style: github
-    link-external-icon: true
+    # link-external-icon: true
     link-external-newwindow: true

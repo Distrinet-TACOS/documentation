@@ -1,33 +1,81 @@
 ---
-title: Keeping safety-critical programs alive when Linux isn’t able to
-subtitle: Using OP-TEE to deliver availability to applications in a Trusted Execution Environment.
+title: Mr-TEE
+subtitle: "Practical Trusted Execution of Mixed-Criticality Code"
 
 abstract: |
-    Increasingly, industry is using Linux on embedded systems to take advantage of its flexibility and existing (open source) functionality. This allows them to connect Cyber-Physical Systems, which have stringent safety requirements, to the Internet so that they can do remote management and monitoring. However, the flip side of the flexibility coin is decreased availability. Not only can a lot more go wrong in such a complex operating system, if an attacker would be able to get root access on such systems, all bets are off.
-
-    Our research project makes use of hardware Trusted Execution Environments (TEE), now readily available on even low-end commodity devices, to provide a secure and always available execution context for safety-critical programs. By integrating a real-time scheduler inside of OP-TEE OS running in an Arm TrustZone TEE, it is possible to safeguard the real-time execution requirements of these programs, even under the influence of Linux kernel panics and remote attackers with root privileges. This presentation will explain the system architecture that resulted from our research, its implementation on a common Arm processor and a quick demo showcasing the core functionality.
+    Industry 4.0 is increasingly using commodity hardware and software
+    in place of dedicated control systems to lower costs and increase
+    flexibility. However, this means that critical control code
+    must compete for resources with an increasingly complex software
+    stack that exposes a new attack surface. The Mixed Criticality
+    Trusted Execution Environment (Mr-TEE) tackles this problem at
+    its root, by delivering availability for safety-critical control code,
+    while running untrusted applications in a minimally modified Linux
+    stack. This is achieved by providing a real-time scheduler and novel
+    peripheral sharing system in the Secure World. Mr-TEE hence provides
+    the best of both worlds for Industry 4.0 developers, ensuring
+    the trusted execution of time-sensitive control applications,
+    while minimizing design effort and restrictions for untrusted applications.
+    Evaluation on an Arm TrustZone-enabled Cortex MCU
+    demonstrates a worst-case overhead of 1.88% to support real-time
+    scheduling in the TEE.
 
 author:
-    - Tom Van Eyck
-    - Hamdi Trimech
-    - Majid Salehi
-    - Thanh-Liem Ta
-    - Sam Michiels
-    - Danny Hughes
-    - Hassaan Janjua
-date: 2023-2-5
+    - name: Tom Van Eyck
+      orcid: 0000-0001-7087-3438
+      affiliation: DistriNet - KU Leuven, Belgium
+    - name: Hamdi Trimech
+      orcid: 0000-0002-3694-3524
+      affiliation: DistriNet - KU Leuven, Belgium
+    - name: Sam Michiels
+      orcid: 0000-0002-3866-5425
+      affiliation: DistriNet - KU Leuven, Belgium
+    - name: Danny Hughes
+      orcid: 0000-0002-0750-3693
+      affiliation: DistriNet - KU Leuven, Belgium
+    - name: Majid Salehi
+      orcid: 0000-0001-5781-7589
+      affiliation: Nokia Bell Labs, Antwerp, Belgium
+    - name: Hassaan Janjua
+      orcid: 0000-0001-7197-2390
+      affiliation: DistriNet - KU Leuven, Belgium
+    - name: Thanh-Liem Ta
+      affiliation: Polytech Sorbonne, Paris, France
+
+date: 2023-12-14
 datformat: long
 
-bibliography: references.bib
+doi: 10.1145/3626562.3626831
+
+bibliography: mr-tee.bib
 nocite: |
     @*
 ---
 
-<!-- ## Preface -->
+---
 
-This is the documentation for the [FOSDEM 2023 talk "Keeping safety-critical programs alive when Linux isn’t able to"](https://fosdem.org/2023/schedule/event/cc_mrtee/). It explains the details of a TEE implementation that provides hardware isolation and real-time execution of safety-critical applications for Cyber-Physical systems, while transparantly sharing peripherals with little developer overhead.
+This is the documentation for Mr-TEE, presented in the paper ["Mr-TEE: Practical Trusted Execution of Mixed-Criticality Code"](https://dl.acm.org/doi/10.1145/3626562.3626831). It explains the details of a TEE implementation that provides hardware isolation and real-time execution of safety-critical applications for Cyber-Physical systems, while transparantly sharing peripherals with little developer overhead.
 
-With the support of VLAIO. [![VLAIO](figures/vlaio.png){height=50}](https://vlaio.be)
+Mr-TEE has also been presented at FOSDEM 2023: ["Keeping safety-critical programs alive when Linux isn’t able to"](https://fosdem.org/2023/schedule/event/cc_mrtee/).
 
-This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 101020416. [![EU](figures/eu.jpg){height=50}](https://cordis.europa.eu/project/id/101020416)
+<div class=".parent"></div>
 
+::: {.parent}
+
+::: {}
+[![](figures/vlaio.png){height=50 fig-align=right fig-alt="VLAIO"}](https://vlaio.be)
+:::
+
+::: {}
+With the support of VLAIO via the ICON-TACOS and ICON-TRUSTI projects.
+:::
+
+::: {}
+[![](figures/eu.jpg){height=50 fig-align=right fig-alt="EU"}](https://cordis.europa.eu/project/id/101020416)
+:::
+
+::: {}
+This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 101020416.
+:::
+
+:::

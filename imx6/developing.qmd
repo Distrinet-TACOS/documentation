@@ -1,0 +1,38 @@
+---
+title: Developing changes for OPTEE-OS
+---
+
+## Developing with Buildroot
+
+Because Buildroot is meant as more of a deployment than a development system, making changes to the components requires some work. We will be following the [Buildroot documentation](https://buildroot.org/downloads/manual/manual.html#_using_buildroot_during_development).
+
+1. First, clone the repositories of the components you want to in a separate directory. Let's use `<changes-dir>` for this example.
+2. Create a file in `<project-dir>/output` called `local.mk` and add the following lines for each component that you cloned locally (in this case OPTEE-OS and Linux):
+
+   ``` txt
+   OPTEE_OS_OVERRIDE_SRCDIR = <changes-dir>/optee_os
+   LINUX_OVERRIDE_SRCDIR = <changes-dir>/linux
+   ```
+
+   This will tell Buildroot that it should not pull the build files from the remote repositories, but should instead use the locally cloned files.
+3. Then issue the following command after every change you made to these files (again for OPTEE-OS and Linux):
+
+   ``` bash
+   make BR2_JLEVEL="$(nproc)" optee-os-rebuild linux-rebuild all
+   ```
+
+   This will copy the files from the local clones to `<project-dir>/output/build/...`
+
+   :::{.callout-note}
+   It might be necessary to first run
+
+   ``` bash
+   make optee-os-dirclean linux-dirclean
+   ```
+
+   to remove the current build files. This *will* remove all files in `<project-dir>/output/build/...`, so make sure that any changes are backed up first.
+   :::
+
+## Debugging
+
+Debugging Linux on hardware boards is pretty difficult. printk statements can be used to print execution flow and memory values to the console. Otherwise, a hardware J-Link debugger may be used. We do not explain how to use that here.

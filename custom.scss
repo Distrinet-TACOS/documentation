@@ -24,11 +24,21 @@ div.sourceCode {
     margin-left: 0;
 }
 
+.parent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 0px;
+    align-items: center;
+    margin-top: 2em;
+}
+
 table {
     border-top: solid 1px $table-border-color;
 
     thead {
-        border-top: none!important;
+        border-top: none !important;
     }
 }
 
@@ -38,11 +48,16 @@ table {
     padding: 1rem;
     margin-bottom: 1rem;
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         font-family: monospace;
         display: inline;
     }
-    
+
     table:last-child {
         margin-bottom: 0rem;
     }

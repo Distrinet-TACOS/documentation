@@ -1,0 +1,79 @@
+---
+title: Prerequisites
+---
+
+::: {.callout-important}
+Mr-TEE was developed for the i.MX6 SabreLite board. Although support should be available for virtualization using QEMU, it certainly won't work out of the box. Interrupt assignments and other necessary configurations for QEMU are missing.
+
+Qemu can be used though to develop and test Trusted Applications, just not in a Mr-TEE context.
+:::
+
+## Ubuntu
+
+This guide is based on a clean Ubuntu 20.04 installation in a VM. It should be possible to repeat the results on any Linux distribution and any hypervisor platform, as long as the required packages are available.
+
+At least 60GiB free disk space is required. If the disk is not large enough and the build process is started, the disk will fill, possibly leading to system crashes.
+
+The first thing to do when the operating system is installed, is to update the package manager for the right architectures. Run the following in a command line:
+
+``` bash
+sudo dpkg --add-architecture i386
+sudo apt update
+```
+
+Then the required packages can be installed:
+
+``` bash
+sudo apt install android-tools-adb android-tools-fastboot autoconf \
+         automake bc bison build-essential ccache cscope \
+         curldevice-tree-compiler expect flex ftp-upload gdisk iasl \
+         libattr1-dev libcap-dev libfdt-dev libftdi-dev libglib2.0-dev \
+         libgmp-dev libhidapi-dev libmpc-dev libncurses5-dev libncursesw5-dev \
+         libpixman-1-dev libpython2.7 libssl-dev libtool make mtools netcat \
+         ninja-build python-crypto python3-crypto python-is-python3 \
+         python-pyelftools python3-pycryptodome python3-pyelftools \
+         python3-serial rsync unzip uuid-dev xdg-utils xterm xz-utils zlib1g-dev
+```
+
+### Changes from original [2]
+
+- python-serial is not available for Ubuntu 20.04. This package has thus been removed from the install procedure. This should not have any impact, because only python3 is used.
+- As python3 is the only python version available on Ubuntu 20.04, a package is added that links `python` to `python3`. This might be troublesome on systems where Python 2 is installed and existing tools use Python 2 by calling `python`. If this is the case, change these tools to use `python2` explicitly.
+
+## Google AOSP repo
+
+The repo tool from the Google Android Open Source Project (AOSP) allows you to manage multiple git repositories using manifest files. OP-TEE uses these manifests to combine all projects into a single development environment based on the specific architecture to be used.
+
+Obviously, because repo uses git, git needs to be installed and setup on the system. Configure git with your email and name.
+
+``` bash
+sudo apt install git
+git config --global user.email "<email>"
+git config --global user.name "<name>"
+```
+
+After that, repo can be installed:
+
+``` bash
+mkdir -p ~/bin
+PATH="${HOME}/bin:${PATH}"
+curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+chmod a+rx ~/bin/repo
+```
+
+Because repo is installed in `~/bin`, this directory needs to be added to the path. This should already been taken care of by Ubuntu, this can be checked if the following is present in `~/.profile`. If not, it should be added to the end of the file.
+
+``` bash
+ set path so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+```
+
+## QEMU
+
+Next, QEMU should be installed. This can be done by executing
+
+```bash
+sudo apt install qemu
+```

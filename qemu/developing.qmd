@@ -1,0 +1,5 @@
+---
+title: Developing changes for OPTEE-OS
+---
+
+It is very easy to make changes to the OPTEE-OS components on QEMU. Just change what you want in the respective directory in `<project-dir>` and rebuild in `<project-dir>/build`.

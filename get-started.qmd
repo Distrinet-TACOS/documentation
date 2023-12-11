@@ -1,0 +1,28 @@
+---
+title: Getting started
+---
+
+Mr-TEE is a mixed criticality system that use Arm TrustZone to provide isolation. The following features can be found in the architecture in @fig-architecture:
+
+- Isolation of safety-critical applications,
+- a secure scheduler to deliver availability for safety-critical applications,
+- a transparent peripheral sharing system between the two worlds,
+- and a Normal World Observer that monitors the running state of the Linux kernel.
+
+![Mr-TEE Architecture](figures/Architecture.svg){#fig-architecture}
+
+## Critical applications
+
+As Mr-TEE uses [OP-TEE OS](https://optee.readthedocs.io/en/latest/general/about.html) at its base for the Secure World, critical applications should be developed as [Trusted Applications](https://optee.readthedocs.io/en/latest/architecture/trusted_applications.html). These applications can then make use of the [API](/reference/reference.html#sec-scheduling) provided by FreeRTOS.
+
+:::{.callout-note}
+As any increase in the code size in the Secure World can introduce bugs and vulnerabilities, it is paramount that care is taken with the amount and quality of that code. If possible (without compromising security and availability), consider minimizing your application, or splitting it over the two worlds.
+:::
+
+## Sharing peripherals
+
+Critical peripherals can be mapped to the Secure World using Arm TrustZone[^1]. Afterwards, a peripheral sharing Secure Driver can be developed as a [Pseudo Trusted Application](/reference/reference.html#sec-pta) (PTA). This PTA can deliver access control for the Normal World and sharing logic between non-critical and critical applications, using the [APIs](/reference/reference.html#sec-ssp) for Shared Secure Peripherals. The architecture for the Shared Secure Peripherals can be found in @fig-ssp.
+
+![SSP Notifier Architecture](figures/ssp-notifier.svg){#fig-ssp}
+
+[^1]: Depending on the specific SoC, there might not be support for complete isolation. For example, the Raspberry Pi 3 contains a chip that provides some parts of Arm TrustZone, but lacks the necessary memory and peripheral protection that is necessary. Please refer to the Reference manual and Security Manuals of your specific SoC.
